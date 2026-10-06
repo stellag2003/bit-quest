@@ -1,5 +1,7 @@
 # Bit Quest
 
+**Jogue agora:** https://stellag2003.github.io/bit-quest/
+
 Jogo mobile educativo (8–12 anos) que ensina **lógica de programação** dentro de um console portátil retrô.
 A criança programa o robô **Bit** em três fases: **Sequências → Decisões (SE/ENTÃO) → Repetição (loops)**,
 guiada por mentores reais da computação: Ada Lovelace, Grace Hopper, Alan Turing e Katherine Johnson.
