@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#4a3a9e">
+  <meta name="description" content="Bit Quest: aprenda lógica de programação jogando. Sequências, decisões e loops em um console portátil retrô.">
+  <title>Bit Quest</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%235b47b8'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23c9dc8b'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%230f380f'/%3E%3Crect x='5' y='3' width='1' height='1' fill='%230f380f'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/console.css">
+  <link rel="stylesheet" href="styles/lcd.css">
+  <link rel="stylesheet" href="styles/screens.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i class="cloud cloud--a"></i><i class="cloud cloud--b"></i><i class="cloud cloud--c"></i></div>
+
+  <main class="console" aria-label="Console Bit Quest">
+    <div class="console__ridge" aria-hidden="true"><span>◀ OFF</span><span>ON ▶</span></div>
+
+    <section class="bezel">
+      <div class="bezel__top" aria-hidden="true">
+        <span class="led" title="Luz de energia"></span>
+        <span class="bezel__stripes"><i></i><i></i></span>
+        <span class="bezel__caption">Tela de pixels · 4 tons</span>
+      </div>
+      <div class="lcd">
+        <div id="screen" class="lcd__screen"></div>
+        <div id="overlay" class="lcd__overlay" aria-live="polite"></div>
+      </div>
+      <div id="legend" class="legend" aria-label="Legenda dos botões"></div>
+    </section>
+
+    <div class="brand" aria-hidden="true">
+      <span class="brand__name">Bit<em>Quest</em></span>
+      <span class="brand__tag">código para exploradores</span>
+    </div>
+
+    <section class="console__controls" aria-label="Botões do console">
+      <div class="dpad" role="group" aria-label="Direcional">
+        <button class="dpad__btn dpad__up" data-btn="up" aria-label="Cima"></button>
+        <button class="dpad__btn dpad__left" data-btn="left" aria-label="Esquerda"></button>
+        <span class="dpad__center" aria-hidden="true"></span>
+        <button class="dpad__btn dpad__right" data-btn="right" aria-label="Direita"></button>
+        <button class="dpad__btn dpad__down" data-btn="down" aria-label="Baixo"></button>
+      </div>
+
+      <div class="ab" role="group" aria-label="Botões de ação">
+        <div class="ab__item ab__item--b"><button class="round-btn" data-btn="b" aria-label="B: voltar"></button><span>B</span></div>
+        <div class="ab__item ab__item--a"><button class="round-btn" data-btn="a" aria-label="A: confirmar"></button><span>A</span></div>
+      </div>
+
+      <div class="pills" role="group" aria-label="Select e Start">
+        <div class="pill"><button class="pill__btn" data-btn="select" aria-label="Select: dica"></button><span>Select</span></div>
+        <div class="pill"><button class="pill__btn" data-btn="start" aria-label="Start: executar"></button><span>Start</span></div>
+      </div>
+
+      <div class="speaker" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </section>
+  </main>
+
+  <noscript><p class="noscript">Bit Quest precisa de JavaScript ligado para funcionar.</p></noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
