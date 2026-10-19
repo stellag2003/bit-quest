@@ -32,7 +32,7 @@ export class ChallengeScreen extends Screen {
     }
     const { fase, challenge, index } = this.session;
     this.challenge = challenge;
-    this.mentor = game.content.mentors.find((m) => m.id === fase.mentorId);
+    this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.state = 'editing';
 
     this.editor = createEditor(challenge, { sfx });

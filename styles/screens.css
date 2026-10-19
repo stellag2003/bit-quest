@@ -1674,3 +1674,254 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.fase__num {
+  font-family: var(--font-brand);
+  font-size: 1.5em;
+}
+
+/* ───────────── Fase 4: buggy program tag · Fase 5: ★ function ───────────── */
+.program__bug {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px;
+  background: var(--c0);
+  color: var(--c3);
+  font-weight: 700;
+}
+
+/* The ★ frame spans the whole first line so it reads as "the block definition" */
+.loop--fn {
+  flex-basis: calc(100% - 6px);
+  background: var(--c0);
+  color: var(--c3);
+}
+
+.loop--fn .loop__body {
+  min-height: 40px;
+}
+
+.loop__fnname {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-weight: 700;
+  padding: 0 0.35em;
+}
+
+.loop__fncount {
+  margin-left: auto;
+  font-size: 0.8em;
+}
+
+.chip--call {
+  font-weight: 700;
+}
+
+.chip--call .chip__icon {
+  color: var(--c0);
+}
+
+.strip__fn {
+  background: var(--c0);
+  color: var(--c3);
+}
+
+/* ───────────── Finale & certificate ───────────── */
+.scr--finale {
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+.finale__confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.finale {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 6px;
+}
+
+.finale__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.finale__duo {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.finale__bit {
+  width: 64px;
+  height: 64px;
+}
+
+.finale__title {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: 2em;
+  animation: finale-pop 0.6s steps(4) both;
+}
+
+@keyframes finale-pop {
+  from { scale: 0.4; }
+  70% { scale: 1.15; }
+  to { scale: 1; }
+}
+
+.finale__message {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.finale__learned {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--c1);
+}
+
+.certificate {
+  position: relative;
+  margin: 6px 3px 0;
+  padding: 16px 14px 12px;
+  text-align: center;
+  background: var(--c3);
+  box-shadow: var(--edge), inset 0 0 0 4px var(--c3), inset 0 0 0 6px var(--c1);
+}
+
+.certificate__seal {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--c0);
+  color: var(--c3);
+  box-shadow: var(--edge-light);
+}
+
+.certificate__kicker {
+  margin: 6px 0 0;
+  font-family: var(--font-brand);
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.certificate__title {
+  margin: 2px 0 8px;
+  font-size: 1.3em;
+}
+
+.certificate__text {
+  margin: 0 0 10px;
+}
+
+.certificate__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+.certificate__date {
+  margin: 0 0 10px;
+  font-size: 0.85em;
+  color: var(--c1);
+}
+
+.certificate__signs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 0.75em;
+}
+
+.certificate__signs span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+  border-top: 2px solid var(--c0);
+}
+
+.certificate__sign {
+  font-family: var(--font-brand);
+  font-size: 1.4em;
+}
+
+.certificate__note {
+  margin: 10px 0 0;
+  font-size: 0.75em;
+  color: var(--c1);
+}
+
+.certificate__name {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 3px;
+}
+
+.certificate__name label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85em;
+}
+
+.certificate__input {
+  min-height: 40px;
+  padding: 4px 8px;
+  border: 0;
+  background: var(--c3);
+  color: var(--c0);
+  font: inherit;
+  font-size: 1.1em;
+  box-shadow: var(--edge);
+  user-select: text;
+}
+
+.finale__next {
+  margin: 3px;
+  padding: 10px 12px;
+}
+
+.finale__next h2 {
+  margin: 0 0 4px;
+}
+
+.finale__next p {
+  margin: 0 0 10px;
+}
+
+.finale__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.home__certificate {
+  min-height: 38px;
+}

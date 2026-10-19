@@ -3,7 +3,7 @@ import { icon } from '../pixel/icons.js';
 import { t } from '../i18n/index.js';
 import { COMMAND_UI, SENSOR_UI } from '../ui/catalog.js';
 import { h } from '../ui/dom.js';
-import { clearHighlights, commandChip, highlightStep, sensorChip } from './blocks.js';
+import { bugBadge, clearHighlights, commandChip, highlightStep, sensorChip } from './blocks.js';
 
 /**
  * Editor for Fase 2: fill "SE [sensor] ENTÃO [ação]" cards. The palette writes
@@ -13,8 +13,11 @@ export class RuleEditor {
   constructor({ challenge, sfx }) {
     this.challenge = challenge;
     this.sfx = sfx;
-    this.rules = Array.from({ length: challenge.ruleSlots }, () => rule());
-    this.selected = { ruleId: this.rules[0].id, slot: 'condition' };
+    // Fase 4 (debugging) starts from the given rules; otherwise every card starts empty.
+    const start = structuredClone(challenge.start ?? []);
+    this.rules = Array.from({ length: challenge.ruleSlots }, (_, i) => start[i] ?? rule());
+    const firstEmpty = this.rules.find((r) => !r.condition || !r.action) ?? this.rules.at(-1);
+    this.selected = { ruleId: firstEmpty.id, slot: firstEmpty.condition ? 'action' : 'condition' };
     this.locked = false;
     this.onChange = () => {};
 
@@ -22,7 +25,7 @@ export class RuleEditor {
     this.defaultRule = h('span', { class: 'rule-default', dataset: { nodeId: 'default' } },
       t('rules.default'), icon('walk'));
     this.programEl = h('section', { class: 'program program--rules', 'aria-label': t('rules.title') },
-      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), this.defaultRule), this.list);
+      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), challenge.start ? bugBadge() : null, this.defaultRule), this.list);
 
     const button = (kind, id, content, aria) => h('button', {
       class: `chip chip--${kind === 'condition' ? 'sensor' : 'cmd'} palette__btn`,

@@ -14,7 +14,7 @@ export const fase1 = {
     example: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
   },
   lesson: [
-    { text: 'Oi! Eu sou a Ada. Este é o Bit, um robô que adora seguir instruções.' },
+    { text: 'Oi! Este é o Bit, um robô que adora seguir instruções.' },
     {
       text: 'Um programa é uma lista de comandos. O Bit faz um de cada vez, na ordem.',
       demo: {

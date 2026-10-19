@@ -37,9 +37,9 @@ describe('SPEC-005 map unlocking', () => {
 
   it('whole game can be finished, unlocking all mentors and medals', () => {
     const { game } = makeGame();
-    [fase1, fase2, fase3].forEach((f) => solveFase(game, f));
+    CONTENT.fases.forEach((f) => solveFase(game, f));
     const p = game.store.get();
-    assert.deepEqual(p.completedFases, ['f1', 'f2', 'f3']);
+    assert.deepEqual(p.completedFases, CONTENT.fases.map((f) => f.id));
     assert.equal(p.unlockedMentors.length, CONTENT.mentors.length);
     assert.ok(p.achievements.includes('loop-master'));
     assert.ok(p.achievements.includes('star-sky'));
@@ -127,5 +127,28 @@ describe('Economy and profile', () => {
     game.resetProgress.execute();
     assert.equal(game.store.get().completedFases.length, 0);
     assert.equal(game.store.get().settings.music, false);
+  });
+});
+
+describe('End of the game', () => {
+  it('the celebration is due only after every fase, and only once', () => {
+    const { game } = makeGame();
+    CONTENT.fases.slice(0, -1).forEach((f) => solveFase(game, f));
+    assert.equal(game.playerSummary.execute().gameCompleted, false);
+    solveFase(game, CONTENT.fases.at(-1));
+    const done = game.playerSummary.execute();
+    assert.equal(done.gameCompleted, true);
+    assert.equal(done.finale.seen, false);
+    game.completeGame.execute();
+    const after = game.playerSummary.execute().finale;
+    assert.equal(after.seen, true);
+    assert.ok(after.completedAt);
+  });
+
+  it('the certificate name is trimmed and kept short', () => {
+    const { game } = makeGame();
+    assert.equal(game.setCertificateName.execute('   Ana    Clara  '), 'Ana Clara');
+    assert.equal(game.setCertificateName.execute('x'.repeat(40)).length, 24);
+    assert.equal(game.playerSummary.execute().finale.name, 'x'.repeat(24));
   });
 });

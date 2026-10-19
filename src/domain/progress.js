@@ -19,6 +19,7 @@ export function createInitialProgress(now, { firstMentor = 'ada', firstPalette =
     palettes: { owned: [firstPalette], current: firstPalette },
     settings: { sfx: true, music: true, guideSeen: false, lang: null, difficulty: null, largeText: false, plainFont: false, calmMotion: false },
     stats: { runs: 0, failures: 0 },
+    finale: { seen: false, name: '', completedAt: null },
   };
 }
 
@@ -27,7 +28,7 @@ export function migrateProgress(saved, now, options) {
   const base = createInitialProgress(now, options);
   if (!saved || typeof saved !== 'object') return base;
   const merged = { ...base, ...saved, version: SAVE_VERSION };
-  for (const key of ['energy', 'streak', 'palettes', 'settings', 'stats']) {
+  for (const key of ['energy', 'streak', 'palettes', 'settings', 'stats', 'finale']) {
     merged[key] = { ...base[key], ...(saved[key] ?? {}) };
   }
   for (const key of ['lessonsDone', 'completedFases', 'unlockedMentors', 'achievements']) {

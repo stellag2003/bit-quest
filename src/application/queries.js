@@ -28,6 +28,8 @@ export class PlayerSummaryQuery {
       unlockedMentors: [...p.unlockedMentors],
       achievements: [...p.achievements],
       lessonsDone: [...p.lessonsDone],
+      gameCompleted: this.curriculum.fases.every((f) => p.completedFases.includes(f.id)),
+      finale: { ...p.finale },
     };
   }
 }

@@ -59,6 +59,7 @@ export class HomeScreen extends Screen {
         h('div', { class: 'home__row' },
           h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('library') }, icon('book'), t('home.learn')),
           this.colorsButton(s))),
+      s.gameCompleted ? h('button', { class: 'pbtn home__certificate', type: 'button', onClick: () => this.ctx.nav.go('finale') }, icon('trophy'), t('finale.viewCertificate')) : null,
       h('p', { class: 'home__progress' },
         h('span', {}, icon('flag'), ` ${t('home.challenges', { done: s.completedChallenges, total: s.totalChallenges })}`),
         h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`),

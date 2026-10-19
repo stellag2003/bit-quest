@@ -6,7 +6,7 @@ import { h } from '../ui/dom.js';
 export function mentorCard(mentor) {
   return h('article', { class: 'mentor-card' },
     h('h2', { class: 'mentor-card__name' }, mentor.name),
-    h('p', { class: 'mentor-card__meta' }, h('span', {}, mentor.years), h('span', {}, mentor.area)),
+    h('p', { class: 'mentor-card__meta' }, mentor.years ? h('span', {}, mentor.years) : null, h('span', {}, mentor.area)),
     h('p', {}, mentor.intro),
     h('div', { class: 'mentor-card__fact panel' }, h('strong', {}, icon('star'), ` ${t('mentor.fact')}`), h('p', {}, mentor.fact)),
     h('blockquote', { class: 'mentor-card__message' },

@@ -3,8 +3,9 @@
 **Jogue agora:** https://stellag2003.github.io/bit-quest/
 
 Jogo mobile educativo (8–12 anos) que ensina **lógica de programação** dentro de um console portátil retrô.
-A criança programa o robô **Bit** em três fases: **Sequências → Decisões (SE/ENTÃO) → Repetição (loops)**,
-guiada por mentores reais da computação: Ada Lovelace, Grace Hopper, Alan Turing e Katherine Johnson.
+A criança programa o robô **Bit** em seis fases: **Sequências → Decisões (SE/ENTÃO) → Repetição (loops) →
+Depuração → Funções → Tudo junto**, guiada por mentores reais da ciência e da computação: Ada Lovelace,
+Grace Hopper, Alan Turing, Katherine Johnson, Sonja Ashauer, Liane Tarouco e Steve Jobs.
 
 HTML, CSS e JavaScript puros. Canvas 2D para o mundo em pixel art, Web Audio para os sons 8-bit e
 LocalStorage para salvar o progresso. Sem backend e sem dependências.
@@ -25,7 +26,7 @@ LocalStorage para salvar o progresso. Sem backend e sem dependências.
 ## Comandos
 
 ```bash
-npm test        # 59 testes: motor, regras, progressão e prova de que todo desafio tem solução
+npm test        # 73 testes: motor, regras, progressão e prova de que todo desafio tem solução
 npm run build   # gera dist/bitquest.html (bundle de arquivo único, sem dependências)
 npm start       # servidor estático local
 npm run portraits # converte a arte de assets/personagens em src/presentation/pixel/portraits.js
@@ -40,11 +41,19 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 - **3 níveis de dificuldade**, escolhidos ao ligar o jogo (e trocáveis em Ajustes):
   **Fácil** (errar não gasta energia, 3★ mesmo com 1 erro, Bit mais devagar), **Médio** (regras originais)
   e **Difícil** (limite de blocos = melhor solução, dica só após 2 tentativas, +50% de XP e moedas).
-- **9 desafios** em 3 fases, cada fase com uma lição curta e um exemplo animado.
+- **18 desafios** em 6 fases, cada fase com uma lição curta e um exemplo.
 - **Fase 1:** montar a sequência de comandos (Andar, Virar, Pular).
 - **Fase 2:** o Bit anda sozinho; a criança escreve regras SE/ENTÃO. O último desafio exige que as
   **mesmas regras vençam dois mapas diferentes**, mostrados lado a lado: o programa reage ao ambiente.
 - **Fase 3:** o bloco Repetir com **limite de blocos**; a recompensa mostra quanto o loop economizou.
+- **Fase 4 · Depuração:** o desafio já começa com um programa com **um bug**; a criança roda, descobre
+  onde o Bit erra e conserta (tira um bloco, muda o número do Repetir ou troca uma regra).
+- **Fase 5 · Funções:** a criança monta a **★ Função** (até 4 blocos) e usa o bloco ★ várias vezes.
+- **Fase 6 · Tudo junto:** desafios finais em mapas maiores, misturando regras, Repetir e funções.
+- **Final:** ao completar as 6 fases, comemoração com confete e música, a mensagem "você aprendeu lógica de
+  programação e construiu seus primeiros algoritmos", um **certificado fictício** com o nome da criança,
+  estrelas, nível e data, e um convite para buscar 3 estrelas em tudo e encarar o nível Difícil.
+  O certificado pode ser revisto pela tela inicial.
 - Feedback que não pune: o Bit para onde errou, o bloco culpado ganha um "!", aparece uma dica e
   "Tentar de novo" mantém o programa. Erros de montagem (programa vazio, regra incompleta) não gastam energia.
 - Progressão: XP e níveis, estrelas, moedas, energia que recarrega (toque na barra para ver e recarregar),
@@ -63,7 +72,8 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 
 A arte dos personagens fica em `assets/personagens/` (PNG 32×32, fundo transparente, paleta de 19 cores):
 **Mary**, a personagem principal (quem joga), aparece ao lado do Bit, e os quatro mentores usam seus
-retratos em todo o jogo. O retrato da Ada Lovelace foi desenhado na mesma paleta por `tools/draw-ada.mjs`. Sempre ampliados em múltiplo inteiro com `image-rendering: pixelated`.
+retratos em todo o jogo. Os retratos de Ada Lovelace, Sonja Ashauer, Liane Tarouco e Steve Jobs foram desenhados na mesma paleta por
+`tools/draw-portraits.mjs`. Sempre ampliados em múltiplo inteiro com `image-rendering: pixelated`.
 Depois de trocar um PNG, rode `npm run portraits` e `npm run build`.
 
 ## Mentores e fatos

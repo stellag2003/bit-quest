@@ -15,7 +15,7 @@ export const GUIDE = [
     robot: true,
     items: [
       ['flag', 'Objetivo', 'levar o Bit até a bandeira'],
-      ['map', '3 fases', 'Sequências, Decisões e Repetição'],
+      ['map', '6 fases', 'de Sequências até Tudo junto'],
     ],
   },
   {
@@ -46,6 +46,26 @@ export const GUIDE = [
     items: [
       ['repeat', 'Repetir', 'coloque comandos dentro dele'],
       ['trophy', 'Limite de blocos', 'cada desafio tem um máximo'],
+    ],
+  },
+  {
+    id: 'debug',
+    title: 'Fase 4 · Depuração',
+    text: 'Aqui o desafio já começa com um programa que tem um bug. Rode, descubra onde o Bit erra e conserte.',
+    items: [
+      ['bug', 'Ache o bug', 'rode e veja onde o Bit para'],
+      ['trash', 'Tire um bloco', 'toque no bloco errado'],
+      ['repeat', 'Mude um número', 'toque no × do Repetir'],
+    ],
+  },
+  {
+    id: 'functions',
+    title: 'Fase 5 · Funções',
+    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser. Na fase 6 você junta tudo!',
+    items: [
+      ['star', '★ Função', 'junte até 4 blocos nela'],
+      ['play', 'Bloco ★', 'faz tudo o que está na função'],
+      ['trophy', 'Fase 6 · Tudo junto', 'mistura tudo o que você aprendeu'],
     ],
   },
   {
@@ -86,7 +106,7 @@ export const GUIDE = [
     title: 'Mentores e Aprender',
     text: 'Pessoas reais da computação acompanham você. Complete fases para desbloquear novos mentores.',
     items: [
-      ['person', 'Mentores', 'Ada, Grace, Alan e Katherine'],
+      ['person', 'Mentores', 'Ada, Grace, Alan, Katherine, Sonja, Liane e Steve'],
       ['book', 'Aprender', 'mentores, conceitos e medalhas'],
       ['palette', 'Cores da tela', 'cada cor nova traz uma música nova'],
     ],

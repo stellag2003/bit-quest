@@ -93,3 +93,33 @@ describe('Accessibility: screen palettes stay readable', () => {
     });
   });
 });
+
+describe('Content: fases 4–6 (debugging, functions, all together)', () => {
+  const all = CONTENT.fases.flatMap((f) => f.challenges);
+
+  it('every debugging challenge starts with a program that fails until it is fixed', () => {
+    const debugging = all.filter((c) => c.start);
+    assert.ok(debugging.length >= 3);
+    for (const c of debugging) {
+      const result = evaluator.evaluate(c, c.start);
+      assert.equal(result.success, false, c.id);
+      assert.ok(result.failure.stepIndex >= 0, `${c.id}: the bug must show while Bit runs`);
+    }
+  });
+
+  it('function challenges cannot be solved inside the limit without the ★ function', () => {
+    for (const c of all.filter((ch) => ch.palette?.includes('call'))) {
+      const inlined = [...flatten(c.solution)].map(({ node }) => cmd(node.command));
+      assert.equal(evaluator.evaluate(c, inlined).failure?.code, 'too_many_blocks', c.id);
+    }
+  });
+
+  it('every new mentor is unlocked by exactly one fase and has a game message', () => {
+    const rewards = CONTENT.fases.map((f) => f.reward.mentorId);
+    for (const id of ['sonja', 'liane', 'jobs']) {
+      assert.equal(rewards.filter((r) => r === id).length, 1, id);
+      const mentor = CONTENT.mentors.find((m) => m.id === id);
+      assert.ok(mentor.intro && mentor.fact && mentor.message && mentor.unlockText, id);
+    }
+  });
+});

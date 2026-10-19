@@ -11,6 +11,9 @@ export function chipContent(ui) {
 export const commandChip = (commandId) => chipContent(COMMAND_UI[commandId]);
 export const sensorChip = (sensorId) => chipContent(SENSOR_UI[sensorId]);
 
+/** "This program has a bug" tag shown on debugging challenges. */
+export const bugBadge = () => h('span', { class: 'program__bug' }, icon('bug'), ` ${t('seq.buggy')}`);
+
 /** Read-only rendering of a program (lessons, library, results). */
 export function programStrip(nodes, { compact = false } = {}) {
   const render = (node) => {
@@ -18,6 +21,14 @@ export function programStrip(nodes, { compact = false } = {}) {
       return h('span', { class: 'strip__loop', dataset: { nodeId: node.id } },
         h('span', { class: 'strip__loophead' }, icon('repeat', 'chip__icon'), `${node.times}×`),
         h('span', { class: 'strip__body' }, node.body.map(render)));
+    }
+    if (node.type === 'function') {
+      return h('span', { class: 'strip__loop strip__fn', dataset: { nodeId: node.id } },
+        h('span', { class: 'strip__loophead' }, icon('star', 'chip__icon'), t('seq.function')),
+        h('span', { class: 'strip__body' }, node.body.map(render)));
+    }
+    if (node.type === 'call') {
+      return h('span', { class: 'chip chip--cmd chip--call', dataset: { nodeId: node.id } }, commandChip('call'));
     }
     if (node.type === 'rule') {
       return h('span', { class: 'strip__rule', dataset: { nodeId: node.id } },

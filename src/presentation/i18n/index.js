@@ -3,9 +3,9 @@ import { ES } from './es.js';
 import { PT } from './pt.js';
 
 /**
- * Interface copy in pt / en / es. The language is chosen once at startup
- * (changing it saves the setting and reloads), so `t()` reads a module-level
- * dictionary instead of threading the locale through every component.
+ * Interface copy in pt / en / es. `t()` reads a module-level dictionary
+ * instead of threading the locale through every component; switching
+ * language calls setLanguage() and redraws the current screen.
  */
 export const LANGUAGES = [
   { id: 'pt', label: 'Português', short: 'PT', htmlLang: 'pt-BR' },

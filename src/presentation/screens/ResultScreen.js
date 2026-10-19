@@ -1,5 +1,6 @@
 import { REWARDS } from '../../domain/scoring.js';
 import { Screen } from '../Screen.js';
+import { finaleDue } from './FinaleScreen.js';
 import { starRow } from '../components/hud.js';
 import { mentorPortrait } from '../components/mentorViews.js';
 import { icon } from '../pixel/icons.js';
@@ -20,7 +21,7 @@ export class ResultScreen extends Screen {
     if (!outcome) return this.later(() => this.ctx.nav.go('map'), 0);
     const { game, theme } = this.ctx;
     const { fase, challenge } = game.curriculum.findChallenge(challengeId);
-    const mentor = game.content.mentors.find((m) => m.id === fase.mentorId);
+    const mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.outcome = outcome;
 
     this.stars = starRow(0, 3, 'stars--big');
@@ -102,7 +103,7 @@ export class ResultScreen extends Screen {
 
   continue() {
     if (this.outcome.mentorUnlocked) this.ctx.nav.go('mentor', { mentorId: this.outcome.mentorUnlocked });
-    else this.ctx.nav.go('map');
+    else this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
   }
 
   onStart() {

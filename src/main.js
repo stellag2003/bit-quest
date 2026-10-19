@@ -20,6 +20,7 @@ import { InputController } from './presentation/input/InputController.js';
 import { BootScreen } from './presentation/screens/BootScreen.js';
 import { ChallengeScreen } from './presentation/screens/ChallengeScreen.js';
 import { DifficultyScreen } from './presentation/screens/DifficultyScreen.js';
+import { FinaleScreen } from './presentation/screens/FinaleScreen.js';
 import { GuideScreen } from './presentation/screens/GuideScreen.js';
 import { HomeScreen } from './presentation/screens/HomeScreen.js';
 import { LessonScreen } from './presentation/screens/LessonScreen.js';
@@ -34,10 +35,8 @@ const $ = (selector) => document.querySelector(selector);
 
 const bus = new EventBus();
 const repository = LocalStorageRepository.isAvailable() ? new LocalStorageRepository() : new MemoryRepository();
-// The language is fixed for the page's lifetime: switching saves it and reloads.
-const RESUME_KEY = 'bitquest:resume';
 const lang = setLanguage(resolveLanguage(repository.load()?.settings?.lang, navigator.languages ?? [navigator.language]));
-const game = createGame({ content: localizeContent(CONTENT, lang), repository, clock: SystemClock, bus });
+let game = createGame({ content: localizeContent(CONTENT, lang), repository, clock: SystemClock, bus });
 translateShell();
 
 const theme = new ThemeService({ palettes: CONTENT.palettes, store: game.store, bus });
@@ -64,6 +63,7 @@ const app = new App({
     home: HomeScreen,
     guide: GuideScreen,
     difficulty: DifficultyScreen,
+    finale: FinaleScreen,
     map: MapScreen,
     lesson: LessonScreen,
     challenge: ChallengeScreen,
@@ -73,12 +73,17 @@ const app = new App({
     settings: SettingsScreen,
   },
 });
-const changeLanguage = (id) => {
-  game.updateSettings.execute({ lang: id });
-  try { sessionStorage.setItem(RESUME_KEY, app.currentName); } catch { /* storage blocked: restart at boot */ }
-  location.reload();
+// Switching language rebuilds the game around the same progress store and redraws the
+// current screen in place: no reload, so the music and the audio unlock survive.
+const ctx = { game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')) };
+ctx.changeLanguage = (id) => {
+  game.updateSettings.execute({ lang: setLanguage(id) });
+  game = createGame({ content: localizeContent(CONTENT, id), repository, clock: SystemClock, bus, store: game.store });
+  ctx.game = game;
+  translateShell();
+  app.refresh();
 };
-app.setContext({ game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')), changeLanguage });
+app.setContext(ctx);
 bus.on('theme:changed', () => app.refresh());
 
 // Every on-screen button clicks, unless it plays its own sound.
@@ -97,7 +102,7 @@ const syncBody = ({ settings }) => {
 syncBody(game.store.get());
 game.store.subscribe(syncBody);
 
-if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { game, app, bus, audio };
+if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { get game() { return game; }, app, bus, audio };
 
 /** Static text in index.html (console labels, ARIA) follows the chosen language. */
 function translateShell() {
@@ -108,14 +113,4 @@ function translateShell() {
   document.querySelectorAll('[data-i18n-content]').forEach((el) => el.setAttribute('content', t(el.dataset.i18nContent)));
 }
 
-let resume = null;
-try {
-  resume = sessionStorage.getItem(RESUME_KEY);
-  sessionStorage.removeItem(RESUME_KEY);
-} catch { /* storage blocked */ }
-if (resume === 'settings' || resume === 'home' || resume === 'guide') {
-  document.body.classList.add('is-powered');
-  app.go(resume);
-} else {
-  app.go('boot');
-}
+app.go('boot');

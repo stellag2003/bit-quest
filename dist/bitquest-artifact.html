@@ -2891,6 +2891,257 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
   cursor: pointer;
 }
 
+.fase__num {
+  font-family: var(--font-brand);
+  font-size: 1.5em;
+}
+
+/* ───────────── Fase 4: buggy program tag · Fase 5: ★ function ───────────── */
+.program__bug {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px;
+  background: var(--c0);
+  color: var(--c3);
+  font-weight: 700;
+}
+
+/* The ★ frame spans the whole first line so it reads as "the block definition" */
+.loop--fn {
+  flex-basis: calc(100% - 6px);
+  background: var(--c0);
+  color: var(--c3);
+}
+
+.loop--fn .loop__body {
+  min-height: 40px;
+}
+
+.loop__fnname {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-weight: 700;
+  padding: 0 0.35em;
+}
+
+.loop__fncount {
+  margin-left: auto;
+  font-size: 0.8em;
+}
+
+.chip--call {
+  font-weight: 700;
+}
+
+.chip--call .chip__icon {
+  color: var(--c0);
+}
+
+.strip__fn {
+  background: var(--c0);
+  color: var(--c3);
+}
+
+/* ───────────── Finale & certificate ───────────── */
+.scr--finale {
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+.finale__confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.finale {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 6px;
+}
+
+.finale__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.finale__duo {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.finale__bit {
+  width: 64px;
+  height: 64px;
+}
+
+.finale__title {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: 2em;
+  animation: finale-pop 0.6s steps(4) both;
+}
+
+@keyframes finale-pop {
+  from { scale: 0.4; }
+  70% { scale: 1.15; }
+  to { scale: 1; }
+}
+
+.finale__message {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.finale__learned {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--c1);
+}
+
+.certificate {
+  position: relative;
+  margin: 6px 3px 0;
+  padding: 16px 14px 12px;
+  text-align: center;
+  background: var(--c3);
+  box-shadow: var(--edge), inset 0 0 0 4px var(--c3), inset 0 0 0 6px var(--c1);
+}
+
+.certificate__seal {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--c0);
+  color: var(--c3);
+  box-shadow: var(--edge-light);
+}
+
+.certificate__kicker {
+  margin: 6px 0 0;
+  font-family: var(--font-brand);
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.certificate__title {
+  margin: 2px 0 8px;
+  font-size: 1.3em;
+}
+
+.certificate__text {
+  margin: 0 0 10px;
+}
+
+.certificate__stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+.certificate__date {
+  margin: 0 0 10px;
+  font-size: 0.85em;
+  color: var(--c1);
+}
+
+.certificate__signs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  font-size: 0.75em;
+}
+
+.certificate__signs span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+  border-top: 2px solid var(--c0);
+}
+
+.certificate__sign {
+  font-family: var(--font-brand);
+  font-size: 1.4em;
+}
+
+.certificate__note {
+  margin: 10px 0 0;
+  font-size: 0.75em;
+  color: var(--c1);
+}
+
+.certificate__name {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 0 3px;
+}
+
+.certificate__name label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85em;
+}
+
+.certificate__input {
+  min-height: 40px;
+  padding: 4px 8px;
+  border: 0;
+  background: var(--c3);
+  color: var(--c0);
+  font: inherit;
+  font-size: 1.1em;
+  box-shadow: var(--edge);
+  user-select: text;
+}
+
+.finale__next {
+  margin: 3px;
+  padding: 10px 12px;
+}
+
+.finale__next h2 {
+  margin: 0 0 4px;
+}
+
+.finale__next p {
+  margin: 0 0 10px;
+}
+
+.finale__actions {
+  display: grid;
+  gap: 8px;
+}
+
+.home__certificate {
+  min-height: 38px;
+}
+
 </style>
 
 <style>
@@ -3299,6 +3550,7 @@ function createInitialProgress(now, { firstMentor = 'ada', firstPalette = 'class
     palettes: { owned: [firstPalette], current: firstPalette },
     settings: { sfx: true, music: true, guideSeen: false, lang: null, difficulty: null, largeText: false, plainFont: false, calmMotion: false },
     stats: { runs: 0, failures: 0 },
+    finale: { seen: false, name: '', completedAt: null },
   };
 }
 
@@ -3307,7 +3559,7 @@ function migrateProgress(saved, now, options) {
   const base = createInitialProgress(now, options);
   if (!saved || typeof saved !== 'object') return base;
   const merged = { ...base, ...saved, version: SAVE_VERSION };
-  for (const key of ['energy', 'streak', 'palettes', 'settings', 'stats']) {
+  for (const key of ['energy', 'streak', 'palettes', 'settings', 'stats', 'finale']) {
     merged[key] = { ...base[key], ...(saved[key] ?? {}) };
   }
   for (const key of ['lessonsDone', 'completedFases', 'unlockedMentors', 'achievements']) {
@@ -3377,9 +3629,11 @@ return { NodeStatus, ProgressionRules };
 __m["src/domain/program.js"] = (() => {
 /**
  * Program nodes (plain data, serialisable):
- *   { id, type: 'cmd',    command }
- *   { id, type: 'repeat', times, body: [cmd...] }
- *   { id, type: 'rule',   condition, action }
+ *   { id, type: 'cmd',      command }
+ *   { id, type: 'repeat',   times, body: [cmd | call...] }
+ *   { id, type: 'function', body: [cmd...] }   (Fase 5: at most one, defines the ★ block)
+ *   { id, type: 'call' }                       (runs the function's body)
+ *   { id, type: 'rule',     condition, action }
  */
 let nodeCounter = 0;
 function nextNodeId() {
@@ -3392,36 +3646,58 @@ const REPEAT_LIMITS = Object.freeze({ min: 2, max: 9 });
 const cmd = (command) => ({ id: nextNodeId(), type: 'cmd', command });
 const repeat = (times, body = []) => ({ id: nextNodeId(), type: 'repeat', times, body });
 const rule = (condition = null, action = null) => ({ id: nextNodeId(), type: 'rule', condition, action });
+const fn = (body = []) => ({ id: nextNodeId(), type: 'function', body });
+const call = () => ({ id: nextNodeId(), type: 'call' });
 
-/** Blocks the child placed (a Repetir counts as one block, plus its body). */
+const definitionIn = (nodes) => nodes.find((node) => node.type === 'function') ?? null;
+
+/**
+ * Blocks the child placed: a Repetir counts as one block plus its body; the
+ * function's frame is free (it is always on screen) but its body counts.
+ */
 function countBlocks(nodes) {
-  return nodes.reduce((total, node) => total + 1 + (node.type === 'repeat' ? countBlocks(node.body) : 0), 0);
+  return nodes.reduce((total, node) => {
+    if (node.type === 'function') return total + countBlocks(node.body);
+    return total + 1 + (node.type === 'repeat' ? countBlocks(node.body) : 0);
+  }, 0);
 }
 
-/** How many commands the program would need without loops. */
-function expandedLength(nodes) {
-  return nodes.reduce((total, node) => total + (node.type === 'repeat' ? node.times * expandedLength(node.body) : 1), 0);
+/** How many commands the program would need without loops or functions. */
+function expandedLength(nodes, def = definitionIn(nodes)) {
+  return nodes.reduce((total, node) => {
+    if (node.type === 'function') return total;
+    if (node.type === 'repeat') return total + node.times * expandedLength(node.body, def);
+    if (node.type === 'call') return total + (def ? expandedLength(def.body, def) : 0);
+    return total + 1;
+  }, 0);
 }
 
-/** Walks the program in execution order, telling which loop iteration each command belongs to. */
-function* flatten(nodes, loops = []) {
+/**
+ * Walks the program in execution order. `loops` tells which Repetir iteration
+ * (and which ★ call) each command belongs to, so the editor can light them up.
+ */
+function* flatten(nodes, loops = [], def = definitionIn(nodes)) {
   for (const node of nodes) {
     if (node.type === 'repeat') {
       for (let iteration = 1; iteration <= node.times; iteration += 1) {
-        yield* flatten(node.body, [...loops, { id: node.id, iteration, times: node.times }]);
+        yield* flatten(node.body, [...loops, { id: node.id, iteration, times: node.times }], def);
       }
+    } else if (node.type === 'call' && def) {
+      yield* flatten(def.body, [...loops, { id: node.id, iteration: 1, times: 1, call: true }], def);
     } else if (node.type === 'cmd') {
       yield { node, loops };
     }
   }
 }
 
-function findSequenceProblem(nodes) {
-  if (nodes.length === 0) return { code: 'empty', nodeId: null };
-  for (const node of nodes) {
+function findSequenceProblem(nodes, def = definitionIn(nodes)) {
+  const main = nodes.filter((node) => node.type !== 'function');
+  if (main.length === 0) return { code: 'empty', nodeId: null };
+  for (const node of main) {
+    if (node.type === 'call' && !def?.body.length) return { code: 'empty_function', nodeId: def?.id ?? node.id };
     if (node.type !== 'repeat') continue;
     if (node.body.length === 0) return { code: 'empty_loop', nodeId: node.id };
-    const inner = findSequenceProblem(node.body);
+    const inner = findSequenceProblem(node.body, def);
     if (inner) return inner;
   }
   return null;
@@ -3436,7 +3712,7 @@ function findRuleProblem(rules) {
   return null;
 }
 
-return { nextNodeId, REPEAT_LIMITS, cmd, repeat, rule, countBlocks, expandedLength, flatten, findSequenceProblem, isCompleteRule, findRuleProblem };
+return { nextNodeId, REPEAT_LIMITS, cmd, repeat, rule, fn, call, countBlocks, expandedLength, flatten, findSequenceProblem, isCompleteRule, findRuleProblem };
 })();
 // ── src/domain/runners/runResult.js
 __m["src/domain/runners/runResult.js"] = (() => {
@@ -4012,6 +4288,32 @@ class UpdateSettings {
   }
 }
 
+/** The end-of-game celebration: shown once, remembers when and the name on the certificate. */
+class CompleteGame {
+  constructor({ store, clock }) {
+    Object.assign(this, { store, clock });
+  }
+
+  execute() {
+    this.store.update((p) => {
+      p.finale.seen = true;
+      p.finale.completedAt ??= this.clock.now();
+    });
+  }
+}
+
+class SetCertificateName {
+  constructor({ store }) {
+    this.store = store;
+  }
+
+  execute(name) {
+    const clean = String(name ?? '').replace(/\s+/g, ' ').trim().slice(0, 24);
+    this.store.update((p) => void (p.finale.name = clean));
+    return clean;
+  }
+}
+
 class ResetProgress {
   constructor({ store, bus }) {
     Object.assign(this, { store, bus });
@@ -4025,7 +4327,7 @@ class ResetProgress {
   }
 }
 
-return { SelectMentor, UpdateSettings, ResetProgress };
+return { SelectMentor, UpdateSettings, CompleteGame, SetCertificateName, ResetProgress };
 })();
 // ── src/application/queries.js
 __m["src/application/queries.js"] = (() => {
@@ -4058,6 +4360,8 @@ class PlayerSummaryQuery {
       unlockedMentors: [...p.unlockedMentors],
       achievements: [...p.achievements],
       lessonsDone: [...p.lessonsDone],
+      gameCompleted: this.curriculum.fases.every((f) => p.completedFases.includes(f.id)),
+      finale: { ...p.finale },
     };
   }
 }
@@ -4109,13 +4413,13 @@ const { createSensorRegistry } = __m["src/domain/sensors.js"];
 const { PurchasePalette, RefillEnergy, SelectPalette } = __m["src/application/economy.js"];
 const { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } = __m["src/application/learning.js"];
 const { ProgressStore } = __m["src/application/ProgressStore.js"];
-const { ResetProgress, SelectMentor, UpdateSettings } = __m["src/application/profile.js"];
+const { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } = __m["src/application/profile.js"];
 const { MapOverviewQuery, PlayerSummaryQuery } = __m["src/application/queries.js"];
 /**
  * Application composition: builds the rules and use cases from content and
  * infrastructure ports ({ repository, clock, bus }). No DOM in here.
  */
-function createGame({ content, repository, clock, bus }) {
+function createGame({ content, repository, clock, bus, store: existingStore = null }) {
   const { fases, mentors, achievements, palettes, economy, difficulties } = content;
   const curriculum = new Curriculum(fases);
   const rules = new ProgressionRules(curriculum);
@@ -4124,7 +4428,8 @@ function createGame({ content, repository, clock, bus }) {
   const evaluator = new ChallengeEvaluator([new SequenceRunner(commands), new RuleRunner(commands, sensors)]);
   const defaults = { firstMentor: mentors[0].id, firstPalette: palettes[0].id };
 
-  const store = new ProgressStore({
+  // Passing the store keeps the same progress (and its subscribers) when only the language changes.
+  const store = existingStore ?? new ProgressStore({
     repository,
     clock,
     createInitial: (now) => createInitialProgress(now, defaults),
@@ -4151,6 +4456,8 @@ function createGame({ content, repository, clock, bus }) {
     selectMentor: new SelectMentor({ store }),
     updateSettings: new UpdateSettings({ store }),
     resetProgress: new ResetProgress({ store, bus }),
+    completeGame: new CompleteGame({ store, clock }),
+    setCertificateName: new SetCertificateName({ store }),
     playerSummary: new PlayerSummaryQuery({ store, rules, curriculum, clock, mentors }),
     mapOverview: new MapOverviewQuery({ store, rules, curriculum }),
   };
@@ -4274,6 +4581,7 @@ __m["src/content/feedback.js"] = (() => {
 const FAILURES = {
   empty: { title: 'Seu programa está vazio', hint: 'Toque nos comandos lá embaixo para montar o caminho.' },
   empty_loop: { title: 'O Repetir está vazio', hint: 'Coloque pelo menos um comando dentro do Repetir.' },
+  empty_function: { title: 'A função está vazia', hint: 'Coloque comandos dentro da ★ Função antes de usá-la.' },
   incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
@@ -4314,7 +4622,7 @@ const fase1 = {
     example: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
   },
   lesson: [
-    { text: 'Oi! Eu sou a Ada. Este é o Bit, um robô que adora seguir instruções.' },
+    { text: 'Oi! Este é o Bit, um robô que adora seguir instruções.' },
     {
       text: 'Um programa é uma lista de comandos. O Bit faz um de cada vez, na ordem.',
       demo: {
@@ -4383,7 +4691,7 @@ const fase2 = {
     example: [rule('rockAhead', 'jump')],
   },
   lesson: [
-    { text: 'Olá, sou a Grace! Agora o Bit anda sozinho... mas o caminho tem surpresas.' },
+    { text: 'Agora o Bit anda sozinho... mas o caminho tem surpresas.' },
     {
       text: 'Programas tomam decisões. SE tiver pedra à frente, ENTÃO o Bit pula.',
       demo: {
@@ -4462,7 +4770,7 @@ const fase3 = {
   },
   lesson: [
     {
-      text: 'Eu sou o Alan. Repare: Andar, Andar, Andar, Andar, Andar... que cansativo!',
+      text: 'Repare: Andar, Andar, Andar, Andar, Andar... que cansativo!',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('walk'), cmd('walk')],
     },
     {
@@ -4518,13 +4826,232 @@ const fase3 = {
 
 return { LOOP_MESSAGE, fase3 };
 })();
+// ── src/content/fases/fase4-depuracao.js
+__m["src/content/fases/fase4-depuracao.js"] = (() => {
+const { cmd, repeat, rule } = __m["src/domain/program.js"];
+/**
+ * Fase 4: Depuração. Every challenge starts with a program that has ONE bug.
+ * Each bug can be fixed with what the editors already do: remove a block,
+ * change a Repetir count, or swap a rule's action.
+ */
+const fase4 = {
+  id: 'f4',
+  number: 4,
+  title: 'Depuração',
+  mentorId: 'katherine',
+  scenery: 'meadow',
+  reward: { mentorId: 'sonja' },
+  concept: {
+    title: 'Depuração (debug)',
+    summary: 'Depurar é achar e consertar o erro de um programa. Rode, veja onde o Bit parou e mude só o que está errado.',
+    example: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
+  },
+  lesson: [
+    { text: 'Nem todo programa funciona de primeira. Um erro no programa se chama bug.' },
+    {
+      text: 'Este programa tem um bug: um passo a mais. Rode, veja onde o Bit bate e encontre o bloco culpado.',
+      strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
+    },
+    { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra.' },
+  ],
+  challenges: [
+    {
+      id: 'f4-c1',
+      title: 'Um passo a mais',
+      kind: 'sequence',
+      goal: 'O programa tem um bug. Conserte e leve o Bit até a bandeira.',
+      palette: ['walk', 'turnLeft', 'turnRight', 'jump'],
+      maps: [['#.....#', '.>..#..', '.......', '...G...', '#.....#']],
+      start: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
+      optimalBlocks: 5,
+      hints: ['Rode o programa: em qual bloco o Bit bate na árvore?', 'Tem um Andar a mais antes de Virar. Toque nele para tirar.'],
+      solution: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
+    },
+    {
+      id: 'f4-c2',
+      title: 'Conta errada',
+      kind: 'sequence',
+      goal: 'O Repetir está contando errado. Conserte o número.',
+      palette: ['walk', 'turnLeft', 'turnRight', 'jump', 'repeat'],
+      maxBlocks: 2,
+      maps: [['#.#.#.#.#.#', '.>.......G.', '#.#.#.#.#.#']],
+      start: [repeat(6, [cmd('walk')])],
+      optimalBlocks: 2,
+      hints: ['O Bit para antes da bandeira. Faltam quantas casas?', 'Conte as casas até a bandeira e toque no número do Repetir até chegar nele.'],
+      solution: [repeat(8, [cmd('walk')])],
+    },
+    {
+      id: 'f4-c3',
+      title: 'Regra trocada',
+      kind: 'rules',
+      goal: 'Uma das regras está errada. Descubra qual e conserte.',
+      sensors: ['rockAhead', 'wallAhead'],
+      actions: ['jump', 'turnLeft', 'turnRight'],
+      ruleSlots: 2,
+      maps: [['########', '#>.R..##', '#####.##', '#####R##', '#G....##', '########']],
+      start: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnLeft')],
+      optimalBlocks: 2,
+      hints: ['A regra da pedra funciona. Olhe a regra da parede.', 'O caminho vira para a direita. Toque no ENTÃO da regra da parede e escolha Virar dir.'],
+      solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
+    },
+  ],
+};
+
+return { fase4 };
+})();
+// ── src/content/fases/fase5-funcoes.js
+__m["src/content/fases/fase5-funcoes.js"] = (() => {
+const { call, cmd, fn } = __m["src/domain/program.js"];
+/** Fase 5: Funções. The child builds a ★ block once and uses it several times. */
+const FN_PALETTE = ['walk', 'turnLeft', 'turnRight', 'jump', 'call'];
+
+const fase5 = {
+  id: 'f5',
+  number: 5,
+  title: 'Funções',
+  mentorId: 'sonja',
+  scenery: 'canyon',
+  reward: { mentorId: 'liane' },
+  concept: {
+    title: 'Função',
+    summary: 'Uma função é um bloco novo que você cria juntando outros blocos. Depois é só usar esse bloco quantas vezes quiser.',
+    example: [fn([cmd('walk'), cmd('jump')]), call(), call()],
+  },
+  lesson: [
+    { text: 'Às vezes o mesmo pedaço de programa aparece várias vezes. Dá para escrever ele uma vez só!' },
+    {
+      text: 'Coloque os passos dentro da ★ Função. Cada bloco ★ que você usar faz tudo o que está lá dentro.',
+      demo: {
+        kind: 'sequence',
+        map: ['#.G#', '#..#', '>..#'],
+        program: [fn([cmd('walk'), cmd('turnLeft'), cmd('walk'), cmd('turnRight')]), call(), call()],
+      },
+    },
+    { text: 'Primeiro monte a função lá em cima. Depois use o bloco ★ no programa.' },
+  ],
+  challenges: [
+    {
+      id: 'f5-c1',
+      title: 'O bloco mágico',
+      kind: 'sequence',
+      goal: 'Crie uma função e chegue à bandeira com só 5 blocos.',
+      palette: FN_PALETTE,
+      functionMax: 4,
+      maxBlocks: 5,
+      maps: [['#.#.#.#.#', '>..R...RG', '#.#.#.#.#']],
+      optimalBlocks: 5,
+      hints: ['O caminho se repete: Andar, Andar, Pular.', 'Função: Andar, Andar, Pular. Programa: ★ e ★.'],
+      solution: [fn([cmd('walk'), cmd('walk'), cmd('jump')]), call(), call()],
+    },
+    {
+      id: 'f5-c2',
+      title: 'Escada da Sonja',
+      kind: 'sequence',
+      goal: 'Suba a escada usando no máximo 7 blocos.',
+      palette: FN_PALETTE,
+      functionMax: 4,
+      maxBlocks: 7,
+      maps: [['.......', '..G#...', '.#..#..', '..#..#.', '...#.<.', '.......']],
+      optimalBlocks: 7,
+      hints: ['Cada degrau é igual: andar, virar, andar, virar.', 'Função: Andar, Virar dir., Andar, Virar esq. Use ★ três vezes.'],
+      solution: [fn([cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('turnLeft')]), call(), call(), call()],
+    },
+    {
+      id: 'f5-c3',
+      title: 'Padrão escondido',
+      kind: 'sequence',
+      goal: 'Ache o pedaço que se repete e use no máximo 8 blocos.',
+      palette: FN_PALETTE,
+      functionMax: 4,
+      maxBlocks: 8,
+      maps: [['#########', '>.R..####', '####.####', '####R####', '####.####', '####..R.G', '#########']],
+      optimalBlocks: 8,
+      hints: ['Antes e depois de cada curva o Bit faz: Andar, Pular, Andar.', 'Função: Andar, Pular, Andar. Programa: ★, Virar dir., ★, Virar esq., ★.'],
+      solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), call(), cmd('turnRight'), call(), cmd('turnLeft'), call()],
+    },
+  ],
+};
+
+return { fase5 };
+})();
+// ── src/content/fases/fase6-tudo-junto.js
+__m["src/content/fases/fase6-tudo-junto.js"] = (() => {
+const { call, cmd, fn, repeat, rule } = __m["src/domain/program.js"];
+/** Fase 6: Tudo junto. Final challenges mixing decisions, loops and functions on bigger maps. */
+const fase6 = {
+  id: 'f6',
+  number: 6,
+  title: 'Tudo junto',
+  mentorId: 'liane',
+  scenery: 'lab',
+  reward: { mentorId: 'jobs' },
+  concept: {
+    title: 'Pensamento computacional',
+    summary: 'Programadores misturam tudo o que aprenderam: sequência, decisões, repetição e funções. Escolha a melhor ferramenta para cada caminho.',
+    example: [repeat(2, [call(), cmd('turnRight')])],
+  },
+  lesson: [
+    { text: 'Você já sabe sequências, decisões, repetição e funções. Agora é hora de juntar tudo!' },
+    {
+      text: 'Antes de montar, olhe o mapa inteiro: o que se repete? Onde o Bit precisa decidir?',
+      strip: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight')])],
+    },
+    { text: 'Não existe só um jeito certo. Mas o melhor programa é curto e fácil de entender.' },
+  ],
+  challenges: [
+    {
+      id: 'f6-c1',
+      title: 'Labirinto de regras',
+      kind: 'rules',
+      goal: 'Crie as regras que levam o Bit por todo o labirinto.',
+      sensors: ['rockAhead', 'wallAhead'],
+      actions: ['jump', 'turnLeft', 'turnRight'],
+      ruleSlots: 2,
+      maps: [['#########', '#>.R...##', '######.##', '######R##', '######.##', '#G..R..##', '#########']],
+      optimalBlocks: 2,
+      hints: ['Você vai precisar de uma regra para pedras e outra para paredes.', 'SE pedra → Pular. SE parede → Virar dir.'],
+      solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
+    },
+    {
+      id: 'f6-c2',
+      title: 'Volta na praça',
+      kind: 'sequence',
+      goal: 'Dê a volta nas pedras usando só 4 blocos.',
+      palette: ['walk', 'turnLeft', 'turnRight', 'jump', 'repeat'],
+      maxBlocks: 4,
+      maps: [['>.R.', '##..', '#..R', 'GR..']],
+      optimalBlocks: 4,
+      hints: ['Andar, Pular, Virar... e de novo. Quantas vezes?', 'Repetir 3× [Andar, Pular, Virar dir.].'],
+      solution: [repeat(3, [cmd('walk'), cmd('jump'), cmd('turnRight')])],
+    },
+    {
+      id: 'f6-c3',
+      title: 'Desafio final',
+      kind: 'sequence',
+      goal: 'Use uma função dentro do Repetir. No máximo 8 blocos!',
+      palette: ['walk', 'turnLeft', 'turnRight', 'jump', 'repeat', 'call'],
+      functionMax: 4,
+      maxBlocks: 8,
+      maps: [['>.R..####', '####.####', '####R####', '####.####', '####..R..', '########.', '########R', '########.', '########G']],
+      optimalBlocks: 8,
+      hints: ['O pedaço Andar, Pular, Andar aparece 4 vezes, com curvas entre eles.', 'Função: Andar, Pular, Andar. Programa: Repetir 2× [★, Virar dir., ★, Virar esq.].'],
+      solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight'), call(), cmd('turnLeft')])],
+    },
+  ],
+};
+
+return { fase6 };
+})();
 // ── src/content/fases/index.js
 __m["src/content/fases/index.js"] = (() => {
 const { fase1 } = __m["src/content/fases/fase1-sequencias.js"];
 const { fase2 } = __m["src/content/fases/fase2-decisoes.js"];
 const { fase3 } = __m["src/content/fases/fase3-repeticao.js"];
+const { fase4 } = __m["src/content/fases/fase4-depuracao.js"];
+const { fase5 } = __m["src/content/fases/fase5-funcoes.js"];
+const { fase6 } = __m["src/content/fases/fase6-tudo-junto.js"];
 /** Order of the learning map. Add a new fase file here to extend the game. */
-const FASES = [fase1, fase2, fase3];
+const FASES = [fase1, fase2, fase3, fase4, fase5, fase6];
 
 return { FASES };
 })();
@@ -4563,7 +5090,7 @@ const GUIDE = [
     robot: true,
     items: [
       ['flag', 'Objetivo', 'levar o Bit até a bandeira'],
-      ['map', '3 fases', 'Sequências, Decisões e Repetição'],
+      ['map', '6 fases', 'de Sequências até Tudo junto'],
     ],
   },
   {
@@ -4594,6 +5121,26 @@ const GUIDE = [
     items: [
       ['repeat', 'Repetir', 'coloque comandos dentro dele'],
       ['trophy', 'Limite de blocos', 'cada desafio tem um máximo'],
+    ],
+  },
+  {
+    id: 'debug',
+    title: 'Fase 4 · Depuração',
+    text: 'Aqui o desafio já começa com um programa que tem um bug. Rode, descubra onde o Bit erra e conserte.',
+    items: [
+      ['bug', 'Ache o bug', 'rode e veja onde o Bit para'],
+      ['trash', 'Tire um bloco', 'toque no bloco errado'],
+      ['repeat', 'Mude um número', 'toque no × do Repetir'],
+    ],
+  },
+  {
+    id: 'functions',
+    title: 'Fase 5 · Funções',
+    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser. Na fase 6 você junta tudo!',
+    items: [
+      ['star', '★ Função', 'junte até 4 blocos nela'],
+      ['play', 'Bloco ★', 'faz tudo o que está na função'],
+      ['trophy', 'Fase 6 · Tudo junto', 'mistura tudo o que você aprendeu'],
     ],
   },
   {
@@ -4634,7 +5181,7 @@ const GUIDE = [
     title: 'Mentores e Aprender',
     text: 'Pessoas reais da computação acompanham você. Complete fases para desbloquear novos mentores.',
     items: [
-      ['person', 'Mentores', 'Ada, Grace, Alan e Katherine'],
+      ['person', 'Mentores', 'Ada, Grace, Alan, Katherine, Sonja, Liane e Steve'],
       ['book', 'Aprender', 'mentores, conceitos e medalhas'],
       ['palette', 'Cores da tela', 'cada cor nova traz uma música nova'],
     ],
@@ -4700,6 +5247,36 @@ const MENTORS = [
     message: 'Confira, teste e confira de novo. Cuidado com os detalhes também é coragem.',
     unlockText: 'Complete a fase Repetição.',
   },
+  {
+    id: 'sonja',
+    name: 'Sonja Ashauer',
+    years: '1923–1948',
+    area: 'Física teórica',
+    intro: 'Física brasileira, nascida em São Paulo. Foi a primeira mulher do Brasil a fazer doutorado em física, na Universidade de Cambridge, na Inglaterra.',
+    fact: 'O orientador dela em Cambridge foi Paul Dirac, um dos criadores da física quântica. Sonja terminou o doutorado com só 24 anos.',
+    message: 'Grandes ideias começam com perguntas pequenas. Não tenha medo de perguntar!',
+    unlockText: 'Complete a fase Depuração.',
+  },
+  {
+    id: 'liane',
+    name: 'Liane Tarouco',
+    years: '',
+    area: 'Redes de computadores e internet',
+    intro: 'Cientista da computação brasileira e professora da UFRGS, em Porto Alegre. Ajudou a levar a internet para as universidades do Brasil, quando quase ninguém sabia o que era isso.',
+    fact: 'Em 2017, ela entrou para o Internet Hall of Fame, que homenageia as pessoas que ajudaram a construir a internet no mundo.',
+    message: 'Computadores ficam mais fortes quando conversam entre si. Pessoas também!',
+    unlockText: 'Complete a fase Funções.',
+  },
+  {
+    id: 'jobs',
+    name: 'Steve Jobs',
+    years: '1955–2011',
+    area: 'Computadores pessoais e design',
+    intro: 'Empresário americano. Em 1976, fundou a Apple com Steve Wozniak numa garagem. A empresa ajudou a levar os computadores para dentro das casas.',
+    fact: 'Na faculdade, ele fez uma aula de caligrafia, a arte de desenhar letras. Anos depois, essa aula inspirou as letras bonitas do computador Macintosh, de 1984.',
+    message: 'Um bom programa é aquele que qualquer pessoa consegue usar. Pense em quem vai jogar!',
+    unlockText: 'Complete a fase Tudo junto.',
+  },
 ];
 
 return { MENTORS };
@@ -4743,7 +5320,7 @@ const EN = {
         summary: 'A program is a list of commands. The computer does them one at a time, from first to last.',
       },
       lesson: [
-        'Hi! I\'m Ada. This is Bit, a robot who loves following instructions.',
+        'Hi! This is Bit, a robot who loves following instructions.',
         'A program is a list of commands. Bit does them one at a time, in order.',
         'If the order changes, the path changes. Ready to build your first program?',
       ],
@@ -4772,7 +5349,7 @@ const EN = {
         summary: 'IF something happens, THEN do an action. That way the program decides what to do by itself.',
       },
       lesson: [
-        'Hello, I\'m Grace! Now Bit walks by himself... but the path has surprises.',
+        'Now Bit walks by himself... but the path has surprises.',
         'Programs make decisions. IF there\'s a rock ahead, THEN Bit jumps.',
         'When no rule matches, Bit just walks forward.',
       ],
@@ -4801,7 +5378,7 @@ const EN = {
         summary: 'Instead of writing the same command many times, use Repeat and say how many times.',
       },
       lesson: [
-        'I\'m Alan. Look: Walk, Walk, Walk, Walk, Walk... how tiring!',
+        'Look: Walk, Walk, Walk, Walk, Walk... how tiring!',
         'With Repeat 5× Walk, you write it once and Bit repeats it by himself.',
         'This is called a loop. Now every challenge has a block limit. Save blocks!',
       ],
@@ -4821,6 +5398,93 @@ const EN = {
           title: 'Jumping to the beat',
           goal: 'Find the pattern and use only 3 blocks.',
           hints: ['Before each rock there\'s an empty square. What\'s the pattern?', 'Repeat 3× [Walk, Jump].'],
+        },
+      },
+    },
+    f4: {
+      title: 'Debugging',
+      concept: {
+        title: 'Debugging',
+        summary: 'Debugging means finding and fixing a mistake in a program. Run it, see where Bit stopped and change only what is wrong.',
+      },
+      lesson: [
+        'Not every program works the first time. A mistake in a program is called a bug.',
+        'This program has a bug: one step too many. Run it, see where Bit bumps and find the guilty block.',
+        'Fix only what is wrong: remove a block, change a number or swap a rule.',
+      ],
+      challenges: {
+        'f4-c1': {
+          title: 'One step too many',
+          goal: 'The program has a bug. Fix it and take Bit to the flag.',
+          hints: ['Run the program: at which block does Bit bump into the tree?', 'There\'s an extra Walk before the Turn. Tap it to remove it.'],
+        },
+        'f4-c2': {
+          title: 'Wrong count',
+          goal: 'The Repeat is counting wrong. Fix the number.',
+          hints: ['Bit stops before the flag. How many squares are missing?', 'Count the squares to the flag and tap the Repeat number until you get there.'],
+        },
+        'f4-c3': {
+          title: 'Mixed-up rule',
+          goal: 'One of the rules is wrong. Find out which one and fix it.',
+          hints: ['The rock rule works. Look at the wall rule.', 'The path turns right. Tap the THEN of the wall rule and choose Turn right.'],
+        },
+      },
+    },
+    f5: {
+      title: 'Functions',
+      concept: {
+        title: 'Function',
+        summary: 'A function is a new block you make by putting other blocks together. Then you can use that block as many times as you want.',
+      },
+      lesson: [
+        'Sometimes the same piece of a program shows up many times. You can write it just once!',
+        'Put the steps inside the ★ Function. Every ★ block you use does everything inside it.',
+        'First build the function up top. Then use the ★ block in your program.',
+      ],
+      challenges: {
+        'f5-c1': {
+          title: 'The magic block',
+          goal: 'Make a function and reach the flag with only 5 blocks.',
+          hints: ['The path repeats: Walk, Walk, Jump.', 'Function: Walk, Walk, Jump. Program: ★ and ★.'],
+        },
+        'f5-c2': {
+          title: 'Sonja\'s staircase',
+          goal: 'Climb the stairs using 7 blocks at most.',
+          hints: ['Every step is the same: walk, turn, walk, turn.', 'Function: Walk, Turn right, Walk, Turn left. Use ★ three times.'],
+        },
+        'f5-c3': {
+          title: 'Hidden pattern',
+          goal: 'Find the piece that repeats and use 8 blocks at most.',
+          hints: ['Before and after each turn, Bit does: Walk, Jump, Walk.', 'Function: Walk, Jump, Walk. Program: ★, Turn right, ★, Turn left, ★.'],
+        },
+      },
+    },
+    f6: {
+      title: 'All together',
+      concept: {
+        title: 'Computational thinking',
+        summary: 'Programmers mix everything they have learned: sequences, decisions, repetition and functions. Choose the best tool for each path.',
+      },
+      lesson: [
+        'You already know sequences, decisions, repetition and functions. Now it\'s time to put it all together!',
+        'Before building, look at the whole map: what repeats? Where does Bit need to decide?',
+        'There isn\'t just one right way. But the best program is short and easy to understand.',
+      ],
+      challenges: {
+        'f6-c1': {
+          title: 'Maze of rules',
+          goal: 'Make the rules that take Bit through the whole maze.',
+          hints: ['You\'ll need one rule for rocks and another for walls.', 'IF rock → Jump. IF wall → Turn right.'],
+        },
+        'f6-c2': {
+          title: 'Around the plaza',
+          goal: 'Go around the rocks using only 4 blocks.',
+          hints: ['Walk, Jump, Turn... and again. How many times?', 'Repeat 3× [Walk, Jump, Turn right].'],
+        },
+        'f6-c3': {
+          title: 'Final challenge',
+          goal: 'Use a function inside the Repeat. 8 blocks at most!',
+          hints: ['The piece Walk, Jump, Walk shows up 4 times, with turns between them.', 'Function: Walk, Jump, Walk. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
         },
       },
     },
@@ -4855,6 +5519,27 @@ const EN = {
       message: 'Check, test and check again. Caring about details takes courage too.',
       unlockText: 'Finish the Repetition stage.',
     },
+    sonja: {
+      area: 'Theoretical physics',
+      intro: 'Brazilian physicist, born in São Paulo. She was the first woman from Brazil to earn a PhD in physics, at the University of Cambridge, in England.',
+      fact: 'Her advisor at Cambridge was Paul Dirac, one of the creators of quantum physics. Sonja finished her PhD when she was only 24.',
+      message: 'Big ideas start with small questions. Don\'t be afraid to ask!',
+      unlockText: 'Finish the Debugging stage.',
+    },
+    liane: {
+      area: 'Computer networks and the internet',
+      intro: 'Brazilian computer scientist and professor at UFRGS, in Porto Alegre. She helped bring the internet to Brazil\'s universities, when almost nobody knew what it was.',
+      fact: 'In 2017, she joined the Internet Hall of Fame, which honors the people who helped build the internet around the world.',
+      message: 'Computers get stronger when they talk to each other. So do people!',
+      unlockText: 'Finish the Functions stage.',
+    },
+    jobs: {
+      area: 'Personal computers and design',
+      intro: 'American businessman. In 1976, he founded Apple with Steve Wozniak in a garage. The company helped bring computers into people\'s homes.',
+      fact: 'In college, he took a calligraphy class, the art of drawing letters. Years later, that class inspired the beautiful letters of the Macintosh computer, from 1984.',
+      message: 'A good program is one that anyone can use. Think about who is going to play!',
+      unlockText: 'Finish the All together stage.',
+    },
   },
 
   achievements: {
@@ -4880,7 +5565,7 @@ const EN = {
       text: 'This is Mary, and you play as her! Together you\'ll teach Bit the robot to reach the flag by building programs with command blocks.',
       items: [
         ['Goal', 'take Bit to the flag'],
-        ['3 stages', 'Sequences, Decisions and Repetition'],
+        ['6 stages', 'from Sequences to All together'],
       ],
     },
     sequence: {
@@ -4908,6 +5593,24 @@ const EN = {
       items: [
         ['Repeat', 'put commands inside it'],
         ['Block limit', 'every challenge has a maximum'],
+      ],
+    },
+    debug: {
+      title: 'Stage 4 · Debugging',
+      text: 'Here the challenge starts with a program that has a bug. Run it, find out where Bit goes wrong and fix it.',
+      items: [
+        ['Find the bug', 'run it and see where Bit stops'],
+        ['Remove a block', 'tap the wrong block'],
+        ['Change a number', 'tap the × on the Repeat'],
+      ],
+    },
+    functions: {
+      title: 'Stage 5 · Functions',
+      text: 'Build the ★ Function once and use the ★ block as many times as you want. In stage 6 you put it all together!',
+      items: [
+        ['★ Function', 'put up to 4 blocks in it'],
+        ['★ block', 'does everything in the function'],
+        ['Stage 6 · All together', 'mixes everything you learned'],
       ],
     },
     run: {
@@ -4944,7 +5647,7 @@ const EN = {
       title: 'Mentors and Learn',
       text: 'Real people from computing keep you company. Finish stages to unlock new mentors.',
       items: [
-        ['Mentors', 'Ada, Grace, Alan and Katherine'],
+        ['Mentors', 'Ada, Grace, Alan, Katherine, Sonja, Liane and Steve'],
         ['Learn', 'mentors, concepts and medals'],
         ['Screen colors', 'every new color brings a new song'],
       ],
@@ -4964,6 +5667,7 @@ const EN = {
     failures: {
       empty: { title: 'Your program is empty', hint: 'Tap the commands down below to build the path.' },
       empty_loop: { title: 'The Repeat is empty', hint: 'Put at least one command inside the Repeat.' },
+      empty_function: { title: 'The function is empty', hint: 'Put commands inside the ★ Function before using it.' },
       incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
       too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
       edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },
@@ -5002,7 +5706,7 @@ const ES = {
         summary: 'Un programa es una lista de comandos. La computadora hace uno a la vez, del primero al último.',
       },
       lesson: [
-        '¡Hola! Soy Ada. Este es Bit, un robot al que le encanta seguir instrucciones.',
+        '¡Hola! Este es Bit, un robot al que le encanta seguir instrucciones.',
         'Un programa es una lista de comandos. Bit hace uno a la vez, en orden.',
         'Si cambia el orden, cambia el camino. ¿Armamos tu primer programa?',
       ],
@@ -5031,7 +5735,7 @@ const ES = {
         summary: 'SI pasa algo, ENTONCES haz una acción. Así el programa decide solo qué hacer.',
       },
       lesson: [
-        '¡Hola, soy Grace! Ahora Bit camina solo... pero el camino tiene sorpresas.',
+        'Ahora Bit camina solo... pero el camino tiene sorpresas.',
         'Los programas toman decisiones. SI hay una piedra adelante, ENTONCES Bit salta.',
         'Cuando ninguna regla coincide, Bit simplemente camina hacia adelante.',
       ],
@@ -5060,7 +5764,7 @@ const ES = {
         summary: 'En vez de escribir el mismo comando muchas veces, usa Repetir y di cuántas veces.',
       },
       lesson: [
-        'Soy Alan. Mira: Caminar, Caminar, Caminar, Caminar, Caminar... ¡qué cansado!',
+        'Mira: Caminar, Caminar, Caminar, Caminar, Caminar... ¡qué cansado!',
         'Con Repetir 5× Caminar, lo escribes una vez y Bit lo repite solo.',
         'Esto se llama loop. Ahora cada desafío tiene un límite de bloques. ¡Ahorra!',
       ],
@@ -5080,6 +5784,93 @@ const ES = {
           title: 'Saltos con ritmo',
           goal: 'Encuentra el patrón y usa solo 3 bloques.',
           hints: ['Antes de cada piedra hay un suelo libre. ¿Cuál es el patrón?', 'Repetir 3× [Caminar, Saltar].'],
+        },
+      },
+    },
+    f4: {
+      title: 'Depuración',
+      concept: {
+        title: 'Depuración (debug)',
+        summary: 'Depurar es encontrar y arreglar el error de un programa. Ejecútalo, mira dónde se detuvo Bit y cambia solo lo que está mal.',
+      },
+      lesson: [
+        'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
+        'Este programa tiene un bug: un paso de más. Ejecútalo, mira dónde choca Bit y encuentra el bloque culpable.',
+        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
+      ],
+      challenges: {
+        'f4-c1': {
+          title: 'Un paso de más',
+          goal: 'El programa tiene un bug. Arréglalo y lleva a Bit hasta la bandera.',
+          hints: ['Ejecuta el programa: ¿en qué bloque choca Bit con el árbol?', 'Hay un Caminar de más antes de Girar. Tócalo para quitarlo.'],
+        },
+        'f4-c2': {
+          title: 'Cuenta equivocada',
+          goal: 'El Repetir está contando mal. Arregla el número.',
+          hints: ['Bit se detiene antes de la bandera. ¿Cuántas casillas faltan?', 'Cuenta las casillas hasta la bandera y toca el número del Repetir hasta llegar a él.'],
+        },
+        'f4-c3': {
+          title: 'Regla cambiada',
+          goal: 'Una de las reglas está mal. Descubre cuál y arréglala.',
+          hints: ['La regla de la piedra funciona. Mira la regla de la pared.', 'El camino gira a la derecha. Toca el ENTONCES de la regla de la pared y elige Girar der.'],
+        },
+      },
+    },
+    f5: {
+      title: 'Funciones',
+      concept: {
+        title: 'Función',
+        summary: 'Una función es un bloque nuevo que creas juntando otros bloques. Después solo tienes que usar ese bloque todas las veces que quieras.',
+      },
+      lesson: [
+        'A veces el mismo pedazo de programa aparece muchas veces. ¡Puedes escribirlo una sola vez!',
+        'Pon los pasos dentro de la ★ Función. Cada bloque ★ que uses hace todo lo que está adentro.',
+        'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
+      ],
+      challenges: {
+        'f5-c1': {
+          title: 'El bloque mágico',
+          goal: 'Crea una función y llega a la bandera con solo 5 bloques.',
+          hints: ['El camino se repite: Caminar, Caminar, Saltar.', 'Función: Caminar, Caminar, Saltar. Programa: ★ y ★.'],
+        },
+        'f5-c2': {
+          title: 'La escalera de Sonja',
+          goal: 'Sube la escalera con 7 bloques como máximo.',
+          hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Función: Caminar, Girar der., Caminar, Girar izq. Usa ★ tres veces.'],
+        },
+        'f5-c3': {
+          title: 'Patrón escondido',
+          goal: 'Encuentra el pedazo que se repite y usa 8 bloques como máximo.',
+          hints: ['Antes y después de cada curva, Bit hace: Caminar, Saltar, Caminar.', 'Función: Caminar, Saltar, Caminar. Programa: ★, Girar der., ★, Girar izq., ★.'],
+        },
+      },
+    },
+    f6: {
+      title: 'Todo junto',
+      concept: {
+        title: 'Pensamiento computacional',
+        summary: 'Los programadores mezclan todo lo que aprendieron: secuencias, decisiones, repetición y funciones. Elige la mejor herramienta para cada camino.',
+      },
+      lesson: [
+        'Ya sabes secuencias, decisiones, repetición y funciones. ¡Ahora es hora de juntarlo todo!',
+        'Antes de armar, mira el mapa entero: ¿qué se repite? ¿Dónde tiene que decidir Bit?',
+        'No hay una sola forma correcta. Pero el mejor programa es corto y fácil de entender.',
+      ],
+      challenges: {
+        'f6-c1': {
+          title: 'Laberinto de reglas',
+          goal: 'Crea las reglas que llevan a Bit por todo el laberinto.',
+          hints: ['Vas a necesitar una regla para piedras y otra para paredes.', 'SI piedra → Saltar. SI pared → Girar der.'],
+        },
+        'f6-c2': {
+          title: 'Vuelta a la plaza',
+          goal: 'Da la vuelta a las piedras usando solo 4 bloques.',
+          hints: ['Caminar, Saltar, Girar... y otra vez. ¿Cuántas veces?', 'Repetir 3× [Caminar, Saltar, Girar der.].'],
+        },
+        'f6-c3': {
+          title: 'Desafío final',
+          goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
+          hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
         },
       },
     },
@@ -5113,6 +5904,27 @@ const ES = {
       message: 'Revisa, prueba y vuelve a revisar. Cuidar los detalles también es valentía.',
       unlockText: 'Completa la fase Repetición.',
     },
+    sonja: {
+      area: 'Física teórica',
+      intro: 'Física brasileña, nacida en São Paulo. Fue la primera mujer de Brasil en hacer un doctorado en física, en la Universidad de Cambridge, en Inglaterra.',
+      fact: 'Su director de tesis en Cambridge fue Paul Dirac, uno de los creadores de la física cuántica. Sonja terminó el doctorado con solo 24 años.',
+      message: 'Las grandes ideas empiezan con preguntas pequeñas. ¡No tengas miedo de preguntar!',
+      unlockText: 'Completa la fase Depuración.',
+    },
+    liane: {
+      area: 'Redes de computadoras e internet',
+      intro: 'Científica de la computación brasileña y profesora de la UFRGS, en Porto Alegre. Ayudó a llevar internet a las universidades de Brasil, cuando casi nadie sabía qué era.',
+      fact: 'En 2017 entró al Internet Hall of Fame, que homenajea a las personas que ayudaron a construir internet en el mundo.',
+      message: 'Las computadoras se hacen más fuertes cuando conversan entre sí. ¡Las personas también!',
+      unlockText: 'Completa la fase Funciones.',
+    },
+    jobs: {
+      area: 'Computadoras personales y diseño',
+      intro: 'Empresario estadounidense. En 1976 fundó Apple con Steve Wozniak en un garaje. La empresa ayudó a llevar las computadoras a las casas.',
+      fact: 'En la universidad tomó una clase de caligrafía, el arte de dibujar letras. Años después, esa clase inspiró las letras bonitas de la computadora Macintosh, de 1984.',
+      message: 'Un buen programa es uno que cualquier persona puede usar. ¡Piensa en quién va a jugar!',
+      unlockText: 'Completa la fase Todo junto.',
+    },
   },
   achievements: {
     'first-program': { title: 'Primer programa', description: 'Completa tu primer desafío.' },
@@ -5135,7 +5947,7 @@ const ES = {
       text: '¡Ella es Mary y juegas con ella! Juntas van a enseñarle al robot Bit a llegar hasta la bandera armando programas con bloques de comando.',
       items: [
         ['Objetivo', 'llevar a Bit hasta la bandera'],
-        ['3 fases', 'Secuencias, Decisiones y Repetición'],
+        ['6 fases', 'de Secuencias hasta Todo junto'],
       ],
     },
     sequence: {
@@ -5163,6 +5975,24 @@ const ES = {
       items: [
         ['Repetir', 'pon comandos dentro de él'],
         ['Límite de bloques', 'cada desafío tiene un máximo'],
+      ],
+    },
+    debug: {
+      title: 'Fase 4 · Depuración',
+      text: 'Aquí el desafío ya empieza con un programa que tiene un bug. Ejecútalo, descubre dónde se equivoca Bit y arréglalo.',
+      items: [
+        ['Encuentra el bug', 'ejecuta y mira dónde se detiene Bit'],
+        ['Quita un bloque', 'toca el bloque equivocado'],
+        ['Cambia un número', 'toca el × del Repetir'],
+      ],
+    },
+    functions: {
+      title: 'Fase 5 · Funciones',
+      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras. ¡En la fase 6 juntas todo!',
+      items: [
+        ['★ Función', 'junta hasta 4 bloques en ella'],
+        ['Bloque ★', 'hace todo lo que está en la función'],
+        ['Fase 6 · Todo junto', 'mezcla todo lo que aprendiste'],
       ],
     },
     run: {
@@ -5199,7 +6029,7 @@ const ES = {
       title: 'Mentores y Aprender',
       text: 'Personas reales de la computación te acompañan. Completa fases para desbloquear nuevos mentores.',
       items: [
-        ['Mentores', 'Ada, Grace, Alan y Katherine'],
+        ['Mentores', 'Ada, Grace, Alan, Katherine, Sonja, Liane y Steve'],
         ['Aprender', 'mentores, conceptos y medallas'],
         ['Colores de pantalla', 'cada color nuevo trae una música nueva'],
       ],
@@ -5218,6 +6048,7 @@ const ES = {
     failures: {
       empty: { title: 'Tu programa está vacío', hint: 'Toca los comandos de abajo para armar el camino.' },
       empty_loop: { title: 'El Repetir está vacío', hint: 'Pon al menos un comando dentro del Repetir.' },
+      empty_function: { title: 'La función está vacía', hint: 'Pon comandos dentro de la ★ Función antes de usarla.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },
@@ -5599,29 +6430,33 @@ const SONGS = {
       },
     ],
   },
-  // "Entardecer" (Pôr do sol): slow and warm, in A minor.
+  // "Entardecer" (Pôr do sol): bright and bouncy, in F major, with a jumping octave bass.
   sunset: {
-    bpm: 92,
+    bpm: 152,
     loop: true,
-    gain: 0.042,
+    gain: 0.045,
     voices: [
       {
         wave: 'square',
         notes: [
-          ['A5', 1.5], ['C6', 0.5], ['B5', 1], ['A5', 1], ['E5', 2], ['r', 1], ['G5', 1],
-          ['F5', 1.5], ['A5', 0.5], ['G5', 1], ['F5', 1], ['E5', 3], ['r', 1],
-          ['A5', 1.5], ['C6', 0.5], ['E6', 1], ['D6', 1], ['C6', 1], ['B5', 1], ['A5', 1], ['G5', 1],
-          ['F5', 1], ['E5', 1], ['D5', 1], ['B4', 1], ['A4', 3], ['r', 1],
+          ['C5', 0.5], ['F5', 0.5], ['A5', 0.5], ['C6', 0.5], ['A5', 1], ['F5', 0.5], ['G5', 0.5], ['A5', 1], ['G5', 0.5], ['F5', 0.5], ['D5', 1], ['r', 1],
+          ['A#4', 0.5], ['D5', 0.5], ['F5', 0.5], ['A#5', 0.5], ['A5', 1], ['G5', 0.5], ['F5', 0.5], ['G5', 1], ['A5', 0.5], ['G5', 0.5], ['E5', 1], ['r', 1],
+          ['C5', 0.5], ['F5', 0.5], ['A5', 0.5], ['C6', 0.5], ['D6', 1], ['C6', 0.5], ['A#5', 0.5], ['A5', 1], ['C6', 0.5], ['A5', 0.5], ['F5', 1], ['D5', 1],
+          ['A#4', 0.5], ['D5', 0.5], ['G5', 0.5], ['A#5', 0.5], ['A5', 1], ['G5', 0.5], ['E5', 0.5], ['F5', 3], ['r', 1],
         ],
       },
       {
         wave: 'triangle',
-        gain: 3,
+        gain: 2.6,
         notes: [
-          ['A2', 2], ['A2', 2], ['E2', 2], ['E2', 2],
-          ['F2', 2], ['F2', 2], ['E2', 2], ['E2', 2],
-          ['A2', 2], ['A2', 2], ['C3', 2], ['G2', 2],
-          ['D3', 2], ['E2', 2], ['A2', 2], ['A2', 2],
+          ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5],
+          ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5],
+          ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5],
+          ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5],
+          ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5], ['F2', 0.5], ['F3', 0.5],
+          ['D2', 0.5], ['D3', 0.5], ['D2', 0.5], ['D3', 0.5], ['D2', 0.5], ['D3', 0.5], ['D2', 0.5], ['D3', 0.5],
+          ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5], ['A#2', 0.5], ['A#3', 0.5],
+          ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5], ['C3', 0.5], ['C4', 0.5],
         ],
       },
     ],
@@ -6212,6 +7047,35 @@ const EN = {
   'challenge.hintLocked': 'Hint locked',
   'challenge.hintLockedText.one': 'Try {n} more time to unlock the hint.',
   'challenge.hintLockedText.other': 'Try {n} more times to unlock the hint.',
+  'cmd.call.label': 'Function',
+  'cmd.call.aria': 'Use the ★ function',
+  'seq.function': 'Function',
+  'seq.fnAdd': 'Put blocks inside the function',
+  'seq.fnClose': 'Close the function',
+  'seq.buggy': 'There\'s a bug!',
+  'finale.title': 'Congratulations!',
+  'finale.message': 'You learned programming logic and built your very first algorithms!',
+  'finale.learned': 'You mastered: sequences, decisions, repetition, debugging and functions.',
+  'finale.certTitle': 'Bit Quest Certificate',
+  'finale.certSubtitle': 'Programming Logic',
+  'finale.certText': 'This certifies that {name} completed all {fases} stages of Bit Quest, taught Bit the robot and built their first algorithms.',
+  'finale.namePlaceholder': 'Write your name',
+  'finale.nameLabel': 'Your name on the certificate',
+  'finale.save': 'Save',
+  'finale.defaultName': 'a Bit Quest programmer',
+  'finale.stars': '{n}/{max} stars',
+  'finale.level': 'Level {n}',
+  'finale.mentors': '{n} mentors',
+  'finale.signBit': 'Bit, apprentice robot',
+  'finale.signMary': 'Mary, adventure partner',
+  'finale.fictional': 'A make-believe certificate, created by the game to celebrate your achievement.',
+  'finale.nextTitle': 'This is just the beginning!',
+  'finale.nextText': 'Every programmer keeps learning. How about earning 3 stars on every challenge and taking on Hard mode?',
+  'finale.goHard': 'Take on Hard',
+  'finale.goStars': 'Go for 3 stars',
+  'finale.goHome': 'Home',
+  'finale.viewCertificate': 'See my certificate',
+  'finale.allStars': 'You have every star! You are amazing!',
 };
 
 return { EN };
@@ -6463,6 +7327,35 @@ const ES = {
   'challenge.hintLocked': 'Pista bloqueada',
   'challenge.hintLockedText.one': 'Intenta {n} vez más para desbloquear la pista.',
   'challenge.hintLockedText.other': 'Intenta {n} veces más para desbloquear la pista.',
+  'cmd.call.label': 'Función',
+  'cmd.call.aria': 'Usar la función ★',
+  'seq.function': 'Función',
+  'seq.fnAdd': 'Poner bloques dentro de la función',
+  'seq.fnClose': 'Cerrar la función',
+  'seq.buggy': '¡Hay un bug!',
+  'finale.title': '¡Felicidades!',
+  'finale.message': '¡Aprendiste lógica de programación y construiste tus primeros algoritmos!',
+  'finale.learned': 'Dominas: secuencias, decisiones, repetición, depuración y funciones.',
+  'finale.certTitle': 'Certificado Bit Quest',
+  'finale.certSubtitle': 'Lógica de Programación',
+  'finale.certText': 'Certificamos que {name} completó las {fases} fases de Bit Quest, le enseñó al robot Bit y construyó sus primeros algoritmos.',
+  'finale.namePlaceholder': 'Escribe tu nombre',
+  'finale.nameLabel': 'Tu nombre en el certificado',
+  'finale.save': 'Guardar',
+  'finale.defaultName': 'Programador(a) Bit Quest',
+  'finale.stars': '{n}/{max} estrellas',
+  'finale.level': 'Nivel {n}',
+  'finale.mentors': '{n} mentores',
+  'finale.signBit': 'Bit, robot aprendiz',
+  'finale.signMary': 'Mary, compañera de aventura',
+  'finale.fictional': 'Certificado ficticio, creado por el juego para celebrar tu logro.',
+  'finale.nextTitle': '¡Esto es solo el comienzo!',
+  'finale.nextText': 'Todo programador sigue aprendiendo. ¿Qué tal ganar 3 estrellas en todos los desafíos y probar el nivel Difícil?',
+  'finale.goHard': 'Probar el Difícil',
+  'finale.goStars': 'Buscar 3 estrellas',
+  'finale.goHome': 'Inicio',
+  'finale.viewCertificate': 'Ver mi certificado',
+  'finale.allStars': '¡Tienes todas las estrellas! ¡Eres increíble!',
 };
 
 return { ES };
@@ -6714,6 +7607,35 @@ const PT = {
   'challenge.hintLocked': 'Dica bloqueada',
   'challenge.hintLockedText.one': 'Tente mais {n} vez para liberar a dica.',
   'challenge.hintLockedText.other': 'Tente mais {n} vezes para liberar a dica.',
+  'cmd.call.label': 'Função',
+  'cmd.call.aria': 'Usar a função ★',
+  'seq.function': 'Função',
+  'seq.fnAdd': 'Colocar blocos dentro da função',
+  'seq.fnClose': 'Fechar a função',
+  'seq.buggy': 'Tem um bug!',
+  'finale.title': 'Parabéns!',
+  'finale.message': 'Você aprendeu lógica de programação e construiu seus primeiros algoritmos!',
+  'finale.learned': 'Você domina: sequências, decisões, repetição, depuração e funções.',
+  'finale.certTitle': 'Certificado Bit Quest',
+  'finale.certSubtitle': 'Lógica de Programação',
+  'finale.certText': 'Certificamos que {name} completou as {fases} fases do Bit Quest, ensinou o robô Bit e construiu seus primeiros algoritmos.',
+  'finale.namePlaceholder': 'Escreva seu nome',
+  'finale.nameLabel': 'Seu nome no certificado',
+  'finale.save': 'Salvar',
+  'finale.defaultName': 'Programador(a) Bit Quest',
+  'finale.stars': '{n}/{max} estrelas',
+  'finale.level': 'Nível {n}',
+  'finale.mentors': '{n} mentores',
+  'finale.signBit': 'Bit, robô aprendiz',
+  'finale.signMary': 'Mary, parceira de aventura',
+  'finale.fictional': 'Certificado fictício, criado pelo jogo para comemorar sua conquista.',
+  'finale.nextTitle': 'Isso é só o começo!',
+  'finale.nextText': 'Todo programador continua aprendendo. Que tal ganhar 3 estrelas em todos os desafios e encarar o nível Difícil?',
+  'finale.goHard': 'Encarar o Difícil',
+  'finale.goStars': 'Buscar 3 estrelas',
+  'finale.goHome': 'Início',
+  'finale.viewCertificate': 'Ver meu certificado',
+  'finale.allStars': 'Você tem todas as estrelas! Você é incrível!',
 };
 
 return { PT };
@@ -6724,9 +7646,9 @@ const { EN } = __m["src/presentation/i18n/en.js"];
 const { ES } = __m["src/presentation/i18n/es.js"];
 const { PT } = __m["src/presentation/i18n/pt.js"];
 /**
- * Interface copy in pt / en / es. The language is chosen once at startup
- * (changing it saves the setting and reloads), so `t()` reads a module-level
- * dictionary instead of threading the locale through every component.
+ * Interface copy in pt / en / es. `t()` reads a module-level dictionary
+ * instead of threading the locale through every component; switching
+ * language calls setLanguage() and redraws the current screen.
  */
 const LANGUAGES = [
   { id: 'pt', label: 'Português', short: 'PT', htmlLang: 'pt-BR' },
@@ -7033,7 +7955,7 @@ return { Screen };
 __m["src/presentation/components/languagePicker.js"] = (() => {
 const { LANGUAGES, currentLanguage, t } = __m["src/presentation/i18n/index.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
-/** PT / EN / ES switch. Choosing another language saves it and restarts the UI in that language. */
+/** PT / EN / ES switch. Choosing another language saves it and redraws the screen in that language. */
 function languagePicker(ctx, { compact = false } = {}) {
   const active = currentLanguage().id;
   return h('div', { class: `langs ${compact ? 'langs--compact' : ''}`, role: 'group', 'aria-label': t('settings.language') },
@@ -7116,6 +8038,7 @@ const COMMAND_UI = {
   turnRight: entry('cmd.turnRight', 'turnRight'),
   jump: entry('cmd.jump', 'jump'),
   repeat: entry('cmd.repeat', 'repeat'),
+  call: entry('cmd.call', 'star'),
 };
 
 const SENSOR_UI = {
@@ -7139,6 +8062,9 @@ function chipContent(ui) {
 const commandChip = (commandId) => chipContent(COMMAND_UI[commandId]);
 const sensorChip = (sensorId) => chipContent(SENSOR_UI[sensorId]);
 
+/** "This program has a bug" tag shown on debugging challenges. */
+const bugBadge = () => h('span', { class: 'program__bug' }, icon('bug'), ` ${t('seq.buggy')}`);
+
 /** Read-only rendering of a program (lessons, library, results). */
 function programStrip(nodes, { compact = false } = {}) {
   const render = (node) => {
@@ -7146,6 +8072,14 @@ function programStrip(nodes, { compact = false } = {}) {
       return h('span', { class: 'strip__loop', dataset: { nodeId: node.id } },
         h('span', { class: 'strip__loophead' }, icon('repeat', 'chip__icon'), `${node.times}×`),
         h('span', { class: 'strip__body' }, node.body.map(render)));
+    }
+    if (node.type === 'function') {
+      return h('span', { class: 'strip__loop strip__fn', dataset: { nodeId: node.id } },
+        h('span', { class: 'strip__loophead' }, icon('star', 'chip__icon'), t('seq.function')),
+        h('span', { class: 'strip__body' }, node.body.map(render)));
+    }
+    if (node.type === 'call') {
+      return h('span', { class: 'chip chip--cmd chip--call', dataset: { nodeId: node.id } }, commandChip('call'));
     }
     if (node.type === 'rule') {
       return h('span', { class: 'strip__rule', dataset: { nodeId: node.id } },
@@ -7176,7 +8110,7 @@ function clearHighlights(container) {
   container.querySelectorAll('[data-iteration]').forEach((el) => (el.textContent = ''));
 }
 
-return { chipContent, commandChip, sensorChip, programStrip, highlightStep, clearHighlights };
+return { chipContent, commandChip, sensorChip, bugBadge, programStrip, highlightStep, clearHighlights };
 })();
 // ── src/presentation/components/RuleEditor.js
 __m["src/presentation/components/RuleEditor.js"] = (() => {
@@ -7185,7 +8119,7 @@ const { icon } = __m["src/presentation/pixel/icons.js"];
 const { t } = __m["src/presentation/i18n/index.js"];
 const { COMMAND_UI, SENSOR_UI } = __m["src/presentation/ui/catalog.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
-const { clearHighlights, commandChip, highlightStep, sensorChip } = __m["src/presentation/components/blocks.js"];
+const { bugBadge, clearHighlights, commandChip, highlightStep, sensorChip } = __m["src/presentation/components/blocks.js"];
 /**
  * Editor for Fase 2: fill "SE [sensor] ENTÃO [ação]" cards. The palette writes
  * into the selected slot and then advances to the next empty one.
@@ -7194,8 +8128,11 @@ class RuleEditor {
   constructor({ challenge, sfx }) {
     this.challenge = challenge;
     this.sfx = sfx;
-    this.rules = Array.from({ length: challenge.ruleSlots }, () => rule());
-    this.selected = { ruleId: this.rules[0].id, slot: 'condition' };
+    // Fase 4 (debugging) starts from the given rules; otherwise every card starts empty.
+    const start = structuredClone(challenge.start ?? []);
+    this.rules = Array.from({ length: challenge.ruleSlots }, (_, i) => start[i] ?? rule());
+    const firstEmpty = this.rules.find((r) => !r.condition || !r.action) ?? this.rules.at(-1);
+    this.selected = { ruleId: firstEmpty.id, slot: firstEmpty.condition ? 'action' : 'condition' };
     this.locked = false;
     this.onChange = () => {};
 
@@ -7203,7 +8140,7 @@ class RuleEditor {
     this.defaultRule = h('span', { class: 'rule-default', dataset: { nodeId: 'default' } },
       t('rules.default'), icon('walk'));
     this.programEl = h('section', { class: 'program program--rules', 'aria-label': t('rules.title') },
-      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), this.defaultRule), this.list);
+      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), challenge.start ? bugBadge() : null, this.defaultRule), this.list);
 
     const button = (kind, id, content, aria) => h('button', {
       class: `chip chip--${kind === 'condition' ? 'sensor' : 'cmd'} palette__btn`,
@@ -7331,25 +8268,29 @@ return { RuleEditor };
 })();
 // ── src/presentation/components/SequenceEditor.js
 __m["src/presentation/components/SequenceEditor.js"] = (() => {
-const { REPEAT_LIMITS, cmd, countBlocks, repeat } = __m["src/domain/program.js"];
+const { REPEAT_LIMITS, call, cmd, countBlocks, fn, repeat } = __m["src/domain/program.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
 const { t, tn } = __m["src/presentation/i18n/index.js"];
 const { COMMAND_UI } = __m["src/presentation/ui/catalog.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
-const { clearHighlights, commandChip, highlightStep } = __m["src/presentation/components/blocks.js"];
+const { bugBadge, clearHighlights, commandChip, highlightStep } = __m["src/presentation/components/blocks.js"];
 const MAX_PROGRAM = 12;
 const LOOP_BODY_MAX = 4;
 
 /**
- * Editor for Fases 1 and 3: tap palette → append block; tap block → remove;
- * Repetir captures the next blocks until closed. Same interface as RuleEditor.
+ * Editor for sequence challenges: tap palette → append block; tap block → remove;
+ * Repetir captures the next blocks until closed. Debugging challenges start
+ * from `challenge.start`; function challenges (`functionMax`) add a ★ Função
+ * frame on top whose body is filled the same way. Same interface as RuleEditor.
  */
 class SequenceEditor {
   constructor({ challenge, sfx }) {
     this.challenge = challenge;
     this.sfx = sfx;
-    this.nodes = [];
-    this.target = null;
+    this.nodes = structuredClone(challenge.start ?? []);
+    // ★ Função: always present, filled first (the cursor starts inside it).
+    this.def = challenge.functionMax ? fn([]) : null;
+    this.target = this.def?.id ?? null;
     this.locked = false;
     this.onChange = () => {};
     this.limit = challenge.maxBlocks ?? MAX_PROGRAM;
@@ -7357,7 +8298,7 @@ class SequenceEditor {
     this.counter = h('span', { class: 'program__count', 'aria-live': 'polite' });
     this.list = h('div', { class: 'program__list', role: 'list' });
     this.programEl = h('section', { class: 'program', 'aria-label': t('seq.title') },
-      h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), this.counter), this.list);
+      h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), challenge.start ? bugBadge() : null, this.counter), this.list);
     this.paletteButtons = challenge.palette.map((id) => h('button', {
       class: `chip chip--cmd chip--${id} palette__btn`,
       type: 'button',
@@ -7371,38 +8312,48 @@ class SequenceEditor {
   }
 
   get blocks() {
-    return countBlocks(this.nodes);
+    return countBlocks(this.getProgram());
   }
 
+  /** The open container (a Repetir or the ★ Função) receiving new blocks, if any. */
   get loop() {
+    if (this.def && this.target === this.def.id) return this.def;
     return this.nodes.find((n) => n.id === this.target) ?? null;
   }
 
+  get bodyMax() {
+    return this.loop === this.def ? this.challenge.functionMax : LOOP_BODY_MAX;
+  }
+
   isEmpty() {
-    return this.nodes.length === 0;
+    return this.nodes.length === 0 && !this.def?.body.length;
   }
 
   getProgram() {
-    return structuredClone(this.nodes);
+    return structuredClone(this.def ? [this.def, ...this.nodes] : this.nodes);
   }
 
   canAdd(commandId) {
     if (this.locked || this.blocks >= this.limit) return false;
-    if (commandId === 'repeat') return !this.loop;
+    const open = this.loop;
+    // Repetir and ★ never go inside the ★ itself: tapping them closes it and adds to the main program.
+    if (commandId === 'repeat') return !open || open === this.def;
     return true;
   }
 
   add(commandId) {
     if (!this.canAdd(commandId)) return;
+    if (this.loop === this.def && (commandId === 'repeat' || commandId === 'call')) this.target = null;
+    const make = () => (commandId === 'call' ? call() : cmd(commandId));
     if (commandId === 'repeat') {
       const node = repeat(REPEAT_LIMITS.min, []);
       this.nodes.push(node);
       this.target = node.id;
     } else if (this.loop) {
-      this.loop.body.push(cmd(commandId));
-      if (this.loop.body.length >= LOOP_BODY_MAX) this.target = null;
+      this.loop.body.push(make());
+      if (this.loop.body.length >= this.bodyMax) this.target = null;
     } else {
-      this.nodes.push(cmd(commandId));
+      this.nodes.push(make());
     }
     this.sfx('place');
     this.changed();
@@ -7415,7 +8366,7 @@ class SequenceEditor {
       if (this.target === nodeId) this.target = null;
       this.nodes.splice(index, 1);
     } else {
-      this.nodes.forEach((n) => n.type === 'repeat' && (n.body = n.body.filter((b) => b.id !== nodeId)));
+      [this.def, ...this.nodes].forEach((n) => n && n.body && (n.body = n.body.filter((b) => b.id !== nodeId)));
     }
     this.sfx('remove');
     this.changed();
@@ -7423,6 +8374,7 @@ class SequenceEditor {
 
   /** B button: undo the last placed block. */
   removeLast() {
+    if (this.nodes.length === 0 && this.def?.body.length) return this.remove(this.def.body.at(-1).id);
     const loop = this.loop;
     if (loop?.body.length) return this.remove(loop.body.at(-1).id);
     const last = this.nodes.at(-1);
@@ -7437,7 +8389,8 @@ class SequenceEditor {
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.nodes = [];
-    this.target = null;
+    if (this.def) this.def.body = [];
+    this.target = this.def?.id ?? null;
     this.sfx('remove');
     this.changed();
   }
@@ -7487,9 +8440,10 @@ class SequenceEditor {
 
     const items = this.nodes.map((node) => (node.type === 'repeat' ? this.renderLoop(node) : this.renderBlock(node)));
     if (!this.loop && !this.locked) items.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
-    if (this.nodes.length === 0) {
+    if (this.nodes.length === 0 && !this.def) {
       items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
+    if (this.def) items.unshift(this.renderFunction(this.def));
     this.list.replaceChildren(...items);
     // The list scrolls inside its own area: keep the cursor (where the next block goes) in view.
     const cursor = this.list.querySelector('.cursor');
@@ -7497,16 +8451,33 @@ class SequenceEditor {
   }
 
   renderBlock(node) {
+    const id = node.type === 'call' ? 'call' : node.command;
     return h('button', {
-      class: `chip chip--cmd chip--${node.command} block`,
+      class: `chip chip--cmd chip--${id} block`,
       type: 'button',
       role: 'listitem',
       'data-sound': 'none',
-      'aria-label': t('seq.remove', { what: COMMAND_UI[node.command].aria }),
+      'aria-label': t('seq.remove', { what: COMMAND_UI[id].aria }),
       dataset: { nodeId: node.id },
       disabled: this.locked,
       onClick: () => this.remove(node.id),
-    }, commandChip(node.command));
+    }, commandChip(id));
+  }
+
+  /** The ★ Função frame: like a Repetir without a counter, and it cannot be removed. */
+  renderFunction(def) {
+    const open = this.target === def.id && !this.locked;
+    const body = def.body.map((child) => this.renderBlock(child));
+    if (open) body.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
+    else if (def.body.length < this.challenge.functionMax && !this.locked) {
+      body.push(h('button', { class: 'loop__add', type: 'button', 'aria-label': t('seq.fnAdd'), onClick: () => this.setTarget(def.id) }, '+'));
+    }
+    return h('div', { class: `loop loop--fn ${open ? 'is-open' : ''}`, role: 'listitem', dataset: { nodeId: def.id } },
+      h('div', { class: 'loop__head' },
+        h('span', { class: 'loop__fnname' }, icon('star', 'chip__icon'), t('seq.function')),
+        h('small', { class: 'loop__fncount' }, `${def.body.length}/${this.challenge.functionMax}`),
+        open ? h('button', { class: 'loop__close', type: 'button', 'aria-label': t('seq.fnClose'), onClick: () => this.setTarget(null) }, icon('check')) : null),
+      h('div', { class: 'loop__body' }, body));
   }
 
   renderLoop(node) {
@@ -7684,6 +8655,9 @@ const PORTRAITS = {
   grace: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADW0lEQVR4nMWXX0hTURzHv1th2CCkbrRhEO0fo8Hawx2YU7ZkPtlryHoJwpRefCh7Gj2FT/7BpyK3gnpIUvAl91SsCUWDSYyhMHQuAmWlQyKwUMhfD3ou99y/0wl9X7Zz7rm/7+f8zu+eey7wn2UxumgXPHQcJt9rK7o+J42Mz1y4dBz+AEB6ICoAu+AhZiw4nKhVK5oRS49/AgB8j1oMnQWHkwNRQmhmoB7zndzWwX8YgtSqFcNYqpTIM2CmerPA9OvHN9UyaAIAwNc7f3Gq7Wxdgc20k9vC5RcnAKjrgGscV9WbSQ7BAWTzZYqILswvrCJfKCEU9OFK85eGzM77b3LxIqILFotF8uWKMF8oAQAiogsA4F55AgTaGgJYn3qASHyMiy+XBEBExEgZxPpKQ96S5hdWpUnlCyVk82WKhtwWDkA5CADcAF5+Ps0Fu33tt6GZcnzcps6sPBPcEoym0hjq6+ECJCcmFO39349v+rn+jt5JTaB4IoBQ0KcbXxIRUTZfpmy+TCPJOSIi8vpjtLE4TRuL02QXPGQXPFJbfs1sHIsnj898rezP/MKqlJ6hvh6pzVTdXFZBd/ROas5cOVYej8VnkpYgGnJbiIgYjFbFKsWWQS/9TCweM5Y/hlblwIjokp5ZuTaXZlDMDnN9u8Ucdos5rq+YHcbm0gzXx+LJC51JtREB+9U6mkojbsuga7ioOat6izCTCKA1PobRVFqaFHsEVQAAMJKco1DQh3yhhLgtg6YGN6LdYg5T211gMR/evcF5WrVu0jPfLeYQiCZ0zQLRhGpJmgJtiNsyujWleVQaSc6R2eyVIMr6UIJPbXepZq8LAABrr+9To+mXA1y8Na7pZXgobRTEyLhuADkIANOiZDVgZnxoACWMVoHWa3poAK8/Ju3dgsOJT++eAdh/1wNA68H7Ptw9wB0+l5fem8bXPRXLTfUkDr4FAFQPAIxi6MGo9gGvP0btsX5d81q1gnD3gKo/3D2A6T8VLA8+RWeqGZkW/np7rJ+0JiVRef0xYh8Remd4uQSHE5XCBwCAM3gdtWoFnalmPC+OY+3VPZwLV3A17VTdw+KzjFiOYq4HUO99cgjr3qx4aHP2QWLWpyXmITic2JsVybI3KxJQ/9cN01EzwMSA/wH1pOFo6Kt9NAAAAABJRU5ErkJggg==',
   turing: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAChUlEQVR4nMWWMWhTQRjHfy0iHUKh5IUki5VAnmBKFlMqLsbSJYOTCoUiOIl0CAiCSAanIgWh4CCOguhSnbKKtItEjEswgwmG6pKWRARxkCzPId7z8nJ3794r4n96vPvu+//v/333cfCfMRN1Q8bJe6b1w2E3Uk7rYEHsJhMALKfnAHh/9MuP6Xz7GVnIrC25m0z45DrIMWFOWQsQ5DJUpw8KsRVhFKAiVwlRYeOsg5tMhIow1imKAJ0bMO4NXU+cMAmQ8fLVPf/76pUHE6TL6bnQsuhg5YBMHoQQI4QIBG9HbAde3L9kXFc5EwXWJbBB0CkbQaECThbPA1As1/x/rb0tZawqxmS/UUDGyXvNR5f9xOLbBDmmWK7R2tti1GpQqtY9nQjlz4yT955uFFhayfkOAKQK18im3AkHRq3GhEv9QYdBe3di/eO7Hjeet5VOWI3ifwmtgKWV3NS/QXtXW38Y110+vSmXUcDhsDtTqta1mwRGrUZoDECpWtc2YuggMp3YBsVyzXgLQnvA9pRx90YeRNubOzzcf6tcu3PxAncf346UL/TVIuaBfB23N3eUsTL5n/sf+jKydkC+72GnjFK20B6Qb4RNYhFjc3qI8SgV41YuSZBYCLfJG+tZLsa0DNO4PZYAt7A29ab7cfSF/qDDszMlAK5/apJNucynF6f2d9qv4zWhW1jznOz0CB32ewDsNz8DsJpa8L8Bgnuc7E1v2O9phSibUEcuCOSTvhl8B2A+vThFLu9ROakUECQ/nZ9O6mRzrFcqwNiB9UpFSS7v1YmYsEVFftDtqYQDcOvrBwCenDqnjQnmCJbDdyAqucBqasG4ftDtGZ2YPQ45/O2BuCJ+A59YKbsjn0FNAAAAAElFTkSuQmCC',
   katherine: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC30lEQVR4nMVWv2tTURT+WjpEeVMTSARdlGRoXIQmxRYsQhwFXVyyBP+AKvhjUJzEDFqX/AHSJUtXl0gLJYKRpoE6GIcnLQQK7cO8DOFROwSew/Pc3Hd/vHefiH7T/XHe+b5zz7nnXeA/YyaJcS6T903sTobfjf3OJSEupK3QeimbCs33nLPfo8DeREisgFwm7+uIp4TBmigIyPtxImZNyfXRTue0RraFtBWbNq06MXJV1ABgux6qCxlJWCmbYmPb9bTpUC4SOe9EhO16obmYJlMRkTWgiwYANqpFZldr9kOCqguZUEqiIClSRS9Gy5OLqDX7LCViAKpT0J7AnnOGUjaF5rehETFvU2v22VyVGh6Rt+DWtSxzUkhbqLcGsQLqrQGzBxBZR4CQArHyT+bSkWSNSmC7tu1F2uUmLhuLaZBOQLzvuYmLsTNAo2Jh7AzYmIiJXNwfO4MQsdykNAIo97xiyv3xDztk26hYTAyBbDaqRVa8UWlgAvjjN7k+JiDhvD+xO7Jc6JrP5FKJjYfHh2wsRs7XQebCZTY+/LID8kti+DqQBABy4+k1buPr7pScsLXvAJjeFh5XlwIRi2vvpauoFKA6BT7/fwLqB7wA7S0w6f+i47g1/icFBCcr1kCoE9quB9v1UEhbnNKi9DsVux2tqRD4CILjuypB+S8Ifwy0HtwxeorxoPp4+/HzjMqnVoAOSUTw5HG2iR6lj25c91UVL5KbECcWcPrkmQ8AL3Z3AKiv3ta+g5dLNwEA59/UjXzHPkqJuHvvPlYXr2AdwOPVZYkYANbbHQBAu3eAU8A3EaLdJGKenMeHh3eV5IR27wDlzXdsrhOiXOTJeREAmJCfT59j1OkCAOaXyzj3+hUjBhAijxIhpUBFzjtsIxBSFvajiHnfoojQ5Gil4s8vi64DjDpd6PaS2I46XVz8tC234r9FDgQpofSo9o5WKuyUZ4k8zmFSxH1DnJGP0n+BX0eHrCdHMlLpAAAAAElFTkSuQmCC',
+  sonja: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABO0lEQVR4nNWWMQoCMRBF9xAWXkCsLUXYylN4A1vFxhMIHsHewtqjeIStPIDtShY+jGFmMplNFAc+QjbJf/nJxm2af6rpZNZbVM24nS/6fbscfjUVBYExzFMA9LkbAgNjc2sCHEQWDI08ntACwEG4AayGGoQLIGUen3wLRDEAmD4ft0EahBvAam6FKAIgmacgXACceXfdieZQ6CONdydgNZcgRidAAdAWm9J2LgV3Armr51IYlUAMkHoLpG0olkAoCSBUsQR+vgUxwOtwZE04uNC32hnwvoquf0NIAuhW60EaQJFPNe9F5DbUIDQQPK/2YQqDlKoAcCBfWbkEUHXfudO72Z76INyE9NajbegnzWMuTBR0vtw/RGGoqdQPQKOMucLec+UC0VadW9lpaOa5ENJ4EcJiboVIjY8h3tQxs0b7NGmSAAAAAElFTkSuQmCC',
+  liane: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABOElEQVR4nNWWvQ0CMQxGbwgKFoAFKGmZgg1okWiYAIkRrqOgoGYAelpKyqsYgPZQTvoky9iJL3GQsOTi8nPvJXHgmuafYjqZ9ZasBj62V1O6ilDw7f5MwumYIgm+agtck8gSyYW77QQEcuBcIlsgBueVH5NwFwD09bgMGZMoErDALRJuAho8JeEiEJ6781aFI8MYaW6RgBWuSbgKoI1DaburAODrzeErAZf6qISbAC00DqQFWlUgBAToDoS2EK4CSJy/tP3SMdA6KP5rhsB7txerXbodYSwEssFcwHoF+VWsKtAtV0NWFcjZBVc4l4iJoL/ahykAqawiIIn8ZOWaQPWi4z8ip/miR3IJwOkY7T3moC/DdUPSPuu4YrAUOHuxL0cktpqxMXo3YvCxEtp8VcICt0qk5nOJD4po2dBJYQqbAAAAAElFTkSuQmCC',
+  jobs: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABAElEQVR4nGNgGAVDBUiIqP4nBVPdcjt1Q5Iw1RxBjuVUdQS6A15dWYUX09QBhCxHdwRVHUCs5ciOoJoDniwrItkBID2jDhgeDkB3BK4cgSxOE8ujMjswMMxybHJUjwKYhbCyHt1CmDjMQTRzAAjAHIAcAiAxEKCZA9CDGj0NoMtR3QHfSquwpnRsOQSkdvhkQ1wO2JEfgILpUg4U21kS9DlIDVUtR3cEskNANDIbJk91yxnQQgGZxiZGEwcgO4RujdEBcwA2Q9HFkHMGLNgJ6SHbEWraLigYl+/xqaPYYmwWIqd6fI4h2iHk+JpqoYFPM6mOIEY/yZYT6whS9IPsBgBh0CRh0wRAygAAAABJRU5ErkJggg==',
 };
 
 return { PORTRAIT_SIZE, PORTRAITS };
@@ -8379,7 +9353,7 @@ class ChallengeScreen extends Screen {
     }
     const { fase, challenge, index } = this.session;
     this.challenge = challenge;
-    this.mentor = game.content.mentors.find((m) => m.id === fase.mentorId);
+    this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.state = 'editing';
 
     this.editor = createEditor(challenge, { sfx });
@@ -8629,6 +9603,159 @@ class DifficultyScreen extends Screen {
 
 return { DifficultyScreen };
 })();
+// ── src/presentation/screens/FinaleScreen.js
+__m["src/presentation/screens/FinaleScreen.js"] = (() => {
+const { Screen } = __m["src/presentation/Screen.js"];
+const { currentLanguage, t } = __m["src/presentation/i18n/index.js"];
+const { spriteCanvas } = __m["src/presentation/pixel/draw.js"];
+const { icon } = __m["src/presentation/pixel/icons.js"];
+const { portraitCanvas } = __m["src/presentation/pixel/portrait.js"];
+const { ROBOT } = __m["src/presentation/pixel/sprites.js"];
+const { h, reducedMotion } = __m["src/presentation/ui/dom.js"];
+/** True right after the last fase is completed, until the celebration has been shown once. */
+function finaleDue(game) {
+  const s = game.playerSummary.execute();
+  return s.gameCompleted && !s.finale.seen;
+}
+
+/**
+ * End of the game: confetti and the victory song, a "you learned programming
+ * logic" message, a make-believe certificate with the player's name, and an
+ * invitation to keep playing (3 stars everywhere, Hard mode).
+ */
+class FinaleScreen extends Screen {
+  get music() {
+    return null;
+  }
+
+  get legend() {
+    return [['A', t('legend.choose')], ['B', t('legend.back')]];
+  }
+
+  render() {
+    const { game, theme, bus, sfx } = this.ctx;
+    const first = finaleDue(game);
+    game.completeGame.execute();
+    const s = game.playerSummary.execute();
+
+    const mary = portraitCanvas('hero', { scale: 2 });
+    const bit = spriteCanvas(ROBOT.S[0], theme.colors, 4);
+    bit.classList.add('finale__bit');
+    this.confetti = h('canvas', { class: 'finale__confetti', 'aria-hidden': 'true' });
+
+    this.certificateEl = h('div');
+    this.root.append(
+      this.confetti,
+      h('div', { class: 'finale' },
+        h('header', { class: 'finale__hero' },
+          h('div', { class: 'finale__duo', 'aria-hidden': 'true' }, mary, bit),
+          h('h1', { class: 'finale__title' }, t('finale.title')),
+          h('p', { class: 'finale__message' }, t('finale.message')),
+          h('p', { class: 'finale__learned' }, t('finale.learned'))),
+        this.certificateEl,
+        h('section', { class: 'finale__next panel' },
+          h('h2', {}, icon('flame'), ` ${t('finale.nextTitle')}`),
+          h('p', {}, s.stars >= s.maxStars ? t('finale.allStars') : t('finale.nextText')),
+          h('div', { class: 'finale__actions' },
+            h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.goHard() }, icon('flame'), t('finale.goHard')),
+            h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('map') }, icon('star'), t('finale.goStars')),
+            h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('home') }, icon('home'), t('finale.goHome'))))),
+    );
+    this.renderCertificate();
+
+    if (first) {
+      bus.emit('song', 'victory');
+      this.later(() => sfx('achievement'), 1400);
+    }
+    if (!reducedMotion()) this.startConfetti(first ? 260 : 90);
+  }
+
+  renderCertificate() {
+    const { game } = this.ctx;
+    const s = game.playerSummary.execute();
+    const name = s.finale.name || t('finale.defaultName');
+    const date = new Date(s.finale.completedAt ?? Date.now()).toLocaleDateString(currentLanguage().htmlLang, { day: 'numeric', month: 'long', year: 'numeric' });
+    this.nameInput = h('input', {
+      class: 'certificate__input',
+      type: 'text',
+      maxlength: '24',
+      value: s.finale.name,
+      placeholder: t('finale.namePlaceholder'),
+      'aria-label': t('finale.nameLabel'),
+      autocomplete: 'off',
+      onKeydown: (event) => event.key === 'Enter' && this.saveName(),
+    });
+
+    this.certificateEl.replaceChildren(
+      h('article', { class: 'certificate', 'aria-label': t('finale.certTitle') },
+        h('div', { class: 'certificate__seal', 'aria-hidden': 'true' }, icon('trophy')),
+        h('p', { class: 'certificate__kicker' }, t('finale.certTitle')),
+        h('h2', { class: 'certificate__title' }, t('finale.certSubtitle')),
+        h('p', { class: 'certificate__text' }, t('finale.certText', { name, fases: game.curriculum.fases.length })),
+        h('ul', { class: 'certificate__stats' },
+          h('li', {}, icon('star'), ` ${t('finale.stars', { n: s.stars, max: s.maxStars })}`),
+          h('li', {}, icon('flag'), ` ${t('finale.level', { n: s.level })}`),
+          h('li', {}, icon('person'), ` ${t('finale.mentors', { n: s.unlockedMentors.length })}`)),
+        h('p', { class: 'certificate__date' }, date),
+        h('div', { class: 'certificate__signs' },
+          h('span', {}, h('b', { class: 'certificate__sign' }, 'Bit'), t('finale.signBit')),
+          h('span', {}, h('b', { class: 'certificate__sign' }, 'Mary'), t('finale.signMary'))),
+        h('p', { class: 'certificate__note' }, t('finale.fictional'))),
+      h('div', { class: 'certificate__name' },
+        h('label', {}, t('finale.nameLabel'), this.nameInput),
+        h('button', { class: 'pbtn', type: 'button', onClick: () => this.saveName() }, icon('check'), t('finale.save'))),
+    );
+  }
+
+  saveName() {
+    this.ctx.game.setCertificateName.execute(this.nameInput.value);
+    this.ctx.sfx('coin');
+    this.renderCertificate();
+  }
+
+  goHard() {
+    this.ctx.game.updateSettings.execute({ difficulty: 'hard' });
+    this.ctx.toast.show({ title: t('difficulty.current', { name: t('difficulty.hard') }), iconName: 'flame' });
+    this.ctx.nav.go('map');
+  }
+
+  /** Pixel confetti in the screen palette, falling over the celebration. */
+  startConfetti(count) {
+    const canvas = this.confetti;
+    const ctx = canvas.getContext('2d');
+    const colors = this.ctx.theme.colors;
+    const resize = () => {
+      canvas.width = Math.floor(this.root.clientWidth / 3);
+      canvas.height = Math.floor(this.root.clientHeight / 3);
+    };
+    resize();
+    let pieces = Array.from({ length: count }, (_, i) => ({
+      x: Math.random() * canvas.width,
+      y: -Math.random() * canvas.height,
+      vy: 0.4 + Math.random() * 0.8,
+      vx: (Math.random() - 0.5) * 0.4,
+      color: colors[i % 3],
+      size: 1 + (i % 2),
+    }));
+    this.every(() => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces = pieces.filter((p) => p.y < canvas.height + 2);
+      for (const p of pieces) {
+        p.y += p.vy;
+        p.x += p.vx + Math.sin(p.y / 6) * 0.2;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+      }
+    }, 33);
+  }
+
+  onBack() {
+    this.ctx.nav.go('home');
+  }
+}
+
+return { finaleDue, FinaleScreen };
+})();
 // ── src/presentation/screens/GuideScreen.js
 __m["src/presentation/screens/GuideScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
@@ -8788,6 +9915,7 @@ class HomeScreen extends Screen {
         h('div', { class: 'home__row' },
           h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('library') }, icon('book'), t('home.learn')),
           this.colorsButton(s))),
+      s.gameCompleted ? h('button', { class: 'pbtn home__certificate', type: 'button', onClick: () => this.ctx.nav.go('finale') }, icon('trophy'), t('finale.viewCertificate')) : null,
       h('p', { class: 'home__progress' },
         h('span', {}, icon('flag'), ` ${t('home.challenges', { done: s.completedChallenges, total: s.totalChallenges })}`),
         h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`),
@@ -8859,7 +9987,7 @@ class LessonScreen extends Screen {
   render() {
     const { game, theme, sfx } = this.ctx;
     this.fase = game.curriculum.fase(this.params.faseId);
-    this.mentor = game.content.mentors.find((m) => m.id === this.fase.mentorId);
+    this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.index = 0;
     this.speech = new MentorSpeech({ mentor: this.mentor, colors: theme.colors, sfx });
     this.track(() => this.speech.stop());
@@ -8958,7 +10086,7 @@ const { h } = __m["src/presentation/ui/dom.js"];
 function mentorCard(mentor) {
   return h('article', { class: 'mentor-card' },
     h('h2', { class: 'mentor-card__name' }, mentor.name),
-    h('p', { class: 'mentor-card__meta' }, h('span', {}, mentor.years), h('span', {}, mentor.area)),
+    h('p', { class: 'mentor-card__meta' }, mentor.years ? h('span', {}, mentor.years) : null, h('span', {}, mentor.area)),
     h('p', {}, mentor.intro),
     h('div', { class: 'mentor-card__fact panel' }, h('strong', {}, icon('star'), ` ${t('mentor.fact')}`), h('p', {}, mentor.fact)),
     h('blockquote', { class: 'mentor-card__message' },
@@ -9102,7 +10230,6 @@ class MapScreen extends Screen {
     this.nextKey = next ? next.challengeId ?? `lesson-${next.faseId}` : null;
 
     const sections = fases.map((fase) => {
-      const mentor = mentors.find((m) => m.id === fase.mentorId);
       const reward = mentors.find((m) => m.id === game.curriculum.fase(fase.id).reward.mentorId);
       const nodes = [
         this.node({ key: `lesson-${fase.id}`, kind: 'lesson', label: t('map.lesson'), status: fase.lesson.status, onOpen: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }),
@@ -9120,7 +10247,7 @@ class MapScreen extends Screen {
 
       return h('section', { class: `fase fase--${fase.scenery} ${fase.unlocked ? '' : 'is-locked'} ${fase.completed ? 'is-complete' : ''}`, 'aria-label': t('map.faseAria', { n: fase.number, title: fase.title }) },
         h('header', { class: 'fase__banner' },
-          fase.unlocked ? mentorPortrait(mentor.id, theme.colors, { scale: 2 }) : h('span', { class: 'fase__lock' }, icon('lock')),
+          h('span', { class: 'fase__lock', 'aria-hidden': 'true' }, fase.unlocked ? h('b', { class: 'fase__num' }, fase.number) : icon('lock')),
           h('div', {},
             h('span', { class: 'fase__number' }, t('map.fase', { n: fase.number })),
             h('h2', { class: 'fase__title' }, fase.title),
@@ -9188,6 +10315,7 @@ return { MapScreen };
 // ── src/presentation/screens/MentorUnlockScreen.js
 __m["src/presentation/screens/MentorUnlockScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
+const { finaleDue } = __m["src/presentation/screens/FinaleScreen.js"];
 const { spritePixels } = __m["src/presentation/pixel/draw.js"];
 const { PORTRAIT_SIZE } = __m["src/presentation/pixel/portraits.js"];
 const { hasPortrait, portraitPixels } = __m["src/presentation/pixel/portrait.js"];
@@ -9271,13 +10399,13 @@ class MentorUnlockScreen extends Screen {
             this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
           },
         }, icon('person'), t('mentor.choose')),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, t('mentor.continue'))),
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.onBack() }, t('mentor.continue'))),
     );
     this.details.querySelector('.pbtn--primary').focus({ preventScroll: true });
   }
 
   onBack() {
-    this.ctx.nav.go('map');
+    this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
   }
 }
 
@@ -9287,6 +10415,7 @@ return { MentorUnlockScreen };
 __m["src/presentation/screens/ResultScreen.js"] = (() => {
 const { REWARDS } = __m["src/domain/scoring.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
+const { finaleDue } = __m["src/presentation/screens/FinaleScreen.js"];
 const { starRow } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
@@ -9306,7 +10435,7 @@ class ResultScreen extends Screen {
     if (!outcome) return this.later(() => this.ctx.nav.go('map'), 0);
     const { game, theme } = this.ctx;
     const { fase, challenge } = game.curriculum.findChallenge(challengeId);
-    const mentor = game.content.mentors.find((m) => m.id === fase.mentorId);
+    const mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.outcome = outcome;
 
     this.stars = starRow(0, 3, 'stars--big');
@@ -9388,7 +10517,7 @@ class ResultScreen extends Screen {
 
   continue() {
     if (this.outcome.mentorUnlocked) this.ctx.nav.go('mentor', { mentorId: this.outcome.mentorUnlocked });
-    else this.ctx.nav.go('map');
+    else this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
   }
 
   onStart() {
@@ -9571,6 +10700,7 @@ const { InputController } = __m["src/presentation/input/InputController.js"];
 const { BootScreen } = __m["src/presentation/screens/BootScreen.js"];
 const { ChallengeScreen } = __m["src/presentation/screens/ChallengeScreen.js"];
 const { DifficultyScreen } = __m["src/presentation/screens/DifficultyScreen.js"];
+const { FinaleScreen } = __m["src/presentation/screens/FinaleScreen.js"];
 const { GuideScreen } = __m["src/presentation/screens/GuideScreen.js"];
 const { HomeScreen } = __m["src/presentation/screens/HomeScreen.js"];
 const { LessonScreen } = __m["src/presentation/screens/LessonScreen.js"];
@@ -9584,10 +10714,8 @@ const $ = (selector) => document.querySelector(selector);
 
 const bus = new EventBus();
 const repository = LocalStorageRepository.isAvailable() ? new LocalStorageRepository() : new MemoryRepository();
-// The language is fixed for the page's lifetime: switching saves it and reloads.
-const RESUME_KEY = 'bitquest:resume';
 const lang = setLanguage(resolveLanguage(repository.load()?.settings?.lang, navigator.languages ?? [navigator.language]));
-const game = createGame({ content: localizeContent(CONTENT, lang), repository, clock: SystemClock, bus });
+let game = createGame({ content: localizeContent(CONTENT, lang), repository, clock: SystemClock, bus });
 translateShell();
 
 const theme = new ThemeService({ palettes: CONTENT.palettes, store: game.store, bus });
@@ -9614,6 +10742,7 @@ const app = new App({
     home: HomeScreen,
     guide: GuideScreen,
     difficulty: DifficultyScreen,
+    finale: FinaleScreen,
     map: MapScreen,
     lesson: LessonScreen,
     challenge: ChallengeScreen,
@@ -9623,12 +10752,17 @@ const app = new App({
     settings: SettingsScreen,
   },
 });
-const changeLanguage = (id) => {
-  game.updateSettings.execute({ lang: id });
-  try { sessionStorage.setItem(RESUME_KEY, app.currentName); } catch { /* storage blocked: restart at boot */ }
-  location.reload();
+// Switching language rebuilds the game around the same progress store and redraws the
+// current screen in place: no reload, so the music and the audio unlock survive.
+const ctx = { game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')) };
+ctx.changeLanguage = (id) => {
+  game.updateSettings.execute({ lang: setLanguage(id) });
+  game = createGame({ content: localizeContent(CONTENT, id), repository, clock: SystemClock, bus, store: game.store });
+  ctx.game = game;
+  translateShell();
+  app.refresh();
 };
-app.setContext({ game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')), changeLanguage });
+app.setContext(ctx);
 bus.on('theme:changed', () => app.refresh());
 
 // Every on-screen button clicks, unless it plays its own sound.
@@ -9647,7 +10781,7 @@ const syncBody = ({ settings }) => {
 syncBody(game.store.get());
 game.store.subscribe(syncBody);
 
-if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { game, app, bus, audio };
+if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { get game() { return game; }, app, bus, audio };
 
 /** Static text in index.html (console labels, ARIA) follows the chosen language. */
 function translateShell() {
@@ -9658,17 +10792,7 @@ function translateShell() {
   document.querySelectorAll('[data-i18n-content]').forEach((el) => el.setAttribute('content', t(el.dataset.i18nContent)));
 }
 
-let resume = null;
-try {
-  resume = sessionStorage.getItem(RESUME_KEY);
-  sessionStorage.removeItem(RESUME_KEY);
-} catch { /* storage blocked */ }
-if (resume === 'settings' || resume === 'home' || resume === 'guide') {
-  document.body.classList.add('is-powered');
-  app.go(resume);
-} else {
-  app.go('boot');
-}
+app.go('boot');
 
 return {  };
 })();

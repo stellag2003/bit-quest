@@ -1,7 +1,7 @@
 import { LANGUAGES, currentLanguage, t } from '../i18n/index.js';
 import { h } from '../ui/dom.js';
 
-/** PT / EN / ES switch. Choosing another language saves it and restarts the UI in that language. */
+/** PT / EN / ES switch. Choosing another language saves it and redraws the screen in that language. */
 export function languagePicker(ctx, { compact = false } = {}) {
   const active = currentLanguage().id;
   return h('div', { class: `langs ${compact ? 'langs--compact' : ''}`, role: 'group', 'aria-label': t('settings.language') },

@@ -1,4 +1,5 @@
 import { Screen } from '../Screen.js';
+import { finaleDue } from './FinaleScreen.js';
 import { spritePixels } from '../pixel/draw.js';
 import { PORTRAIT_SIZE } from '../pixel/portraits.js';
 import { hasPortrait, portraitPixels } from '../pixel/portrait.js';
@@ -83,12 +84,12 @@ export class MentorUnlockScreen extends Screen {
             this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
           },
         }, icon('person'), t('mentor.choose')),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, t('mentor.continue'))),
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.onBack() }, t('mentor.continue'))),
     );
     this.details.querySelector('.pbtn--primary').focus({ preventScroll: true });
   }
 
   onBack() {
-    this.ctx.nav.go('map');
+    this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
   }
 }

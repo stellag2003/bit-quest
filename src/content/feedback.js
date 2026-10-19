@@ -2,6 +2,7 @@
 export const FAILURES = {
   empty: { title: 'Seu programa está vazio', hint: 'Toque nos comandos lá embaixo para montar o caminho.' },
   empty_loop: { title: 'O Repetir está vazio', hint: 'Coloque pelo menos um comando dentro do Repetir.' },
+  empty_function: { title: 'A função está vazia', hint: 'Coloque comandos dentro da ★ Função antes de usá-la.' },
   incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },

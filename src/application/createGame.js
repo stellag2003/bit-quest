@@ -9,14 +9,14 @@ import { createSensorRegistry } from '../domain/sensors.js';
 import { PurchasePalette, RefillEnergy, SelectPalette } from './economy.js';
 import { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } from './learning.js';
 import { ProgressStore } from './ProgressStore.js';
-import { ResetProgress, SelectMentor, UpdateSettings } from './profile.js';
+import { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } from './profile.js';
 import { MapOverviewQuery, PlayerSummaryQuery } from './queries.js';
 
 /**
  * Application composition: builds the rules and use cases from content and
  * infrastructure ports ({ repository, clock, bus }). No DOM in here.
  */
-export function createGame({ content, repository, clock, bus }) {
+export function createGame({ content, repository, clock, bus, store: existingStore = null }) {
   const { fases, mentors, achievements, palettes, economy, difficulties } = content;
   const curriculum = new Curriculum(fases);
   const rules = new ProgressionRules(curriculum);
@@ -25,7 +25,8 @@ export function createGame({ content, repository, clock, bus }) {
   const evaluator = new ChallengeEvaluator([new SequenceRunner(commands), new RuleRunner(commands, sensors)]);
   const defaults = { firstMentor: mentors[0].id, firstPalette: palettes[0].id };
 
-  const store = new ProgressStore({
+  // Passing the store keeps the same progress (and its subscribers) when only the language changes.
+  const store = existingStore ?? new ProgressStore({
     repository,
     clock,
     createInitial: (now) => createInitialProgress(now, defaults),
@@ -52,6 +53,8 @@ export function createGame({ content, repository, clock, bus }) {
     selectMentor: new SelectMentor({ store }),
     updateSettings: new UpdateSettings({ store }),
     resetProgress: new ResetProgress({ store, bus }),
+    completeGame: new CompleteGame({ store, clock }),
+    setCertificateName: new SetCertificateName({ store }),
     playerSummary: new PlayerSummaryQuery({ store, rules, curriculum, clock, mentors }),
     mapOverview: new MapOverviewQuery({ store, rules, curriculum }),
   };

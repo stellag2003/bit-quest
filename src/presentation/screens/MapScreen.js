@@ -18,7 +18,6 @@ export class MapScreen extends Screen {
     this.nextKey = next ? next.challengeId ?? `lesson-${next.faseId}` : null;
 
     const sections = fases.map((fase) => {
-      const mentor = mentors.find((m) => m.id === fase.mentorId);
       const reward = mentors.find((m) => m.id === game.curriculum.fase(fase.id).reward.mentorId);
       const nodes = [
         this.node({ key: `lesson-${fase.id}`, kind: 'lesson', label: t('map.lesson'), status: fase.lesson.status, onOpen: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }),
@@ -36,7 +35,7 @@ export class MapScreen extends Screen {
 
       return h('section', { class: `fase fase--${fase.scenery} ${fase.unlocked ? '' : 'is-locked'} ${fase.completed ? 'is-complete' : ''}`, 'aria-label': t('map.faseAria', { n: fase.number, title: fase.title }) },
         h('header', { class: 'fase__banner' },
-          fase.unlocked ? mentorPortrait(mentor.id, theme.colors, { scale: 2 }) : h('span', { class: 'fase__lock' }, icon('lock')),
+          h('span', { class: 'fase__lock', 'aria-hidden': 'true' }, fase.unlocked ? h('b', { class: 'fase__num' }, fase.number) : icon('lock')),
           h('div', {},
             h('span', { class: 'fase__number' }, t('map.fase', { n: fase.number })),
             h('h2', { class: 'fase__title' }, fase.title),

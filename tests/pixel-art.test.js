@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import { ICON_BITMAPS } from '../src/presentation/pixel/icons.js';
 import { FLAG, MENTOR_SPRITES, ROBOT, ROCK, TREE } from '../src/presentation/pixel/sprites.js';
 import { CONTENT } from '../src/content/index.js';
+import { PORTRAITS } from '../src/presentation/pixel/portraits.js';
 
 const isGrid = (rows, size) => rows.length === size && rows.every((r) => r.length === size && /^[.0-3]+$/.test(r));
 
@@ -21,8 +22,8 @@ describe('Pixel art data', () => {
     for (const [name, rows] of Object.entries(sprites)) assert.ok(isGrid(rows, 16), name);
   });
 
-  it('every mentor has a portrait', () => {
-    CONTENT.mentors.forEach((m) => assert.ok(MENTOR_SPRITES[m.id], m.id));
+  it('every mentor has a portrait (32×32 art, or the 16×16 LCD sprite as fallback)', () => {
+    CONTENT.mentors.forEach((m) => assert.ok(PORTRAITS[m.id] || MENTOR_SPRITES[m.id], m.id));
   });
 
   it('icons are rectangular 1-bit bitmaps', () => {

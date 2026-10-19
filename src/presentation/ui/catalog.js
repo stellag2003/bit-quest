@@ -14,6 +14,7 @@ export const COMMAND_UI = {
   turnRight: entry('cmd.turnRight', 'turnRight'),
   jump: entry('cmd.jump', 'jump'),
   repeat: entry('cmd.repeat', 'repeat'),
+  call: entry('cmd.call', 'star'),
 };
 
 export const SENSOR_UI = {

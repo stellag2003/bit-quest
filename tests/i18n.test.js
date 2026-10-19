@@ -5,7 +5,7 @@ import { CONTENT_LOCALES, localizeContent } from '../src/content/locales/index.j
 import { DICTIONARIES, resolveLanguage } from '../src/presentation/i18n/index.js';
 
 // Words spelled the same in Portuguese and Spanish.
-const SAME_IN_SPANISH = new Set(['Recarga rápida']);
+const SAME_IN_SPANISH = new Set(['Recarga rápida', 'Física teórica']);
 const placeholders = (text) => (text.match(/\{\w+\}/g) ?? []).sort().join();
 
 describe('i18n: interface copy', () => {

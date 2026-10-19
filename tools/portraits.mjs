@@ -8,10 +8,14 @@ import { join, resolve } from 'node:path';
 const ROOT = resolve('.');
 const SOURCES = {
   hero: 'mulher_cacheada.png', // Mary, the main character
-  ada: 'ada_lovelace.png', // drawn by tools/draw-ada.mjs
+  ada: 'ada_lovelace.png', // drawn by tools/draw-portraits.mjs
   grace: 'grace_hopper.png',
   turing: 'alan_turing.png',
   katherine: 'katherine_johnson.png',
+  // drawn by tools/draw-portraits.mjs, same palette:
+  sonja: 'sonja_ashauer.png',
+  liane: 'liane_tarouco.png',
+  jobs: 'steve_jobs.png',
 };
 
 const entries = Object.entries(SOURCES).map(([id, file]) => {

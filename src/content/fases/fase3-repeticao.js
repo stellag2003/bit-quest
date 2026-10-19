@@ -20,7 +20,7 @@ export const fase3 = {
   },
   lesson: [
     {
-      text: 'Eu sou o Alan. Repare: Andar, Andar, Andar, Andar, Andar... que cansativo!',
+      text: 'Repare: Andar, Andar, Andar, Andar, Andar... que cansativo!',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('walk'), cmd('walk')],
     },
     {

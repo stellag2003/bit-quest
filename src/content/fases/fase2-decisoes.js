@@ -16,7 +16,7 @@ export const fase2 = {
     example: [rule('rockAhead', 'jump')],
   },
   lesson: [
-    { text: 'Olá, sou a Grace! Agora o Bit anda sozinho... mas o caminho tem surpresas.' },
+    { text: 'Agora o Bit anda sozinho... mas o caminho tem surpresas.' },
     {
       text: 'Programas tomam decisões. SE tiver pedra à frente, ENTÃO o Bit pula.',
       demo: {

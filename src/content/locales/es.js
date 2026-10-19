@@ -12,7 +12,7 @@ export const ES = {
         summary: 'Un programa es una lista de comandos. La computadora hace uno a la vez, del primero al último.',
       },
       lesson: [
-        '¡Hola! Soy Ada. Este es Bit, un robot al que le encanta seguir instrucciones.',
+        '¡Hola! Este es Bit, un robot al que le encanta seguir instrucciones.',
         'Un programa es una lista de comandos. Bit hace uno a la vez, en orden.',
         'Si cambia el orden, cambia el camino. ¿Armamos tu primer programa?',
       ],
@@ -41,7 +41,7 @@ export const ES = {
         summary: 'SI pasa algo, ENTONCES haz una acción. Así el programa decide solo qué hacer.',
       },
       lesson: [
-        '¡Hola, soy Grace! Ahora Bit camina solo... pero el camino tiene sorpresas.',
+        'Ahora Bit camina solo... pero el camino tiene sorpresas.',
         'Los programas toman decisiones. SI hay una piedra adelante, ENTONCES Bit salta.',
         'Cuando ninguna regla coincide, Bit simplemente camina hacia adelante.',
       ],
@@ -70,7 +70,7 @@ export const ES = {
         summary: 'En vez de escribir el mismo comando muchas veces, usa Repetir y di cuántas veces.',
       },
       lesson: [
-        'Soy Alan. Mira: Caminar, Caminar, Caminar, Caminar, Caminar... ¡qué cansado!',
+        'Mira: Caminar, Caminar, Caminar, Caminar, Caminar... ¡qué cansado!',
         'Con Repetir 5× Caminar, lo escribes una vez y Bit lo repite solo.',
         'Esto se llama loop. Ahora cada desafío tiene un límite de bloques. ¡Ahorra!',
       ],
@@ -90,6 +90,93 @@ export const ES = {
           title: 'Saltos con ritmo',
           goal: 'Encuentra el patrón y usa solo 3 bloques.',
           hints: ['Antes de cada piedra hay un suelo libre. ¿Cuál es el patrón?', 'Repetir 3× [Caminar, Saltar].'],
+        },
+      },
+    },
+    f4: {
+      title: 'Depuración',
+      concept: {
+        title: 'Depuración (debug)',
+        summary: 'Depurar es encontrar y arreglar el error de un programa. Ejecútalo, mira dónde se detuvo Bit y cambia solo lo que está mal.',
+      },
+      lesson: [
+        'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
+        'Este programa tiene un bug: un paso de más. Ejecútalo, mira dónde choca Bit y encuentra el bloque culpable.',
+        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
+      ],
+      challenges: {
+        'f4-c1': {
+          title: 'Un paso de más',
+          goal: 'El programa tiene un bug. Arréglalo y lleva a Bit hasta la bandera.',
+          hints: ['Ejecuta el programa: ¿en qué bloque choca Bit con el árbol?', 'Hay un Caminar de más antes de Girar. Tócalo para quitarlo.'],
+        },
+        'f4-c2': {
+          title: 'Cuenta equivocada',
+          goal: 'El Repetir está contando mal. Arregla el número.',
+          hints: ['Bit se detiene antes de la bandera. ¿Cuántas casillas faltan?', 'Cuenta las casillas hasta la bandera y toca el número del Repetir hasta llegar a él.'],
+        },
+        'f4-c3': {
+          title: 'Regla cambiada',
+          goal: 'Una de las reglas está mal. Descubre cuál y arréglala.',
+          hints: ['La regla de la piedra funciona. Mira la regla de la pared.', 'El camino gira a la derecha. Toca el ENTONCES de la regla de la pared y elige Girar der.'],
+        },
+      },
+    },
+    f5: {
+      title: 'Funciones',
+      concept: {
+        title: 'Función',
+        summary: 'Una función es un bloque nuevo que creas juntando otros bloques. Después solo tienes que usar ese bloque todas las veces que quieras.',
+      },
+      lesson: [
+        'A veces el mismo pedazo de programa aparece muchas veces. ¡Puedes escribirlo una sola vez!',
+        'Pon los pasos dentro de la ★ Función. Cada bloque ★ que uses hace todo lo que está adentro.',
+        'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
+      ],
+      challenges: {
+        'f5-c1': {
+          title: 'El bloque mágico',
+          goal: 'Crea una función y llega a la bandera con solo 5 bloques.',
+          hints: ['El camino se repite: Caminar, Caminar, Saltar.', 'Función: Caminar, Caminar, Saltar. Programa: ★ y ★.'],
+        },
+        'f5-c2': {
+          title: 'La escalera de Sonja',
+          goal: 'Sube la escalera con 7 bloques como máximo.',
+          hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Función: Caminar, Girar der., Caminar, Girar izq. Usa ★ tres veces.'],
+        },
+        'f5-c3': {
+          title: 'Patrón escondido',
+          goal: 'Encuentra el pedazo que se repite y usa 8 bloques como máximo.',
+          hints: ['Antes y después de cada curva, Bit hace: Caminar, Saltar, Caminar.', 'Función: Caminar, Saltar, Caminar. Programa: ★, Girar der., ★, Girar izq., ★.'],
+        },
+      },
+    },
+    f6: {
+      title: 'Todo junto',
+      concept: {
+        title: 'Pensamiento computacional',
+        summary: 'Los programadores mezclan todo lo que aprendieron: secuencias, decisiones, repetición y funciones. Elige la mejor herramienta para cada camino.',
+      },
+      lesson: [
+        'Ya sabes secuencias, decisiones, repetición y funciones. ¡Ahora es hora de juntarlo todo!',
+        'Antes de armar, mira el mapa entero: ¿qué se repite? ¿Dónde tiene que decidir Bit?',
+        'No hay una sola forma correcta. Pero el mejor programa es corto y fácil de entender.',
+      ],
+      challenges: {
+        'f6-c1': {
+          title: 'Laberinto de reglas',
+          goal: 'Crea las reglas que llevan a Bit por todo el laberinto.',
+          hints: ['Vas a necesitar una regla para piedras y otra para paredes.', 'SI piedra → Saltar. SI pared → Girar der.'],
+        },
+        'f6-c2': {
+          title: 'Vuelta a la plaza',
+          goal: 'Da la vuelta a las piedras usando solo 4 bloques.',
+          hints: ['Caminar, Saltar, Girar... y otra vez. ¿Cuántas veces?', 'Repetir 3× [Caminar, Saltar, Girar der.].'],
+        },
+        'f6-c3': {
+          title: 'Desafío final',
+          goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
+          hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
         },
       },
     },
@@ -123,6 +210,27 @@ export const ES = {
       message: 'Revisa, prueba y vuelve a revisar. Cuidar los detalles también es valentía.',
       unlockText: 'Completa la fase Repetición.',
     },
+    sonja: {
+      area: 'Física teórica',
+      intro: 'Física brasileña, nacida en São Paulo. Fue la primera mujer de Brasil en hacer un doctorado en física, en la Universidad de Cambridge, en Inglaterra.',
+      fact: 'Su director de tesis en Cambridge fue Paul Dirac, uno de los creadores de la física cuántica. Sonja terminó el doctorado con solo 24 años.',
+      message: 'Las grandes ideas empiezan con preguntas pequeñas. ¡No tengas miedo de preguntar!',
+      unlockText: 'Completa la fase Depuración.',
+    },
+    liane: {
+      area: 'Redes de computadoras e internet',
+      intro: 'Científica de la computación brasileña y profesora de la UFRGS, en Porto Alegre. Ayudó a llevar internet a las universidades de Brasil, cuando casi nadie sabía qué era.',
+      fact: 'En 2017 entró al Internet Hall of Fame, que homenajea a las personas que ayudaron a construir internet en el mundo.',
+      message: 'Las computadoras se hacen más fuertes cuando conversan entre sí. ¡Las personas también!',
+      unlockText: 'Completa la fase Funciones.',
+    },
+    jobs: {
+      area: 'Computadoras personales y diseño',
+      intro: 'Empresario estadounidense. En 1976 fundó Apple con Steve Wozniak en un garaje. La empresa ayudó a llevar las computadoras a las casas.',
+      fact: 'En la universidad tomó una clase de caligrafía, el arte de dibujar letras. Años después, esa clase inspiró las letras bonitas de la computadora Macintosh, de 1984.',
+      message: 'Un buen programa es uno que cualquier persona puede usar. ¡Piensa en quién va a jugar!',
+      unlockText: 'Completa la fase Todo junto.',
+    },
   },
   achievements: {
     'first-program': { title: 'Primer programa', description: 'Completa tu primer desafío.' },
@@ -145,7 +253,7 @@ export const ES = {
       text: '¡Ella es Mary y juegas con ella! Juntas van a enseñarle al robot Bit a llegar hasta la bandera armando programas con bloques de comando.',
       items: [
         ['Objetivo', 'llevar a Bit hasta la bandera'],
-        ['3 fases', 'Secuencias, Decisiones y Repetición'],
+        ['6 fases', 'de Secuencias hasta Todo junto'],
       ],
     },
     sequence: {
@@ -173,6 +281,24 @@ export const ES = {
       items: [
         ['Repetir', 'pon comandos dentro de él'],
         ['Límite de bloques', 'cada desafío tiene un máximo'],
+      ],
+    },
+    debug: {
+      title: 'Fase 4 · Depuración',
+      text: 'Aquí el desafío ya empieza con un programa que tiene un bug. Ejecútalo, descubre dónde se equivoca Bit y arréglalo.',
+      items: [
+        ['Encuentra el bug', 'ejecuta y mira dónde se detiene Bit'],
+        ['Quita un bloque', 'toca el bloque equivocado'],
+        ['Cambia un número', 'toca el × del Repetir'],
+      ],
+    },
+    functions: {
+      title: 'Fase 5 · Funciones',
+      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras. ¡En la fase 6 juntas todo!',
+      items: [
+        ['★ Función', 'junta hasta 4 bloques en ella'],
+        ['Bloque ★', 'hace todo lo que está en la función'],
+        ['Fase 6 · Todo junto', 'mezcla todo lo que aprendiste'],
       ],
     },
     run: {
@@ -209,7 +335,7 @@ export const ES = {
       title: 'Mentores y Aprender',
       text: 'Personas reales de la computación te acompañan. Completa fases para desbloquear nuevos mentores.',
       items: [
-        ['Mentores', 'Ada, Grace, Alan y Katherine'],
+        ['Mentores', 'Ada, Grace, Alan, Katherine, Sonja, Liane y Steve'],
         ['Aprender', 'mentores, conceptos y medallas'],
         ['Colores de pantalla', 'cada color nuevo trae una música nueva'],
       ],
@@ -228,6 +354,7 @@ export const ES = {
     failures: {
       empty: { title: 'Tu programa está vacío', hint: 'Toca los comandos de abajo para armar el camino.' },
       empty_loop: { title: 'El Repetir está vacío', hint: 'Pon al menos un comando dentro del Repetir.' },
+      empty_function: { title: 'La función está vacía', hint: 'Pon comandos dentro de la ★ Función antes de usarla.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },

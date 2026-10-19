@@ -15,7 +15,7 @@ export class LessonScreen extends Screen {
   render() {
     const { game, theme, sfx } = this.ctx;
     this.fase = game.curriculum.fase(this.params.faseId);
-    this.mentor = game.content.mentors.find((m) => m.id === this.fase.mentorId);
+    this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.index = 0;
     this.speech = new MentorSpeech({ mentor: this.mentor, colors: theme.colors, sfx });
     this.track(() => this.speech.stop());
