@@ -9,7 +9,7 @@ export class Toaster {
     this.showing = false;
   }
 
-  show({ title, text = '', iconName = 'star', duration = 2200 }) {
+  show({ title, text = '', iconName = 'star', duration = text ? 4000 : 2400 }) {
     this.queue.push({ title, text, iconName, duration });
     if (!this.showing) this.next();
   }

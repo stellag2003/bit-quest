@@ -1,6 +1,7 @@
 import { Tile } from '../../domain/tiles.js';
 import { World } from '../../domain/World.js';
 import { drawSprite } from '../pixel/draw.js';
+import { t } from '../i18n/index.js';
 import { SCENERIES } from '../pixel/sceneries.js';
 import { FLAG, ROBOT, ROCK } from '../pixel/sprites.js';
 import { h, reducedMotion, sleep, tween } from '../ui/dom.js';
@@ -14,10 +15,11 @@ const MOTION_SOUND = { walk: 'step', turn: 'turn', jump: 'jump', bump: 'bump' };
  * trace (`steps`) produced by the domain runners.
  */
 export class WorldView {
-  constructor({ theme, sfx, scenery = 'meadow', label = 'Mapa' }) {
+  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title') }) {
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
+    this.label = label;
     this.canvas = h('canvas', { class: 'world__canvas', role: 'img', 'aria-label': label });
     this.el = h('div', { class: 'world' }, this.canvas);
     this.ctx = this.canvas.getContext('2d');
@@ -36,6 +38,7 @@ export class WorldView {
     this.world = new World(rows);
     this.canvas.width = this.world.width * T;
     this.canvas.height = this.world.height * T;
+    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world)}`);
     this.reset();
     this.fit();
   }
@@ -222,4 +225,26 @@ export class WorldView {
     clearInterval(this.idle);
     this.resizeObserver.disconnect();
   }
+}
+
+/** Spoken summary of a map for screen readers: size, where Bit and the flag are, obstacles. */
+export function describeWorld(world) {
+  let rocks = 0;
+  let walls = 0;
+  world.tiles.forEach((tile) => {
+    if (tile === Tile.ROCK) rocks += 1;
+    else if (tile === Tile.WALL) walls += 1;
+  });
+  const { start, goal } = world;
+  return t('world.describe', {
+    w: world.width,
+    h: world.height,
+    x: start.x + 1,
+    y: start.y + 1,
+    dir: t(`dir.${start.dir}`),
+    gx: goal.x + 1,
+    gy: goal.y + 1,
+    rocks,
+    walls,
+  });
 }

@@ -3,12 +3,13 @@ import { clearHighlights, highlightStep, programStrip } from '../components/bloc
 import { MentorSpeech } from '../components/mentorViews.js';
 import { WorldView } from '../components/WorldView.js';
 import { icon } from '../pixel/icons.js';
+import { t } from '../i18n/index.js';
 import { h, sleep } from '../ui/dom.js';
 
 /** Fase intro: 3 short slides, one with a live demo of a program running. */
 export class LessonScreen extends Screen {
   get legend() {
-    return [['A', 'próximo'], ['B', 'mapa']];
+    return [['A', t('legend.next')], ['B', t('legend.map')]];
   }
 
   render() {
@@ -26,8 +27,8 @@ export class LessonScreen extends Screen {
 
     this.root.append(
       h('header', { class: 'lesson__head' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar ao mapa', onClick: () => this.onBack() }, icon('back')),
-        h('div', {}, h('span', { class: 'fase__number' }, `Fase ${this.fase.number} · Lição`), h('h1', { class: 'lesson__title' }, this.fase.title))),
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.backToMap'), onClick: () => this.onBack() }, icon('back')),
+        h('div', {}, h('span', { class: 'fase__number' }, t('lesson.kicker', { n: this.fase.number })), h('h1', { class: 'lesson__title' }, this.fase.title))),
       this.speech.el,
       this.stage,
       h('footer', { class: 'lesson__foot' }, this.dots, this.nextBtn),
@@ -40,7 +41,7 @@ export class LessonScreen extends Screen {
     const last = this.index === this.fase.lesson.length - 1;
     this.stopDemo();
     this.stage.replaceChildren();
-    this.nextBtn.replaceChildren(...(last ? [icon('play'), 'Começar desafios'] : ['Próximo']));
+    this.nextBtn.replaceChildren(...(last ? [icon('play'), t('lesson.start')] : [t('lesson.next')]));
     this.dots.replaceChildren(...this.fase.lesson.map((_, i) => h('span', { class: i === this.index ? 'is-on' : '' })));
     this.speech.say(slide.text);
 
@@ -58,7 +59,7 @@ export class LessonScreen extends Screen {
   }
 
   async startDemo(demo) {
-    const view = new WorldView({ theme: this.ctx.theme, sfx: () => {}, scenery: this.fase.scenery, label: 'Exemplo animado' });
+    const view = new WorldView({ theme: this.ctx.theme, sfx: () => {}, scenery: this.fase.scenery, label: t('lesson.demo') });
     const strip = programStrip(demo.program, { compact: true });
     this.stage.append(h('div', { class: 'lesson__demo' }, view.el, strip));
     view.setWorld(demo.map);

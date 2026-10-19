@@ -2,8 +2,8 @@
 .console {
   position: relative;
   z-index: 1;
-  width: min(100vw, 440px);
-  height: min(100dvh, 900px);
+  width: min(100vw, 500px);
+  height: min(100dvh, 980px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   grid-template-areas: 'ridge' 'bezel' 'brand' 'controls';
@@ -39,7 +39,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 8px 14px 6px;
+  padding: 6px 10px 4px;
   background: var(--bezel);
   border-radius: 10px 10px 42px 10px;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -149,7 +149,7 @@ body:not(.is-powered) .lcd::before {
   min-height: 24px;
   padding-top: 6px;
   font-family: var(--font-brand);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--bezel-ink);
 }
 
@@ -162,26 +162,20 @@ body:not(.is-powered) .lcd::before {
 .legend__key {
   display: inline-grid;
   place-items: center;
-  min-width: 15px;
-  height: 15px;
-  padding: 0 4px;
-  border-radius: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
   background: var(--btn-ab);
   color: #fff;
-  font-size: 8px;
-}
-
-.legend__key--start,
-.legend__key--select {
-  border-radius: 4px;
-  background: #4a3d9a;
+  font-size: 10px;
 }
 
 /* Printed brand */
 .brand {
   grid-area: brand;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 10px 6px 0;
@@ -211,10 +205,10 @@ body:not(.is-powered) .lcd::before {
 .console__controls {
   grid-area: controls;
   position: relative;
-  height: 196px;
+  height: 158px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr;
   padding: 4px 4px 0;
 }
 
@@ -291,8 +285,7 @@ body:not(.is-powered) .lcd::before {
   gap: 4px;
 }
 
-.ab__item span,
-.pill span {
+.ab__item span {
   font-family: var(--font-brand);
   font-weight: 700;
   color: var(--shell-ink);
@@ -316,60 +309,17 @@ body:not(.is-powered) .lcd::before {
   box-shadow: 0 1px 0 #86262a, 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.pills {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  padding: 0 0 6px;
-}
-
-.pill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  transform: rotate(-24deg);
-}
-
-.pill__btn {
-  position: relative;
-  width: 50px;
-  height: 13px;
-  border-radius: 8px;
-  background: var(--pill);
-  box-shadow: 0 2px 0 #221a52, inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.pill__btn::before {
-  content: '';
-  position: absolute;
-  inset: -14px -8px;
-}
-
-.pill__btn.is-down {
-  translate: 0 2px;
-  box-shadow: none;
-}
-
-.pill span {
-  font-size: 8px;
-  letter-spacing: 0.06em;
-}
-
+/* Speaker grille sits in the brand row, clear of the A/B buttons */
 .speaker {
-  position: absolute;
-  right: 22px;
-  bottom: 4px;
   display: flex;
-  gap: 6px;
+  gap: 5px;
+  margin-inline: auto;
   transform: rotate(-28deg);
 }
 
 .speaker i {
-  width: 5px;
-  height: 40px;
+  width: 4px;
+  height: 22px;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.24);
   box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.35);
@@ -390,21 +340,22 @@ body:not(.is-powered) .lcd::before {
 }
 
 @media (max-height: 780px) {
-  .console__controls { height: 164px; }
+  .console__controls { height: 140px; }
   .dpad { width: 112px; height: 112px; }
   .round-btn { width: 52px; height: 52px; }
   .brand { padding-top: 6px; }
   .brand__name { font-size: 18px; }
-  .speaker i { height: 30px; }
+  .speaker i { height: 18px; }
 }
 
 @media (max-height: 680px) {
   .console__ridge,
-  .brand__tag { display: none; }
+  .brand,
   .bezel__top { display: none; }
-  .console__controls { height: 148px; }
-  .dpad { width: 104px; height: 104px; }
-  .round-btn { width: 48px; height: 48px; }
+  .console { padding-top: max(6px, env(safe-area-inset-top)); }
+  .console__controls { height: 112px; padding-top: 8px; }
+  .dpad { width: 98px; height: 98px; }
+  .round-btn { width: 46px; height: 46px; }
 }
 
 /* Phone held sideways: GBA-style layout */
@@ -430,5 +381,4 @@ body:not(.is-powered) .lcd::before {
   .console__controls { display: contents; }
   .dpad { grid-area: dpad; justify-self: center; align-self: center; margin: 0; }
   .ab { grid-area: ab; justify-self: center; align-self: center; }
-  .pills { grid-area: ab; align-self: end; padding-bottom: 12px; }
 }

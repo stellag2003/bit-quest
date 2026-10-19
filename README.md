@@ -20,20 +20,23 @@ LocalStorage para salvar o progresso. Sem backend e sem dependências.
 \* Sem internet, as fontes pixel caem para uma fonte monoespaçada do sistema; o resto funciona igual.
 
 **Controles:** toque na tela (principal) · D-pad/setas movem o cursor · **A**/Z/Enter confirma ·
-**B**/X/Esc volta ou apaga o último bloco · **START**/Espaço executa · **SELECT**/Shift pede dica.
+**B**/X/Esc volta ou apaga o último bloco · no teclado, Espaço executa e Shift pede dica.
 
 ## Comandos
 
 ```bash
-npm test        # 43 testes: motor, regras, progressão e prova de que todo desafio tem solução
+npm test        # 52 testes: motor, regras, progressão e prova de que todo desafio tem solução
 npm run build   # gera dist/bitquest.html (bundle de arquivo único, sem dependências)
 npm start       # servidor estático local
+npm run portraits # converte a arte de assets/personagens em src/presentation/pixel/portraits.js
 ```
 
 Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualquer navegador moderno.
 
 ## O que tem no jogo
 
+- Tela **Como jogar** com 9 páginas explicando todas as funcionalidades: abre sozinha na primeira vez
+  e depois pelo botão **?** da tela inicial ou em Ajustes.
 - **9 desafios** em 3 fases, cada fase com uma lição curta e um exemplo animado.
 - **Fase 1:** montar a sequência de comandos (Andar, Virar, Pular).
 - **Fase 2:** o Bit anda sozinho; a criança escreve regras SE/ENTÃO. O último desafio exige que as
@@ -41,12 +44,24 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 - **Fase 3:** o bloco Repetir com **limite de blocos**; a recompensa mostra quanto o loop economizou.
 - Feedback que não pune: o Bit para onde errou, o bloco culpado ganha um "!", aparece uma dica e
   "Tentar de novo" mantém o programa. Erros de montagem (programa vazio, regra incompleta) não gastam energia.
-- Progressão: XP e níveis, estrelas, moedas, energia que recarrega, sequência de dias, 7 medalhas,
-  mentores desbloqueáveis e **paletas de tela compráveis** (Clássico, Bolso, Pôr do sol, Oceano).
-- Áudio sintetizado na hora: efeitos para cada ação, jingle de vitória e música-tema desligável.
-- Acessibilidade: navegação completa por teclado/D-pad, rótulos ARIA, `prefers-reduced-motion`.
+- Progressão: XP e níveis, estrelas, moedas, energia que recarrega (toque na barra para ver e recarregar),
+  sequência de dias, 7 medalhas, mentores desbloqueáveis e **paletas de tela compráveis**
+  (Clássico, Bolso, Pôr do sol, Oceano), cada uma com a **sua própria música de fundo**.
+- Áudio sintetizado na hora: efeitos para cada ação, jingle de vitória e 4 músicas desligáveis.
+- **Português, inglês e espanhol**: botões PT/EN/ES na tela de ligar e em Ajustes; todo o conteúdo
+  (lições, dicas, mentores, medalhas) está traduzido.
+- Acessibilidade: navegação completa por teclado/D-pad, rótulos ARIA, descrição do mapa para leitores
+  de tela, zoom liberado, contraste AA testado em todas as paletas e, em Ajustes, **Texto maior**,
+  **Letra fácil de ler** (Atkinson Hyperlegible) e **Menos animação** (além de `prefers-reduced-motion`).
 - Responsivo: de 320 px a desktop; com o celular deitado o console vira horizontal e o desafio
   passa para duas colunas.
+
+## Personagens
+
+A arte dos personagens fica em `assets/personagens/` (PNG 32×32, fundo transparente, paleta de 19 cores):
+**Mary**, a personagem principal (quem joga), aparece ao lado do Bit, e os quatro mentores usam seus
+retratos em todo o jogo. O retrato da Ada Lovelace foi desenhado na mesma paleta por `tools/draw-ada.mjs`. Sempre ampliados em múltiplo inteiro com `image-rendering: pixelated`.
+Depois de trocar um PNG, rode `npm run portraits` e `npm run build`.
 
 ## Mentores e fatos
 

@@ -24,6 +24,7 @@ export class Modal {
   }
 
   open(root) {
+    this.returnFocus = document.activeElement;
     root.append(this.el);
     (this.el.querySelector('[data-autofocus]') ?? this.el.querySelector('button'))?.focus({ preventScroll: true });
     return this.done;
@@ -31,6 +32,7 @@ export class Modal {
 
   close(value = null) {
     this.el.remove();
+    if (this.returnFocus?.isConnected) this.returnFocus.focus({ preventScroll: true });
     this.resolve(value);
   }
 }

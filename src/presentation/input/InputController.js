@@ -17,7 +17,8 @@ const DIRECTIONS = new Set(['up', 'down', 'left', 'right']);
 
 /**
  * Maps the virtual console buttons and the keyboard to screen intents:
- * D-pad → focus movement, A → activate, B → back, START/SELECT → screen hooks.
+ * D-pad → focus movement, A → activate, B → back; Space/Shift (keyboard only)
+ * reach the screen's start/select hooks.
  */
 export class InputController {
   constructor({ buttons, navigator, sfx, onFirstInteraction }) {

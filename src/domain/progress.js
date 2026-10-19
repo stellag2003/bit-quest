@@ -17,7 +17,7 @@ export function createInitialProgress(now, { firstMentor = 'ada', firstPalette =
     streak: { count: 0, lastDay: null },
     achievements: [],
     palettes: { owned: [firstPalette], current: firstPalette },
-    settings: { sfx: true, music: true },
+    settings: { sfx: true, music: true, guideSeen: false, lang: null, largeText: false, plainFont: false, calmMotion: false },
     stats: { runs: 0, failures: 0 },
   };
 }

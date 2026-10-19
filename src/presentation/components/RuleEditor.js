@@ -1,5 +1,6 @@
 import { isCompleteRule, rule } from '../../domain/program.js';
 import { icon } from '../pixel/icons.js';
+import { t } from '../i18n/index.js';
 import { COMMAND_UI, SENSOR_UI } from '../ui/catalog.js';
 import { h } from '../ui/dom.js';
 import { clearHighlights, commandChip, highlightStep, sensorChip } from './blocks.js';
@@ -19,9 +20,9 @@ export class RuleEditor {
 
     this.list = h('div', { class: 'rules', role: 'list' });
     this.defaultRule = h('span', { class: 'rule-default', dataset: { nodeId: 'default' } },
-      'Senão, o Bit anda: ', icon('walk'));
-    this.programEl = h('section', { class: 'program program--rules', 'aria-label': 'Suas regras' },
-      h('header', { class: 'program__head' }, h('span', {}, 'Suas regras'), this.defaultRule), this.list);
+      t('rules.default'), icon('walk'));
+    this.programEl = h('section', { class: 'program program--rules', 'aria-label': t('rules.title') },
+      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), this.defaultRule), this.list);
 
     const button = (kind, id, content, aria) => h('button', {
       class: `chip chip--${kind === 'condition' ? 'sensor' : 'cmd'} palette__btn`,
@@ -33,16 +34,16 @@ export class RuleEditor {
     }, content);
 
     this.paletteButtons = [
-      ...challenge.sensors.map((id) => button('condition', id, sensorChip(id), `SE ${SENSOR_UI[id].aria}`)),
-      ...challenge.actions.map((id) => button('action', id, commandChip(id), `ENTÃO ${COMMAND_UI[id].aria}`)),
+      ...challenge.sensors.map((id) => button('condition', id, sensorChip(id), `${t('kw.if')} ${SENSOR_UI[id].aria}`)),
+      ...challenge.actions.map((id) => button('action', id, commandChip(id), `${t('kw.then')} ${COMMAND_UI[id].aria}`)),
     ];
     const group = (slot, keyword) => {
       const buttons = this.paletteButtons.filter((b) => b.dataset.slot === slot);
       return h('div', { class: 'palette__group', style: { '--cols': buttons.length } },
         h('b', { class: 'kw' }, keyword), h('div', { class: 'palette__items' }, buttons));
     };
-    this.paletteEl = h('div', { class: 'palette palette--rules', role: 'group', 'aria-label': 'Peças das regras', style: { '--split': `${challenge.sensors.length}fr ${challenge.actions.length}fr` } },
-      group('condition', 'SE'), group('action', 'ENTÃO'));
+    this.paletteEl = h('div', { class: 'palette palette--rules', role: 'group', 'aria-label': t('rules.palette'), style: { '--split': `${challenge.sensors.length}fr ${challenge.actions.length}fr` } },
+      group('condition', t('kw.if')), group('action', t('kw.then')));
     this.render();
   }
 
@@ -134,12 +135,12 @@ export class RuleEditor {
           type: 'button',
           'data-sound': 'none',
           disabled: this.locked,
-          'aria-label': value ? 'Toque para apagar' : `Escolher ${slot === 'condition' ? 'o SE' : 'o ENTÃO'}`,
+          'aria-label': value ? t('rules.slotFilled') : t(slot === 'condition' ? 'rules.chooseIf' : 'rules.chooseThen'),
           onClick: () => this.select(r.id, slot),
         }, content);
       };
-      return h('div', { class: 'rule', role: 'listitem', dataset: { nodeId: r.id }, 'aria-label': `Regra ${i + 1}` },
-        h('b', { class: 'kw' }, 'SE'), slotButton('condition'), h('b', { class: 'kw' }, 'ENTÃO'), slotButton('action'));
+      return h('div', { class: 'rule', role: 'listitem', dataset: { nodeId: r.id }, 'aria-label': t('rules.rule', { n: i + 1 }) },
+        h('b', { class: 'kw' }, t('kw.if')), slotButton('condition'), h('b', { class: 'kw' }, t('kw.then')), slotButton('action'));
     });
     this.list.replaceChildren(...cards);
   }

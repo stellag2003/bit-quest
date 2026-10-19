@@ -1,13 +1,22 @@
-/** How domain ids are shown to kids (labels + icons). */
+import { t } from '../i18n/index.js';
+
+/** How domain ids are shown to kids (labels + icons). Text is looked up on access, in the current language. */
+const entry = (prefix, iconName) => ({
+  icon: iconName,
+  get label() { return t(`${prefix}.label`); },
+  get detail() { return t(`${prefix}.detail`, {}, ''); },
+  get aria() { return t(`${prefix}.aria`); },
+});
+
 export const COMMAND_UI = {
-  walk: { label: 'Andar', icon: 'walk', aria: 'Andar para a frente' },
-  turnLeft: { label: 'Virar', detail: 'esq.', icon: 'turnLeft', aria: 'Virar para a esquerda' },
-  turnRight: { label: 'Virar', detail: 'dir.', icon: 'turnRight', aria: 'Virar para a direita' },
-  jump: { label: 'Pular', icon: 'jump', aria: 'Pular por cima' },
-  repeat: { label: 'Repetir', icon: 'repeat', aria: 'Repetir comandos' },
+  walk: entry('cmd.walk', 'walk'),
+  turnLeft: entry('cmd.turnLeft', 'turnLeft'),
+  turnRight: entry('cmd.turnRight', 'turnRight'),
+  jump: entry('cmd.jump', 'jump'),
+  repeat: entry('cmd.repeat', 'repeat'),
 };
 
 export const SENSOR_UI = {
-  rockAhead: { label: 'Pedra', detail: 'à frente', icon: 'rock', aria: 'Pedra à frente' },
-  wallAhead: { label: 'Parede', detail: 'à frente', icon: 'wall', aria: 'Parede à frente' },
+  rockAhead: entry('sensor.rockAhead', 'rock'),
+  wallAhead: entry('sensor.wallAhead', 'wall'),
 };

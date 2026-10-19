@@ -1,4 +1,5 @@
 import { Modal } from './components/Modal.js';
+import { t } from './i18n/index.js';
 
 /**
  * Base contract for every screen. The App and the InputController only talk
@@ -46,14 +47,14 @@ export class Screen {
     return value;
   }
 
-  /** Background song for this screen (null = silence). */
+  /** Background song for this screen ('theme' = the current palette's song, null = silence). */
   get music() {
     return 'theme';
   }
 
   /** Legend printed under the LCD: [[button, action], ...]. */
   get legend() {
-    return [['A', 'escolher'], ['B', 'voltar']];
+    return [['A', t('legend.choose')], ['B', t('legend.back')]];
   }
 
   handleBack() {

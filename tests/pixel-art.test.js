@@ -31,3 +31,17 @@ describe('Pixel art data', () => {
     }
   });
 });
+
+describe('Character art (assets/personagens)', () => {
+  it('every portrait is a 32×32 PNG and belongs to the hero or a real mentor', async () => {
+    const { PORTRAITS, PORTRAIT_SIZE } = await import('../src/presentation/pixel/portraits.js');
+    const ids = new Set(['hero', ...CONTENT.mentors.map((m) => m.id)]);
+    assert.ok(PORTRAITS.hero, 'main character');
+    for (const [id, uri] of Object.entries(PORTRAITS)) {
+      assert.ok(ids.has(id), id);
+      const png = Buffer.from(uri.split(',')[1], 'base64');
+      assert.equal(png.toString('ascii', 1, 4), 'PNG', id);
+      assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [PORTRAIT_SIZE, PORTRAIT_SIZE], id);
+    }
+  });
+});

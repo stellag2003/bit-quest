@@ -1,5 +1,6 @@
 import { REPEAT_LIMITS, cmd, countBlocks, repeat } from '../../domain/program.js';
 import { icon } from '../pixel/icons.js';
+import { t, tn } from '../i18n/index.js';
 import { COMMAND_UI } from '../ui/catalog.js';
 import { h } from '../ui/dom.js';
 import { clearHighlights, commandChip, highlightStep } from './blocks.js';
@@ -23,17 +24,17 @@ export class SequenceEditor {
 
     this.counter = h('span', { class: 'program__count', 'aria-live': 'polite' });
     this.list = h('div', { class: 'program__list', role: 'list' });
-    this.programEl = h('section', { class: 'program', 'aria-label': 'Seu programa' },
-      h('header', { class: 'program__head' }, h('span', {}, 'Seu programa'), this.counter), this.list);
+    this.programEl = h('section', { class: 'program', 'aria-label': t('seq.title') },
+      h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), this.counter), this.list);
     this.paletteButtons = challenge.palette.map((id) => h('button', {
       class: `chip chip--cmd chip--${id} palette__btn`,
       type: 'button',
-      'aria-label': `Adicionar ${COMMAND_UI[id].aria}`,
+      'aria-label': t('seq.add', { what: COMMAND_UI[id].aria }),
       'data-sound': 'none',
       dataset: { command: id },
       onClick: () => this.add(id),
     }, commandChip(id)));
-    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': 'Comandos', style: { '--cols': challenge.palette.length } }, this.paletteButtons);
+    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length } }, this.paletteButtons);
     this.render();
   }
 
@@ -148,14 +149,14 @@ export class SequenceEditor {
 
   render() {
     const blocks = this.blocks;
-    this.counter.textContent = this.challenge.maxBlocks ? `Blocos ${blocks}/${this.limit}` : `${blocks} ${blocks === 1 ? 'bloco' : 'blocos'}`;
+    this.counter.textContent = this.challenge.maxBlocks ? t('seq.limit', { n: blocks, max: this.limit }) : tn('seq.blocks', blocks);
     this.counter.classList.toggle('is-full', blocks >= this.limit);
     this.paletteButtons.forEach((btn) => (btn.disabled = !this.canAdd(btn.dataset.command)));
 
     const items = this.nodes.map((node) => (node.type === 'repeat' ? this.renderLoop(node) : this.renderBlock(node)));
     if (!this.loop && !this.locked) items.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
     if (this.nodes.length === 0) {
-      items.unshift(h('p', { class: 'program__empty' }, 'Toque nos comandos abaixo para montar o caminho.'));
+      items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
     this.list.replaceChildren(...items);
   }
@@ -166,7 +167,7 @@ export class SequenceEditor {
       type: 'button',
       role: 'listitem',
       'data-sound': 'none',
-      'aria-label': `${COMMAND_UI[node.command].aria}. Toque para remover.`,
+      'aria-label': t('seq.remove', { what: COMMAND_UI[node.command].aria }),
       dataset: { nodeId: node.id },
       disabled: this.locked,
       onClick: () => this.remove(node.id),
@@ -178,14 +179,14 @@ export class SequenceEditor {
     const body = node.body.map((child) => this.renderBlock(child));
     if (open) body.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
     else if (node.body.length < LOOP_BODY_MAX && !this.locked) {
-      body.push(h('button', { class: 'loop__add', type: 'button', 'aria-label': 'Colocar blocos dentro do Repetir', onClick: () => this.setTarget(node.id) }, '+'));
+      body.push(h('button', { class: 'loop__add', type: 'button', 'aria-label': t('seq.loopAdd'), onClick: () => this.setTarget(node.id) }, '+'));
     }
     return h('div', { class: `loop ${open ? 'is-open' : ''}`, role: 'listitem', dataset: { nodeId: node.id } },
       h('div', { class: 'loop__head' },
-        h('button', { class: 'loop__remove', type: 'button', 'data-sound': 'none', 'aria-label': 'Remover Repetir', disabled: this.locked, onClick: () => this.remove(node.id) }, icon('repeat', 'chip__icon'), 'Repetir'),
-        h('button', { class: 'loop__times', type: 'button', 'data-sound': 'none', 'aria-label': `Repetir ${node.times} vezes. Toque para mudar.`, disabled: this.locked, onClick: () => this.cycleTimes(node) }, `${node.times}×`),
+        h('button', { class: 'loop__remove', type: 'button', 'data-sound': 'none', 'aria-label': t('seq.loopRemove'), disabled: this.locked, onClick: () => this.remove(node.id) }, icon('repeat', 'chip__icon'), t('seq.repeat')),
+        h('button', { class: 'loop__times', type: 'button', 'data-sound': 'none', 'aria-label': t('seq.loopTimes', { n: node.times }), disabled: this.locked, onClick: () => this.cycleTimes(node) }, `${node.times}×`),
         h('span', { class: 'loop__iter', 'data-iteration': '' }),
-        open ? h('button', { class: 'loop__close', type: 'button', 'aria-label': 'Fechar o Repetir', onClick: () => this.setTarget(null) }, icon('check')) : null),
+        open ? h('button', { class: 'loop__close', type: 'button', 'aria-label': t('seq.loopClose'), onClick: () => this.setTarget(null) }, icon('check')) : null),
       h('div', { class: 'loop__body' }, body));
   }
 }

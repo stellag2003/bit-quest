@@ -9,6 +9,8 @@ import { createSensorRegistry } from '../src/domain/sensors.js';
 import { World } from '../src/domain/World.js';
 import { CONTENT } from '../src/content/index.js';
 import { FAILURES } from '../src/content/feedback.js';
+import { noteToFreq } from '../src/infrastructure/audio/notes.js';
+import { SONGS } from '../src/infrastructure/audio/soundBank.js';
 
 const commands = createCommandRegistry();
 const evaluator = new ChallengeEvaluator([new SequenceRunner(commands), new RuleRunner(commands, createSensorRegistry())]);
@@ -56,5 +58,38 @@ describe('Content: lesson demos and copy', () => {
     const ids = CONTENT.mentors.map((m) => m.id);
     CONTENT.fases.forEach((f) => assert.ok(ids.includes(f.reward.mentorId) && ids.includes(f.mentorId)));
     CONTENT.mentors.forEach((m) => assert.ok(m.message && m.fact && m.intro));
+  });
+});
+
+describe('Content: palettes and their songs', () => {
+  it('every palette brings its own looping song that exists in the sound bank', () => {
+    const songs = CONTENT.palettes.map((p) => p.song);
+    assert.equal(new Set(songs).size, songs.length);
+    CONTENT.palettes.forEach((p) => {
+      assert.ok(p.songName, p.id);
+      assert.equal(SONGS[p.song]?.loop, true, p.id);
+      SONGS[p.song].voices.forEach((v) => v.notes.forEach(([note]) => noteToFreq(note)));
+    });
+  });
+});
+
+describe('Accessibility: screen palettes stay readable', () => {
+  const luminance = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const contrast = (a, b) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+
+  it('text colors meet WCAG AA (4.5:1) on every background they are used on', () => {
+    CONTENT.palettes.forEach(({ id, colors: [c0, c1, c2, c3] }) => {
+      assert.ok(contrast(c0, c3) >= 7, `${id}: main text`);
+      assert.ok(contrast(c1, c3) >= 4.5, `${id}: secondary text`);
+      assert.ok(contrast(c0, c2) >= 4.5, `${id}: text on highlighted items`);
+      assert.ok(contrast(c3, c1) >= 4.5, `${id}: light text on primary buttons`);
+    });
   });
 });

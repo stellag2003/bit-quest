@@ -9,8 +9,8 @@
   overflow: hidden;
   color: var(--c0);
   background: var(--c3);
-  font-size: 15px;
-  line-height: 1.25;
+  font-size: 17px;
+  line-height: 1.3;
   animation: scr-in 0.2s steps(3) both;
 }
 
@@ -21,7 +21,7 @@
 }
 
 @media (max-width: 360px) {
-  .scr { font-size: 13.5px; }
+  .scr { font-size: 15.5px; }
 }
 
 /* ───────────── Icons ───────────── */
@@ -101,8 +101,8 @@ body.using-dpad .lcd .is-cursor {
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   margin: 3px;
   border: 0;
   background: var(--c3);
@@ -130,7 +130,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .fase__number {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -171,7 +171,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .topbar__timer {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -183,7 +183,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .stat small {
-  font-size: 0.72em;
+  font-size: 0.8em;
   font-weight: 400;
 }
 
@@ -290,7 +290,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .chip__label small {
-  font-size: 0.68em;
+  font-size: 0.8em;
   font-weight: 400;
 }
 
@@ -410,7 +410,7 @@ body.using-dpad .lcd .is-cursor {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  font-size: 0.72em;
+  font-size: 0.8em;
   font-weight: 600;
 }
 
@@ -517,7 +517,7 @@ body.using-dpad .lcd .is-cursor {
   padding: 8px 12px;
   background: var(--c0);
   color: var(--c3);
-  font-size: 13px;
+  font-size: 15px;
   box-shadow: var(--edge-light);
   animation: drop 0.2s steps(3);
   font-family: var(--font-pixel);
@@ -552,3 +552,121 @@ body.using-dpad .lcd .is-cursor {
 @keyframes ready-pulse { 50% { background: var(--c0); } }
 @keyframes icon-pulse { 50% { background: var(--c0); color: var(--c3); } }
 @keyframes error-blink { 50% { background: var(--c3); color: var(--c0); } }
+
+/* ───────────── Energy button + dialog ───────────── */
+.energy--btn {
+  position: relative;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 0;
+  background: var(--c3);
+  box-shadow: var(--edge);
+  cursor: pointer;
+}
+
+.energy--btn.is-low {
+  background: var(--c2);
+}
+
+.energy--btn .energy__cell {
+  width: 7px;
+  height: 15px;
+}
+
+.energy--btn.is-low .energy__cell:not(.is-full) {
+  background: var(--c3);
+}
+
+.energy__plus {
+  margin-left: 4px;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.energy-dialog {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.energy-dialog__meter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.15em;
+}
+
+.energy-dialog__meter .energy__cell {
+  width: 10px;
+  height: 20px;
+}
+
+.energy-dialog__rules {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+}
+
+.energy-dialog__missing {
+  font-weight: 600;
+}
+
+/* ───────────── Language picker ───────────── */
+.langs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 3px;
+}
+
+.langs__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 0;
+  background: var(--c3);
+  box-shadow: var(--edge);
+  cursor: pointer;
+}
+
+.langs__btn b {
+  font-size: 1.1em;
+}
+
+.langs__btn span {
+  font-size: 0.8em;
+}
+
+.langs__btn.is-current {
+  background: var(--c0);
+  color: var(--c3);
+}
+
+.langs--compact {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.langs--compact .langs__btn {
+  min-width: 40px;
+  min-height: 34px;
+  padding: 4px 6px;
+  font-weight: 700;
+}
+
+/* ───────────── Accessibility settings ───────────── */
+body.is-large-text .scr { font-size: 20px; }
+
+@container lcd (max-height: 480px) {
+  body.is-large-text .scr { font-size: 17.5px; }
+}
+
+body.is-plain-font .scr { letter-spacing: 0.01em; }

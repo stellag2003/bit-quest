@@ -1,11 +1,14 @@
 import { Screen } from '../Screen.js';
-import { drawSprite, spritePixels } from '../pixel/draw.js';
+import { spritePixels } from '../pixel/draw.js';
+import { PORTRAIT_SIZE } from '../pixel/portraits.js';
+import { hasPortrait, portraitPixels } from '../pixel/portrait.js';
 import { icon } from '../pixel/icons.js';
+import { t } from '../i18n/index.js';
 import { MENTOR_SPRITES } from '../pixel/sprites.js';
 import { h, reducedMotion, sleep, tween } from '../ui/dom.js';
 import { mentorCard } from './mentorCard.js';
 
-const SCALE = 6;
+const FRAME = 96;
 
 /** SPEC-006: silhouette → pixels appear in random order → name and story. */
 export class MentorUnlockScreen extends Screen {
@@ -14,17 +17,17 @@ export class MentorUnlockScreen extends Screen {
   }
 
   get legend() {
-    return [['A', 'escolher'], ['B', 'mapa']];
+    return [['A', t('legend.choose')], ['B', t('legend.map')]];
   }
 
   render() {
     const { game } = this.ctx;
     this.mentor = game.content.mentors.find((m) => m.id === this.params.mentorId);
-    this.canvas = h('canvas', { class: 'portrait unlock__portrait', width: 16 * SCALE, height: 16 * SCALE, role: 'img', 'aria-label': `Retrato de ${this.mentor.name}` });
+    this.canvas = h('canvas', { class: 'portrait unlock__portrait', width: FRAME, height: FRAME, role: 'img', 'aria-label': t('mentor.portraitOf', { name: this.mentor.name }) });
     this.details = h('div', { class: 'unlock__details' });
 
     this.root.append(
-      h('p', { class: 'unlock__kicker' }, 'Novo mentor desbloqueado!'),
+      h('p', { class: 'unlock__kicker' }, t('mentor.unlocked')),
       h('div', { class: 'unlock__frame' }, this.canvas),
       this.details,
     );
@@ -33,28 +36,35 @@ export class MentorUnlockScreen extends Screen {
 
   async reveal() {
     const { theme } = this.ctx;
+    const { id } = this.mentor;
+    // Both kinds of art become a list of [x, y, color] pixels: 32×32 portraits or 16×16 LCD sprites.
+    const art = hasPortrait(id)
+      ? { size: PORTRAIT_SIZE, pixels: await portraitPixels(id), color: (c) => c }
+      : { size: 16, pixels: spritePixels(MENTOR_SPRITES[id]), color: (c) => theme.colors[c] };
     const ctx = this.canvas.getContext('2d');
-    ctx.scale(SCALE, SCALE);
-    const sprite = MENTOR_SPRITES[this.mentor.id];
-    drawSprite(ctx, sprite, 0, 0, theme.colors, { tone: theme.colors[1] });
+    ctx.imageSmoothingEnabled = false;
+    ctx.scale(FRAME / art.size, FRAME / art.size);
+    const paint = (pixels, tone = null) => pixels.forEach(([x, y, c]) => {
+      ctx.fillStyle = tone ?? art.color(c);
+      ctx.fillRect(x, y, 1, 1);
+    });
+    paint(art.pixels, theme.colors[1]);
 
     if (!reducedMotion()) {
       await sleep(700);
       this.ctx.sfx('unlock');
-      const pixels = spritePixels(sprite).sort(() => Math.random() - 0.5);
+      const pixels = [...art.pixels].sort(() => Math.random() - 0.5);
       let drawn = 0;
-      await tween(1100, (t) => {
-        const target = Math.round(pixels.length * t);
-        for (; drawn < target; drawn += 1) {
-          const [x, y, c] = pixels[drawn];
-          ctx.fillStyle = theme.colors[c];
-          ctx.fillRect(x, y, 1, 1);
-        }
+      await tween(1100, (progress) => {
+        const target = Math.round(pixels.length * progress);
+        paint(pixels.slice(drawn, target));
+        drawn = target;
       });
     } else {
       this.ctx.sfx('unlock');
     }
-    drawSprite(ctx, sprite, 0, 0, theme.colors);
+    ctx.clearRect(0, 0, art.size, art.size);
+    paint(art.pixels);
     this.root.classList.add('is-revealed');
     this.showDetails();
   }
@@ -70,10 +80,10 @@ export class MentorUnlockScreen extends Screen {
           type: 'button',
           onClick: () => {
             game.selectMentor.execute(this.mentor.id);
-            this.ctx.toast.show({ title: `${this.mentor.name} agora é seu guia`, iconName: 'person' });
+            this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
           },
-        }, icon('person'), 'Escolher como guia'),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, 'Continuar')),
+        }, icon('person'), t('mentor.choose')),
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, t('mentor.continue'))),
     );
     this.details.querySelector('.pbtn--primary').focus({ preventScroll: true });
   }

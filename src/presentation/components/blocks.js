@@ -1,4 +1,5 @@
 import { icon } from '../pixel/icons.js';
+import { t } from '../i18n/index.js';
 import { COMMAND_UI, SENSOR_UI } from '../ui/catalog.js';
 import { h } from '../ui/dom.js';
 
@@ -20,8 +21,8 @@ export function programStrip(nodes, { compact = false } = {}) {
     }
     if (node.type === 'rule') {
       return h('span', { class: 'strip__rule', dataset: { nodeId: node.id } },
-        h('b', { class: 'kw' }, 'SE'), h('span', { class: 'chip chip--sensor' }, sensorChip(node.condition)),
-        h('b', { class: 'kw' }, 'ENTÃO'), h('span', { class: 'chip chip--cmd' }, commandChip(node.action)));
+        h('b', { class: 'kw' }, t('kw.if')), h('span', { class: 'chip chip--sensor' }, sensorChip(node.condition)),
+        h('b', { class: 'kw' }, t('kw.then')), h('span', { class: 'chip chip--cmd' }, commandChip(node.action)));
     }
     return h('span', { class: `chip chip--cmd chip--${node.command}`, dataset: { nodeId: node.id } }, commandChip(node.command));
   };

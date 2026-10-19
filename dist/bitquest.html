@@ -2,14 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#4a3a9e">
-  <meta name="description" content="Bit Quest: aprenda lógica de programação jogando. Sequências, decisões e loops em um console portátil retrô.">
+  <meta name="description" content="Bit Quest: aprenda lógica de programação jogando. Sequências, decisões e loops em um console portátil retrô." data-i18n-content="shell.description">
   <title>Bit Quest</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%235b47b8'/%3E%3Crect x='1' y='2' width='6' height='4' fill='%23c9dc8b'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%230f380f'/%3E%3Crect x='5' y='3' width='1' height='1' fill='%230f380f'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap">
   <style>
 /* ───────────── Tokens ───────────── */
 :root {
@@ -24,7 +24,6 @@
   --btn-ab-hi: #ff9b8f;
   --btn-ab-lo: #a8302f;
   --dpad: #221d3a;
-  --pill: #3a2f7a;
   --sky-top: #8fd3ff;
   --sky-bottom: #dff5ff;
 
@@ -134,14 +133,30 @@ canvas {
   }
 }
 
+body.is-calm *,
+body.is-calm *::before,
+body.is-calm *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Accessibility settings */
+body.is-plain-font {
+  --font-pixel: 'Atkinson Hyperlegible', Verdana, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: auto;
+}
+
+
+
 </style>
   <style>
 /* ───────────── Handheld shell ───────────── */
 .console {
   position: relative;
   z-index: 1;
-  width: min(100vw, 440px);
-  height: min(100dvh, 900px);
+  width: min(100vw, 500px);
+  height: min(100dvh, 980px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto auto;
   grid-template-areas: 'ridge' 'bezel' 'brand' 'controls';
@@ -177,7 +192,7 @@ canvas {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding: 8px 14px 6px;
+  padding: 6px 10px 4px;
   background: var(--bezel);
   border-radius: 10px 10px 42px 10px;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.22);
@@ -287,7 +302,7 @@ body:not(.is-powered) .lcd::before {
   min-height: 24px;
   padding-top: 6px;
   font-family: var(--font-brand);
-  font-size: 9px;
+  font-size: 11px;
   color: var(--bezel-ink);
 }
 
@@ -300,26 +315,20 @@ body:not(.is-powered) .lcd::before {
 .legend__key {
   display: inline-grid;
   place-items: center;
-  min-width: 15px;
-  height: 15px;
-  padding: 0 4px;
-  border-radius: 8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
   background: var(--btn-ab);
   color: #fff;
-  font-size: 8px;
-}
-
-.legend__key--start,
-.legend__key--select {
-  border-radius: 4px;
-  background: #4a3d9a;
+  font-size: 10px;
 }
 
 /* Printed brand */
 .brand {
   grid-area: brand;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 10px 6px 0;
@@ -349,10 +358,10 @@ body:not(.is-powered) .lcd::before {
 .console__controls {
   grid-area: controls;
   position: relative;
-  height: 196px;
+  height: 158px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr;
   padding: 4px 4px 0;
 }
 
@@ -429,8 +438,7 @@ body:not(.is-powered) .lcd::before {
   gap: 4px;
 }
 
-.ab__item span,
-.pill span {
+.ab__item span {
   font-family: var(--font-brand);
   font-weight: 700;
   color: var(--shell-ink);
@@ -454,60 +462,17 @@ body:not(.is-powered) .lcd::before {
   box-shadow: 0 1px 0 #86262a, 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.pills {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  padding: 0 0 6px;
-}
-
-.pill {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  transform: rotate(-24deg);
-}
-
-.pill__btn {
-  position: relative;
-  width: 50px;
-  height: 13px;
-  border-radius: 8px;
-  background: var(--pill);
-  box-shadow: 0 2px 0 #221a52, inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.pill__btn::before {
-  content: '';
-  position: absolute;
-  inset: -14px -8px;
-}
-
-.pill__btn.is-down {
-  translate: 0 2px;
-  box-shadow: none;
-}
-
-.pill span {
-  font-size: 8px;
-  letter-spacing: 0.06em;
-}
-
+/* Speaker grille sits in the brand row, clear of the A/B buttons */
 .speaker {
-  position: absolute;
-  right: 22px;
-  bottom: 4px;
   display: flex;
-  gap: 6px;
+  gap: 5px;
+  margin-inline: auto;
   transform: rotate(-28deg);
 }
 
 .speaker i {
-  width: 5px;
-  height: 40px;
+  width: 4px;
+  height: 22px;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.24);
   box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.35);
@@ -528,21 +493,22 @@ body:not(.is-powered) .lcd::before {
 }
 
 @media (max-height: 780px) {
-  .console__controls { height: 164px; }
+  .console__controls { height: 140px; }
   .dpad { width: 112px; height: 112px; }
   .round-btn { width: 52px; height: 52px; }
   .brand { padding-top: 6px; }
   .brand__name { font-size: 18px; }
-  .speaker i { height: 30px; }
+  .speaker i { height: 18px; }
 }
 
 @media (max-height: 680px) {
   .console__ridge,
-  .brand__tag { display: none; }
+  .brand,
   .bezel__top { display: none; }
-  .console__controls { height: 148px; }
-  .dpad { width: 104px; height: 104px; }
-  .round-btn { width: 48px; height: 48px; }
+  .console { padding-top: max(6px, env(safe-area-inset-top)); }
+  .console__controls { height: 112px; padding-top: 8px; }
+  .dpad { width: 98px; height: 98px; }
+  .round-btn { width: 46px; height: 46px; }
 }
 
 /* Phone held sideways: GBA-style layout */
@@ -568,7 +534,6 @@ body:not(.is-powered) .lcd::before {
   .console__controls { display: contents; }
   .dpad { grid-area: dpad; justify-self: center; align-self: center; margin: 0; }
   .ab { grid-area: ab; justify-self: center; align-self: center; }
-  .pills { grid-area: ab; align-self: end; padding-bottom: 12px; }
 }
 
 </style>
@@ -584,8 +549,8 @@ body:not(.is-powered) .lcd::before {
   overflow: hidden;
   color: var(--c0);
   background: var(--c3);
-  font-size: 15px;
-  line-height: 1.25;
+  font-size: 17px;
+  line-height: 1.3;
   animation: scr-in 0.2s steps(3) both;
 }
 
@@ -596,7 +561,7 @@ body:not(.is-powered) .lcd::before {
 }
 
 @media (max-width: 360px) {
-  .scr { font-size: 13.5px; }
+  .scr { font-size: 15.5px; }
 }
 
 /* ───────────── Icons ───────────── */
@@ -676,8 +641,8 @@ body.using-dpad .lcd .is-cursor {
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   margin: 3px;
   border: 0;
   background: var(--c3);
@@ -705,7 +670,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .fase__number {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -746,7 +711,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .topbar__timer {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -758,7 +723,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .stat small {
-  font-size: 0.72em;
+  font-size: 0.8em;
   font-weight: 400;
 }
 
@@ -865,7 +830,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .chip__label small {
-  font-size: 0.68em;
+  font-size: 0.8em;
   font-weight: 400;
 }
 
@@ -985,7 +950,7 @@ body.using-dpad .lcd .is-cursor {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  font-size: 0.72em;
+  font-size: 0.8em;
   font-weight: 600;
 }
 
@@ -1092,7 +1057,7 @@ body.using-dpad .lcd .is-cursor {
   padding: 8px 12px;
   background: var(--c0);
   color: var(--c3);
-  font-size: 13px;
+  font-size: 15px;
   box-shadow: var(--edge-light);
   animation: drop 0.2s steps(3);
   font-family: var(--font-pixel);
@@ -1127,6 +1092,124 @@ body.using-dpad .lcd .is-cursor {
 @keyframes ready-pulse { 50% { background: var(--c0); } }
 @keyframes icon-pulse { 50% { background: var(--c0); color: var(--c3); } }
 @keyframes error-blink { 50% { background: var(--c3); color: var(--c0); } }
+
+/* ───────────── Energy button + dialog ───────────── */
+.energy--btn {
+  position: relative;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 0;
+  background: var(--c3);
+  box-shadow: var(--edge);
+  cursor: pointer;
+}
+
+.energy--btn.is-low {
+  background: var(--c2);
+}
+
+.energy--btn .energy__cell {
+  width: 7px;
+  height: 15px;
+}
+
+.energy--btn.is-low .energy__cell:not(.is-full) {
+  background: var(--c3);
+}
+
+.energy__plus {
+  margin-left: 4px;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.energy-dialog {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.energy-dialog__meter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.15em;
+}
+
+.energy-dialog__meter .energy__cell {
+  width: 10px;
+  height: 20px;
+}
+
+.energy-dialog__rules {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+}
+
+.energy-dialog__missing {
+  font-weight: 600;
+}
+
+/* ───────────── Language picker ───────────── */
+.langs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 3px;
+}
+
+.langs__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 0;
+  background: var(--c3);
+  box-shadow: var(--edge);
+  cursor: pointer;
+}
+
+.langs__btn b {
+  font-size: 1.1em;
+}
+
+.langs__btn span {
+  font-size: 0.8em;
+}
+
+.langs__btn.is-current {
+  background: var(--c0);
+  color: var(--c3);
+}
+
+.langs--compact {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.langs--compact .langs__btn {
+  min-width: 40px;
+  min-height: 34px;
+  padding: 4px 6px;
+  font-weight: 700;
+}
+
+/* ───────────── Accessibility settings ───────────── */
+body.is-large-text .scr { font-size: 20px; }
+
+@container lcd (max-height: 480px) {
+  body.is-large-text .scr { font-size: 17.5px; }
+}
+
+body.is-plain-font .scr { letter-spacing: 0.01em; }
 
 </style>
   <style>
@@ -1234,6 +1317,45 @@ body.using-dpad .lcd .is-cursor {
   padding: 0 3px;
 }
 
+.home__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.home__colors {
+  position: relative;
+}
+
+.home__swatch {
+  display: inline-flex;
+  box-shadow: 0 0 0 2px var(--c0);
+}
+
+.home__swatch i {
+  width: 7px;
+  height: 16px;
+}
+
+.home__badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  background: var(--c0);
+  color: var(--c3);
+  font-size: 0.8em;
+}
+
+.settings__note {
+  margin: 0 0 8px;
+  font-size: 0.9em;
+}
+
 .home__progress {
   display: flex;
   justify-content: center;
@@ -1284,7 +1406,7 @@ body.using-dpad .lcd .is-cursor {
 
 .fase__hint {
   margin: 2px 0 0;
-  font-size: 0.78em;
+  font-size: 0.8em;
 }
 
 .fase__lock {
@@ -1488,6 +1610,88 @@ body.using-dpad .lcd .is-cursor {
   background: var(--c0);
 }
 
+/* ───────────── Guide (Como jogar) ───────────── */
+.home__tools {
+  display: flex;
+  gap: 6px;
+}
+
+.guide__skip {
+  min-height: 36px;
+  padding-inline: 0.8em;
+}
+
+.guide__page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3px;
+  text-align: center;
+}
+
+.guide__count {
+  margin: 0;
+  font-size: 0.8em;
+  color: var(--c1);
+}
+
+.guide__robot {
+  width: 64px;
+  height: 64px;
+}
+
+.guide__title {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.guide__text {
+  max-width: 30em;
+  margin: 0;
+}
+
+.guide__items {
+  width: 100%;
+  max-width: 30em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.guide__item {
+  display: grid;
+  grid-template-columns: 22px minmax(6.5em, auto) 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.guide__item > span:last-child {
+  color: var(--c1);
+  font-size: 0.9em;
+}
+
+.guide__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.guide__key {
+  grid-column: span 2;
+  min-width: 4.5em;
+  padding: 2px 6px;
+  background: var(--c0);
+  color: var(--c3);
+  text-align: center;
+}
+
 /* ───────────── World view ───────────── */
 .world {
   position: relative;
@@ -1564,7 +1768,7 @@ body.using-dpad .lcd .is-cursor {
 .program__head {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -1992,7 +2196,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .reward__label {
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 .result__message {
@@ -2187,7 +2391,7 @@ body.using-dpad .lcd .is-cursor {
 
 .mentor-card__message footer {
   margin-top: 4px;
-  font-size: 0.72em;
+  font-size: 0.8em;
   opacity: 0.8;
 }
 
@@ -2246,7 +2450,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .mentor-tile small {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -2342,7 +2546,7 @@ body.using-dpad .lcd .is-cursor {
 
 .medal small {
   display: block;
-  font-size: 0.78em;
+  font-size: 0.8em;
 }
 
 /* ───────────── Settings ───────────── */
@@ -2429,7 +2633,7 @@ body.using-dpad .lcd .is-cursor {
 }
 
 .swatch small {
-  font-size: 0.75em;
+  font-size: 0.8em;
 }
 
 .swatch.is-current {
@@ -2506,52 +2710,112 @@ body.using-dpad .lcd .is-cursor {
   .scr--home .pbtn--big { font-size: 1.1em; min-height: 44px; }
 }
 
+/* ───────────── Small LCDs: keep the larger type but tighten the layout ───────────── */
+.home__row > .pbtn { min-width: 0; padding-inline: 0.5em; }
+
+@container lcd (max-width: 340px) {
+  .home__chips { gap: 6px; }
+  .home__chips .stat small { display: none; }
+  .energy--btn { padding-inline: 5px; }
+  .energy--btn .energy__cell { width: 5px; }
+  .slot { min-width: 64px; }
+  .rule { gap: 4px; padding-inline: 4px; }
+}
+
+@container lcd (max-height: 480px) {
+  .scr { font-size: 15.5px; gap: 6px; }
+  .rule { flex-wrap: nowrap; }
+  .slot { min-width: 64px; }
+}
+
+/* Short portrait LCDs: the run button must stay on screen */
+@container lcd (max-height: 480px) and (max-aspect-ratio: 21 / 20) {
+  .scr--challenge { gap: 5px; }
+  .scr--challenge .goal { font-size: 0.85em; }
+  .scr--challenge .rules { max-height: 112px; }
+  .palette--grid .chip,
+  .palette__items .chip { min-height: 46px; }
+}
+
+/* Small phones held sideways */
+@container lcd (min-aspect-ratio: 21 / 20) and (max-width: 460px) {
+  .scr--challenge { font-size: 14px; column-gap: 8px; }
+  .scr--challenge .palette--rules { gap: 4px; }
+  .scr--challenge .palette__items .chip__label { font-size: 0.8em; }
+}
+
+/* ───────────── Main character next to Bit ───────────── */
+.home__duo,
+.guide__duo {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.home__hero-art {
+  width: 64px;
+  height: 64px;
+}
+
+.pixelart {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.home__mary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+}
+
+.home__mary figcaption {
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
 </style>
 </head>
 <body>
   <div class="sky" aria-hidden="true"><i class="cloud cloud--a"></i><i class="cloud cloud--b"></i><i class="cloud cloud--c"></i></div>
 
-  <main class="console" aria-label="Console Bit Quest">
+  <main class="console" aria-label="Console Bit Quest" data-i18n-aria="shell.console">
     <div class="console__ridge" aria-hidden="true"><span>◀ OFF</span><span>ON ▶</span></div>
 
     <section class="bezel">
       <div class="bezel__top" aria-hidden="true">
-        <span class="led" title="Luz de energia"></span>
+        <span class="led" title="Luz de energia" data-i18n-title="shell.powerLed"></span>
         <span class="bezel__stripes"><i></i><i></i></span>
-        <span class="bezel__caption">Tela de pixels · 4 tons</span>
+        <span class="bezel__caption" data-i18n="shell.caption">Tela de pixels · 4 tons</span>
       </div>
       <div class="lcd">
         <div id="screen" class="lcd__screen"></div>
         <div id="overlay" class="lcd__overlay" aria-live="polite"></div>
       </div>
-      <div id="legend" class="legend" aria-label="Legenda dos botões"></div>
+      <div id="legend" class="legend" aria-label="Legenda dos botões" data-i18n-aria="shell.legend"></div>
     </section>
 
     <div class="brand" aria-hidden="true">
       <span class="brand__name">Bit<em>Quest</em></span>
-      <span class="brand__tag">código para exploradores</span>
+      <span class="speaker"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="brand__tag" data-i18n="shell.tagline">código para exploradores</span>
     </div>
 
-    <section class="console__controls" aria-label="Botões do console">
-      <div class="dpad" role="group" aria-label="Direcional">
-        <button class="dpad__btn dpad__up" data-btn="up" aria-label="Cima"></button>
-        <button class="dpad__btn dpad__left" data-btn="left" aria-label="Esquerda"></button>
+    <section class="console__controls" aria-label="Botões do console" data-i18n-aria="shell.controls">
+      <div class="dpad" role="group" aria-label="Direcional" data-i18n-aria="shell.dpad">
+        <button class="dpad__btn dpad__up" data-btn="up" aria-label="Cima" data-i18n-aria="shell.up"></button>
+        <button class="dpad__btn dpad__left" data-btn="left" aria-label="Esquerda" data-i18n-aria="shell.left"></button>
         <span class="dpad__center" aria-hidden="true"></span>
-        <button class="dpad__btn dpad__right" data-btn="right" aria-label="Direita"></button>
-        <button class="dpad__btn dpad__down" data-btn="down" aria-label="Baixo"></button>
+        <button class="dpad__btn dpad__right" data-btn="right" aria-label="Direita" data-i18n-aria="shell.right"></button>
+        <button class="dpad__btn dpad__down" data-btn="down" aria-label="Baixo" data-i18n-aria="shell.down"></button>
       </div>
 
-      <div class="ab" role="group" aria-label="Botões de ação">
-        <div class="ab__item ab__item--b"><button class="round-btn" data-btn="b" aria-label="B: voltar"></button><span>B</span></div>
-        <div class="ab__item ab__item--a"><button class="round-btn" data-btn="a" aria-label="A: confirmar"></button><span>A</span></div>
+      <div class="ab" role="group" aria-label="Botões de ação" data-i18n-aria="shell.actions">
+        <div class="ab__item ab__item--b"><button class="round-btn" data-btn="b" aria-label="B: voltar" data-i18n-aria="shell.b"></button><span>B</span></div>
+        <div class="ab__item ab__item--a"><button class="round-btn" data-btn="a" aria-label="A: confirmar" data-i18n-aria="shell.a"></button><span>A</span></div>
       </div>
 
-      <div class="pills" role="group" aria-label="Select e Start">
-        <div class="pill"><button class="pill__btn" data-btn="select" aria-label="Select: dica"></button><span>Select</span></div>
-        <div class="pill"><button class="pill__btn" data-btn="start" aria-label="Start: executar"></button><span>Start</span></div>
-      </div>
-
-      <div class="speaker" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </section>
   </main>
 
@@ -2911,7 +3175,7 @@ function createInitialProgress(now, { firstMentor = 'ada', firstPalette = 'class
     streak: { count: 0, lastDay: null },
     achievements: [],
     palettes: { owned: [firstPalette], current: firstPalette },
-    settings: { sfx: true, music: true },
+    settings: { sfx: true, music: true, guideSeen: false, lang: null, largeText: false, plainFont: false, calmMotion: false },
     stats: { runs: 0, failures: 0 },
   };
 }
@@ -3645,7 +3909,7 @@ class MapOverviewQuery {
         scenery: fase.scenery,
         unlocked: this.rules.isFaseUnlocked(p, fase.id),
         completed: p.completedFases.includes(fase.id),
-        lockedHint: previous ? `Complete a fase ${previous.title} para abrir` : '',
+        previousTitle: previous?.title ?? null,
         lesson: { status: this.rules.lessonStatus(p, fase.id) },
         challenges: fase.challenges.map((c, index) => ({
           id: c.id,
@@ -3778,6 +4042,35 @@ const ACHIEVEMENTS = [
 ];
 
 return { ACHIEVEMENTS };
+})();
+// ── src/content/feedback.js
+__m["src/content/feedback.js"] = (() => {
+/** Kid-friendly copy for each failure code produced by the engine (SPEC-001..004). */
+const FAILURES = {
+  empty: { title: 'Seu programa está vazio', hint: 'Toque nos comandos lá embaixo para montar o caminho.' },
+  empty_loop: { title: 'O Repetir está vazio', hint: 'Coloque pelo menos um comando dentro do Repetir.' },
+  incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
+  too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
+  edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
+  hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
+  hit_rock: { title: 'O Bit tropeçou na pedra!', hint: 'Pedras são baixinhas: use Pular.' },
+  jump_wall: { title: 'Essa parede é alta demais!', hint: 'Só dá para pular pedras. Para paredes, vire.' },
+  bad_landing: { title: 'Não dá para pousar ali.', hint: 'O Bit pula 2 casas. Veja onde ele vai cair.' },
+  not_reached: { title: 'Os comandos acabaram antes da bandeira.', hint: 'Falta pouco! Adicione mais comandos.' },
+  stuck_loop: { title: 'O Bit está andando em círculos!', hint: 'Será que a curva é para o outro lado?' },
+  too_long: { title: 'O Bit andou demais e se perdeu.', hint: 'Confira as regras: ele chega na bandeira?' },
+};
+
+const ENCOURAGEMENTS = [
+  'Errar faz parte de aprender.',
+  'Todo programador testa e conserta.',
+  'Achou um bug? Agora é só corrigir!',
+  'Quase lá. Tente de novo!',
+];
+
+const PRAISE = ['Mandou bem!', 'Programa perfeito!', 'Uau, funcionou!', 'Que lógica afiada!'];
+
+return { FAILURES, ENCOURAGEMENTS, PRAISE };
 })();
 // ── src/content/fases/fase1-sequencias.js
 __m["src/content/fases/fase1-sequencias.js"] = (() => {
@@ -4010,6 +4303,132 @@ const FASES = [fase1, fase2, fase3];
 
 return { FASES };
 })();
+// ── src/content/palettes.js
+__m["src/content/palettes.js"] = (() => {
+/**
+ * Screen palettes (darkest → lightest). Bought with coins in Ajustes.
+ * Each one brings its own background song (`song` = id in the sound bank).
+ */
+const PALETTES = [
+  { id: 'classic', name: 'Clássico', price: 0, song: 'theme', songName: 'Aventura', colors: ['#0f380f', '#306230', '#8bac0f', '#c9dc8b'] },
+  { id: 'pocket', name: 'Bolso', price: 30, song: 'pocket', songName: 'Passeio', colors: ['#22231f', '#55574d', '#9ea091', '#dfe1d3'] },
+  { id: 'sunset', name: 'Pôr do sol', price: 50, song: 'sunset', songName: 'Entardecer', colors: ['#2b1530', '#7b2f52', '#e0745a', '#fbdcab'] },
+  { id: 'ocean', name: 'Oceano', price: 50, song: 'ocean', songName: 'Maré', colors: ['#0d1b3d', '#265a99', '#5fb4d9', '#d9f4f5'] },
+];
+
+const ECONOMY = Object.freeze({ energyRefillPrice: 15 });
+
+return { PALETTES, ECONOMY };
+})();
+// ── src/content/guide.js
+__m["src/content/guide.js"] = (() => {
+const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
+const { REWARDS } = __m["src/domain/scoring.js"];
+const { ECONOMY } = __m["src/content/palettes.js"];
+/**
+ * "Como jogar": the welcome tour shown on the first launch (and from the "?"
+ * on the home screen). Each item is [icon, label, detail]; `key` items show a
+ * button name instead of an icon.
+ */
+const GUIDE = [
+  {
+    id: 'welcome',
+    title: 'Bem-vindo ao Bit Quest!',
+    text: 'Esta é a Mary, e você joga com ela! Juntas, vocês vão ensinar o robô Bit a chegar até a bandeira montando programas com blocos de comando.',
+    robot: true,
+    items: [
+      ['flag', 'Objetivo', 'levar o Bit até a bandeira'],
+      ['map', '3 fases', 'Sequências, Decisões e Repetição'],
+    ],
+  },
+  {
+    id: 'sequence',
+    title: 'Fase 1 · Sequências',
+    text: 'Toque nos comandos para montar o caminho, passo a passo. O Bit faz tudo na ordem que você montar.',
+    items: [
+      ['walk', 'Andar', 'um quadradinho para a frente'],
+      ['turnLeft', 'Virar esq.', 'gira para a esquerda'],
+      ['turnRight', 'Virar dir.', 'gira para a direita'],
+      ['jump', 'Pular', 'passa por cima de pedras'],
+    ],
+  },
+  {
+    id: 'rules',
+    title: 'Fase 2 · Decisões',
+    text: 'Agora o Bit anda sozinho. Você escreve regras SE/ENTÃO para ele decidir o que fazer no caminho.',
+    items: [
+      ['rock', 'SE pedra à frente', 'ENTÃO pular'],
+      ['wall', 'SE parede à frente', 'ENTÃO virar'],
+      ['map', 'Dois mapas', 'as mesmas regras precisam vencer os dois'],
+    ],
+  },
+  {
+    id: 'repeat',
+    title: 'Fase 3 · Repetição',
+    text: 'O bloco Repetir faz os comandos de dentro várias vezes. Com ele você escreve menos e faz mais.',
+    items: [
+      ['repeat', 'Repetir', 'coloque comandos dentro dele'],
+      ['trophy', 'Limite de blocos', 'cada desafio tem um máximo'],
+    ],
+  },
+  {
+    id: 'run',
+    title: 'Executar e consertar',
+    text: 'Quando o programa estiver pronto, execute e veja o Bit andar. Errar faz parte de programar!',
+    items: [
+      ['play', 'Executar', 'roda o seu programa'],
+      ['bug', 'Bloco com "!"', 'mostra onde o Bit errou'],
+      ['hint', 'Dica', 'peça ajuda quando travar'],
+      ['back', 'Tentar de novo', 'seu programa continua lá'],
+    ],
+  },
+  {
+    id: 'energy',
+    title: 'Energia',
+    text: `Você tem até ${ENERGY_MAX} de energia. Cada execução que dá errado gasta 1. Programa vazio ou regra incompleta não gasta.`,
+    items: [
+      ['energy', 'Recarrega sozinha', `+1 a cada ${ENERGY_REGEN_MS / 60000} minutos`],
+      ['check', 'Vencer devolve', '+1 energia por desafio concluído'],
+      ['coin', 'Recarga rápida', `${ECONOMY.energyRefillPrice} moedas enchem tudo`],
+    ],
+  },
+  {
+    id: 'rewards',
+    title: 'Recompensas',
+    text: 'Quanto menos erros e blocos, mais estrelas. Cada desafio vencido dá XP e moedas.',
+    items: [
+      ['star', 'Estrelas', 'até 3 por desafio'],
+      ['coin', 'Moedas', `${REWARDS.coinsPerStar} por estrela, +${REWARDS.faseBonusCoins} por fase`],
+      ['flame', 'Sequência', 'jogue todo dia para aumentar'],
+      ['trophy', 'Medalhas', 'conquistas especiais'],
+    ],
+  },
+  {
+    id: 'mentors',
+    title: 'Mentores e Aprender',
+    text: 'Pessoas reais da computação acompanham você. Complete fases para desbloquear novos mentores.',
+    items: [
+      ['person', 'Mentores', 'Ada, Grace, Alan e Katherine'],
+      ['book', 'Aprender', 'mentores, conceitos e medalhas'],
+      ['palette', 'Cores da tela', 'cada cor nova traz uma música nova'],
+    ],
+  },
+  {
+    id: 'controls',
+    title: 'Controles',
+    text: 'Toque na tela para jogar. Também dá para usar o direcional, os botões A e B ou o teclado.',
+    items: [
+      ['key', 'Setas', 'mover o cursor'],
+      ['key', 'A', 'confirmar (Z ou Enter)'],
+      ['key', 'B', 'voltar ou apagar (X ou Esc)'],
+      ['key', 'Espaço', 'executar o programa'],
+      ['key', 'Shift', 'pedir dica'],
+    ],
+  },
+];
+
+return { GUIDE };
+})();
 // ── src/content/mentors.js
 __m["src/content/mentors.js"] = (() => {
 /**
@@ -4061,35 +4480,604 @@ const MENTORS = [
 
 return { MENTORS };
 })();
-// ── src/content/palettes.js
-__m["src/content/palettes.js"] = (() => {
-/** Screen palettes (darkest → lightest). Bought with coins in Ajustes. */
-const PALETTES = [
-  { id: 'classic', name: 'Clássico', price: 0, colors: ['#0f380f', '#306230', '#8bac0f', '#c9dc8b'] },
-  { id: 'pocket', name: 'Bolso', price: 30, colors: ['#22231f', '#55574d', '#9ea091', '#dfe1d3'] },
-  { id: 'sunset', name: 'Pôr do sol', price: 50, colors: ['#2b1530', '#7b2f52', '#e0745a', '#fbdcab'] },
-  { id: 'ocean', name: 'Oceano', price: 50, colors: ['#0d1b3d', '#265a99', '#5fb4d9', '#d9f4f5'] },
-];
-
-const ECONOMY = Object.freeze({ energyRefillPrice: 15 });
-
-return { PALETTES, ECONOMY };
-})();
 // ── src/content/index.js
 __m["src/content/index.js"] = (() => {
 const { ACHIEVEMENTS } = __m["src/content/achievements.js"];
+const { ENCOURAGEMENTS, FAILURES, PRAISE } = __m["src/content/feedback.js"];
 const { FASES } = __m["src/content/fases/index.js"];
+const { GUIDE } = __m["src/content/guide.js"];
 const { MENTORS } = __m["src/content/mentors.js"];
 const { ECONOMY, PALETTES } = __m["src/content/palettes.js"];
+/** Game content in Portuguese (source language). See `locales/` for en/es. */
 const CONTENT = Object.freeze({
   fases: FASES,
   mentors: MENTORS,
   achievements: ACHIEVEMENTS,
   palettes: PALETTES,
   economy: ECONOMY,
+  guide: GUIDE,
+  hero: { id: 'hero', name: 'Mary' },
+  feedback: { failures: FAILURES, encouragements: ENCOURAGEMENTS, praise: PRAISE },
 });
 
 return { CONTENT };
+})();
+// ── src/content/locales/en.js
+__m["src/content/locales/en.js"] = (() => {
+const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
+const { REWARDS } = __m["src/domain/scoring.js"];
+const { ECONOMY } = __m["src/content/palettes.js"];
+/** English translation of the game content. Ids mirror the Portuguese source. */
+const EN = {
+  fases: {
+    f1: {
+      title: 'Sequences',
+      concept: {
+        title: 'Sequence',
+        summary: 'A program is a list of commands. The computer does them one at a time, from first to last.',
+      },
+      lesson: [
+        'Hi! I\'m Ada. This is Bit, a robot who loves following instructions.',
+        'A program is a list of commands. Bit does them one at a time, in order.',
+        'If the order changes, the path changes. Ready to build your first program?',
+      ],
+      challenges: {
+        'f1-c1': {
+          title: 'First steps',
+          goal: 'Take Bit to the flag.',
+          hints: ['Count the squares between Bit and the flag.', 'It\'s 3 steps forward: Walk, Walk, Walk.'],
+        },
+        'f1-c2': {
+          title: 'The turn',
+          goal: 'The flag is around the corner.',
+          hints: ['Bit needs to turn before the tree.', 'Walk 2, turn right and walk 2 more.'],
+        },
+        'f1-c3': {
+          title: 'Rock in the way',
+          goal: 'Get past the rock and reach the flag.',
+          hints: ['Rocks are short: you can Jump over them.', 'Walk, jump the rock, turn left and walk 2.'],
+        },
+      },
+    },
+    f2: {
+      title: 'Decisions',
+      concept: {
+        title: 'Condition',
+        summary: 'IF something happens, THEN do an action. That way the program decides what to do by itself.',
+      },
+      lesson: [
+        'Hello, I\'m Grace! Now Bit walks by himself... but the path has surprises.',
+        'Programs make decisions. IF there\'s a rock ahead, THEN Bit jumps.',
+        'When no rule matches, Bit just walks forward.',
+      ],
+      challenges: {
+        'f2-c1': {
+          title: 'Jump the rocks',
+          goal: 'Make a rule to get past the rocks.',
+          hints: ['Choose the IF: what does Bit see ahead?', 'IF rock ahead, THEN jump.'],
+        },
+        'f2-c2': {
+          title: 'Dodge the walls',
+          goal: 'Teach Bit to take the turns by himself.',
+          hints: ['What should Bit do when a wall shows up?', 'Look where the path goes: the turn is to the right.'],
+        },
+        'f2-c3': {
+          title: 'Two maps',
+          goal: 'The same rules must beat both maps.',
+          hints: ['You\'ll need two rules: one for rocks and one for walls.', 'IF rock → jump. IF wall → turn right.'],
+        },
+      },
+    },
+    f3: {
+      title: 'Repetition',
+      concept: {
+        title: 'Repetition (loop)',
+        summary: 'Instead of writing the same command many times, use Repeat and say how many times.',
+      },
+      lesson: [
+        'I\'m Alan. Look: Walk, Walk, Walk, Walk, Walk... how tiring!',
+        'With Repeat 5× Walk, you write it once and Bit repeats it by himself.',
+        'This is called a loop. Now every challenge has a block limit. Save blocks!',
+      ],
+      challenges: {
+        'f3-c1': {
+          title: 'Long hallway',
+          goal: 'Reach the flag using only 2 blocks.',
+          hints: ['Put down the Repeat block and a Walk inside it.', 'Tap the ×2 to change how many times to repeat. Count the squares!'],
+          successMessage: 'You just made a loop! It lets you repeat an action many times without writing the same command again and again.',
+        },
+        'f3-c2': {
+          title: 'Staircase',
+          goal: 'Climb the stairs with 5 blocks at most.',
+          hints: ['Every step is the same: walk, turn, walk, turn.', 'Repeat 3× [Walk, Turn ↺, Walk, Turn ↻].'],
+        },
+        'f3-c3': {
+          title: 'Jumping to the beat',
+          goal: 'Find the pattern and use only 3 blocks.',
+          hints: ['Before each rock there\'s an empty square. What\'s the pattern?', 'Repeat 3× [Walk, Jump].'],
+        },
+      },
+    },
+  },
+
+  mentors: {
+    ada: {
+      area: 'Math and the first programs',
+      intro: 'English mathematician. In 1843 she wrote one of the first algorithms meant for a calculating machine.',
+      fact: 'Ada imagined that these machines might one day even compose music, long before computers existed.',
+      message: 'A machine follows steps. You are the one who chooses the steps!',
+      unlockText: 'Already with you from the start.',
+    },
+    grace: {
+      area: 'Programming languages',
+      intro: 'Computer scientist and US Navy admiral. She created one of the first compilers, which turns words into instructions for the computer.',
+      fact: 'In 1947, the Mark II computer team found a moth stuck in the machine and taped it into their logbook: a real “bug”!',
+      message: 'Found a mistake? Great! Every bug you find makes your program stronger.',
+      unlockText: 'Finish the Sequences stage.',
+    },
+    turing: {
+      area: 'Logic and computer science',
+      intro: 'British mathematician. In 1936 he imagined a simple machine that reads symbols and follows rules: the idea behind computers.',
+      fact: 'Turing loved running. He ran marathons as fast as competitive athletes.',
+      message: 'Big problem? Split it into small pieces and repeat what works.',
+      unlockText: 'Finish the Decisions stage.',
+    },
+    katherine: {
+      area: 'Math and space exploration',
+      intro: 'NASA mathematician. She calculated spaceflight paths, like the one for the first American astronaut, in 1961.',
+      fact: 'In 1962, before flying around the Earth, astronaut John Glenn asked her to double-check the computer\'s math.',
+      message: 'Check, test and check again. Caring about details takes courage too.',
+      unlockText: 'Finish the Repetition stage.',
+    },
+  },
+
+  achievements: {
+    'first-program': { title: 'First program', description: 'Finish your first challenge.' },
+    flawless: { title: 'First try!', description: 'Get 3 stars on a challenge.' },
+    debugger: { title: 'Bug hunter', description: 'Fix a program after a mistake.' },
+    'loop-master': { title: 'Loop master', description: 'Finish the Repetition stage.' },
+    'streak-3': { title: 'Three days in a row', description: 'Play 3 days in a row.' },
+    'all-mentors': { title: 'Hall of mentors', description: 'Unlock every mentor.' },
+    'star-sky': { title: 'Starry sky', description: 'Collect every star in the game.' },
+  },
+
+  palettes: {
+    classic: { name: 'Classic', songName: 'Adventure' },
+    pocket: { name: 'Pocket', songName: 'Stroll' },
+    sunset: { name: 'Sunset', songName: 'Dusk' },
+    ocean: { name: 'Ocean', songName: 'Tide' },
+  },
+
+  guide: {
+    welcome: {
+      title: 'Welcome to Bit Quest!',
+      text: 'This is Mary, and you play as her! Together you\'ll teach Bit the robot to reach the flag by building programs with command blocks.',
+      items: [
+        ['Goal', 'take Bit to the flag'],
+        ['3 stages', 'Sequences, Decisions and Repetition'],
+      ],
+    },
+    sequence: {
+      title: 'Stage 1 · Sequences',
+      text: 'Tap the commands to build the path, step by step. Bit does everything in the order you build it.',
+      items: [
+        ['Walk', 'one square forward'],
+        ['Turn left', 'spins to the left'],
+        ['Turn right', 'spins to the right'],
+        ['Jump', 'hops over rocks'],
+      ],
+    },
+    rules: {
+      title: 'Stage 2 · Decisions',
+      text: 'Now Bit walks by himself. You write IF/THEN rules so he can decide what to do along the way.',
+      items: [
+        ['IF rock ahead', 'THEN jump'],
+        ['IF wall ahead', 'THEN turn'],
+        ['Two maps', 'the same rules must beat both'],
+      ],
+    },
+    repeat: {
+      title: 'Stage 3 · Repetition',
+      text: 'The Repeat block runs the commands inside it several times. With it, you write less and do more.',
+      items: [
+        ['Repeat', 'put commands inside it'],
+        ['Block limit', 'every challenge has a maximum'],
+      ],
+    },
+    run: {
+      title: 'Run and fix',
+      text: 'When your program is ready, run it and watch Bit go. Making mistakes is part of programming!',
+      items: [
+        ['Run', 'starts your program'],
+        ['Block with "!"', 'shows where Bit went wrong'],
+        ['Hint', 'ask for help when you\'re stuck'],
+        ['Try again', 'your program is still there'],
+      ],
+    },
+    energy: {
+      title: 'Energy',
+      text: `You have up to ${ENERGY_MAX} energy. Every run that goes wrong costs 1. An empty program or an unfinished rule costs nothing.`,
+      items: [
+        ['Refills by itself', `+1 every ${ENERGY_REGEN_MS / 60000} minutes`],
+        ['Winning gives back', '+1 energy per challenge won'],
+        ['Quick refill', `${ECONOMY.energyRefillPrice} coins fill it all up`],
+      ],
+    },
+    rewards: {
+      title: 'Rewards',
+      text: 'The fewer mistakes and blocks, the more stars. Every challenge you win gives XP and coins.',
+      items: [
+        ['Stars', 'up to 3 per challenge'],
+        ['Coins', `${REWARDS.coinsPerStar} per star, +${REWARDS.faseBonusCoins} per stage`],
+        ['Streak', 'play every day to make it grow'],
+        ['Medals', 'special achievements'],
+      ],
+    },
+    mentors: {
+      title: 'Mentors and Learn',
+      text: 'Real people from computing keep you company. Finish stages to unlock new mentors.',
+      items: [
+        ['Mentors', 'Ada, Grace, Alan and Katherine'],
+        ['Learn', 'mentors, concepts and medals'],
+        ['Screen colors', 'every new color brings a new song'],
+      ],
+    },
+    controls: {
+      title: 'Controls',
+      text: 'Tap the screen to play. You can also use the D-pad, the A and B buttons, or the keyboard.',
+      items: [
+        ['Arrows', 'move the cursor'],
+        ['A', 'confirm (Z or Enter)'],
+        ['B', 'go back or erase (X or Esc)'],
+        ['Space', 'run the program'],
+        ['Shift', 'get a hint'],
+      ],
+    },
+  },
+
+  feedback: {
+    failures: {
+      empty: { title: 'Your program is empty', hint: 'Tap the commands down below to build the path.' },
+      empty_loop: { title: 'The Repeat is empty', hint: 'Put at least one command inside the Repeat.' },
+      incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
+      too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
+      edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },
+      hit_wall: { title: 'Bonk! Bit bumped into the wall.', hint: 'Before the wall, try Turn.' },
+      hit_rock: { title: 'Bit tripped on the rock!', hint: 'Rocks are short: use Jump.' },
+      jump_wall: { title: 'That wall is too tall!', hint: 'You can only jump rocks. For walls, turn.' },
+      bad_landing: { title: 'Bit can\'t land there.', hint: 'Bit jumps 2 squares. Check where he will land.' },
+      not_reached: { title: 'The commands ran out before the flag.', hint: 'Almost there! Add more commands.' },
+      stuck_loop: { title: 'Bit is walking in circles!', hint: 'Maybe the turn goes the other way?' },
+      too_long: { title: 'Bit walked too far and got lost.', hint: 'Check your rules: do they get him to the flag?' },
+    },
+    encouragements: [
+      'Mistakes are part of learning.',
+      'Every programmer tests and fixes.',
+      'Found a bug? Now just fix it!',
+      'Almost there. Try again!',
+    ],
+    praise: ['Nice job!', 'Perfect program!', 'Wow, it worked!', 'Sharp thinking!'],
+  },
+};
+
+return { EN };
+})();
+// ── src/content/locales/es.js
+__m["src/content/locales/es.js"] = (() => {
+const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
+const { REWARDS } = __m["src/domain/scoring.js"];
+const { ECONOMY } = __m["src/content/palettes.js"];
+/** Spanish translation of the game content. Ids mirror the Portuguese source. */
+const ES = {
+  fases: {
+    f1: {
+      title: 'Secuencias',
+      concept: {
+        title: 'Secuencia',
+        summary: 'Un programa es una lista de comandos. La computadora hace uno a la vez, del primero al último.',
+      },
+      lesson: [
+        '¡Hola! Soy Ada. Este es Bit, un robot al que le encanta seguir instrucciones.',
+        'Un programa es una lista de comandos. Bit hace uno a la vez, en orden.',
+        'Si cambia el orden, cambia el camino. ¿Armamos tu primer programa?',
+      ],
+      challenges: {
+        'f1-c1': {
+          title: 'Primeros pasos',
+          goal: 'Lleva a Bit hasta la bandera.',
+          hints: ['Cuenta los cuadritos entre Bit y la bandera.', 'Son 3 pasos hacia adelante: Caminar, Caminar, Caminar.'],
+        },
+        'f1-c2': {
+          title: 'La curva',
+          goal: 'La bandera está después de la curva.',
+          hints: ['Bit tiene que girar antes del árbol.', 'Camina 2, gira a la derecha y camina 2 más.'],
+        },
+        'f1-c3': {
+          title: 'Piedra en el camino',
+          goal: 'Pasa la piedra y llega a la bandera.',
+          hints: ['Las piedras son bajitas: puedes Saltar por encima.', 'Camina, salta la piedra, gira a la izquierda y camina 2.'],
+        },
+      },
+    },
+    f2: {
+      title: 'Decisiones',
+      concept: {
+        title: 'Condición',
+        summary: 'SI pasa algo, ENTONCES haz una acción. Así el programa decide solo qué hacer.',
+      },
+      lesson: [
+        '¡Hola, soy Grace! Ahora Bit camina solo... pero el camino tiene sorpresas.',
+        'Los programas toman decisiones. SI hay una piedra adelante, ENTONCES Bit salta.',
+        'Cuando ninguna regla coincide, Bit simplemente camina hacia adelante.',
+      ],
+      challenges: {
+        'f2-c1': {
+          title: 'Salta las piedras',
+          goal: 'Crea una regla para pasar las piedras.',
+          hints: ['Elige el SI: ¿qué ve Bit adelante?', 'SI piedra adelante, ENTONCES saltar.'],
+        },
+        'f2-c2': {
+          title: 'Esquiva las paredes',
+          goal: 'Enséñale a Bit a tomar las curvas solo.',
+          hints: ['¿Qué hacer cuando aparece una pared?', 'Mira hacia dónde sigue el camino: la curva es a la derecha.'],
+        },
+        'f2-c3': {
+          title: 'Dos mapas',
+          goal: 'Las mismas reglas tienen que ganar en los 2 mapas.',
+          hints: ['Vas a necesitar dos reglas: una para piedras y otra para paredes.', 'SI piedra → saltar. SI pared → girar a la derecha.'],
+        },
+      },
+    },
+    f3: {
+      title: 'Repetición',
+      concept: {
+        title: 'Repetición (loop)',
+        summary: 'En vez de escribir el mismo comando muchas veces, usa Repetir y di cuántas veces.',
+      },
+      lesson: [
+        'Soy Alan. Mira: Caminar, Caminar, Caminar, Caminar, Caminar... ¡qué cansado!',
+        'Con Repetir 5× Caminar, lo escribes una vez y Bit lo repite solo.',
+        'Esto se llama loop. Ahora cada desafío tiene un límite de bloques. ¡Ahorra!',
+      ],
+      challenges: {
+        'f3-c1': {
+          title: 'Pasillo largo',
+          goal: 'Llega a la bandera usando solo 2 bloques.',
+          hints: ['Pon el bloque Repetir y un Caminar dentro de él.', 'Toca el ×2 para cambiar cuántas veces repetir. ¡Cuenta las casillas!'],
+          successMessage: '¡Acabas de crear un loop! Te permite repetir una acción muchas veces sin tener que escribir el mismo comando.',
+        },
+        'f3-c2': {
+          title: 'Escalera',
+          goal: 'Sube la escalera con 5 bloques como máximo.',
+          hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Repetir 3× [Caminar, Girar ↺, Caminar, Girar ↻].'],
+        },
+        'f3-c3': {
+          title: 'Saltos con ritmo',
+          goal: 'Encuentra el patrón y usa solo 3 bloques.',
+          hints: ['Antes de cada piedra hay un suelo libre. ¿Cuál es el patrón?', 'Repetir 3× [Caminar, Saltar].'],
+        },
+      },
+    },
+  },
+  mentors: {
+    ada: {
+      area: 'Matemáticas y los primeros programas',
+      intro: 'Matemática inglesa. En 1843 escribió uno de los primeros algoritmos pensados para una máquina de calcular.',
+      fact: 'Ada imaginó que esas máquinas un día podrían hasta componer música, mucho antes de que existieran las computadoras.',
+      message: 'Una máquina sigue pasos. ¡Y quien elige los pasos eres tú!',
+      unlockText: 'Ya empieza contigo.',
+    },
+    grace: {
+      area: 'Lenguajes de programación',
+      intro: 'Científica de la computación y almirante de la Marina de EE. UU. Creó uno de los primeros compiladores, que traduce palabras a instrucciones para la computadora.',
+      fact: 'En 1947, el equipo de la computadora Mark II encontró una polilla atrapada en la máquina y la pegó en el cuaderno de registro: ¡un “bug” de verdad!',
+      message: '¿Encontraste un error? ¡Genial! Cada bug que encuentras hace tu programa más fuerte.',
+      unlockText: 'Completa la fase Secuencias.',
+    },
+    turing: {
+      area: 'Lógica y ciencias de la computación',
+      intro: 'Matemático británico. En 1936 imaginó una máquina sencilla que lee símbolos y sigue reglas: la idea detrás de las computadoras.',
+      fact: 'A Turing le encantaba correr. Corría maratones tan rápido como los atletas de competición.',
+      message: '¿Un problema grande? Divídelo en partes pequeñas y repite lo que funciona.',
+      unlockText: 'Completa la fase Decisiones.',
+    },
+    katherine: {
+      area: 'Matemáticas y exploración espacial',
+      intro: 'Matemática de la NASA. Calculó trayectorias de vuelos espaciales, como la del primer astronauta estadounidense, en 1961.',
+      fact: 'En 1962, antes de dar la vuelta a la Tierra, el astronauta John Glenn pidió que ella revisara los cálculos de la computadora.',
+      message: 'Revisa, prueba y vuelve a revisar. Cuidar los detalles también es valentía.',
+      unlockText: 'Completa la fase Repetición.',
+    },
+  },
+  achievements: {
+    'first-program': { title: 'Primer programa', description: 'Completa tu primer desafío.' },
+    flawless: { title: '¡A la primera!', description: 'Gana 3 estrellas en un desafío.' },
+    debugger: { title: 'Cazador de bugs', description: 'Arregla un programa después de equivocarte.' },
+    'loop-master': { title: 'Maestro de los loops', description: 'Completa la fase Repetición.' },
+    'streak-3': { title: 'Tres días seguidos', description: 'Juega 3 días seguidos.' },
+    'all-mentors': { title: 'Sala de mentores', description: 'Desbloquea a todos los mentores.' },
+    'star-sky': { title: 'Cielo estrellado', description: 'Reúne todas las estrellas del juego.' },
+  },
+  palettes: {
+    classic: { name: 'Clásico', songName: 'Aventura' },
+    pocket: { name: 'Bolsillo', songName: 'Paseo' },
+    sunset: { name: 'Atardecer', songName: 'Ocaso' },
+    ocean: { name: 'Océano', songName: 'Marea' },
+  },
+  guide: {
+    welcome: {
+      title: '¡Bienvenido a Bit Quest!',
+      text: '¡Ella es Mary y juegas con ella! Juntas van a enseñarle al robot Bit a llegar hasta la bandera armando programas con bloques de comando.',
+      items: [
+        ['Objetivo', 'llevar a Bit hasta la bandera'],
+        ['3 fases', 'Secuencias, Decisiones y Repetición'],
+      ],
+    },
+    sequence: {
+      title: 'Fase 1 · Secuencias',
+      text: 'Toca los comandos para armar el camino, paso a paso. Bit hace todo en el orden en que lo armes.',
+      items: [
+        ['Caminar', 'un cuadrito hacia adelante'],
+        ['Girar izq.', 'gira a la izquierda'],
+        ['Girar der.', 'gira a la derecha'],
+        ['Saltar', 'pasa por encima de las piedras'],
+      ],
+    },
+    rules: {
+      title: 'Fase 2 · Decisiones',
+      text: 'Ahora Bit camina solo. Tú escribes reglas SI/ENTONCES para que decida qué hacer en el camino.',
+      items: [
+        ['SI piedra adelante', 'ENTONCES saltar'],
+        ['SI pared adelante', 'ENTONCES girar'],
+        ['Dos mapas', 'las mismas reglas tienen que ganar en los dos'],
+      ],
+    },
+    repeat: {
+      title: 'Fase 3 · Repetición',
+      text: 'El bloque Repetir hace los comandos de adentro varias veces. Con él escribes menos y haces más.',
+      items: [
+        ['Repetir', 'pon comandos dentro de él'],
+        ['Límite de bloques', 'cada desafío tiene un máximo'],
+      ],
+    },
+    run: {
+      title: 'Ejecutar y arreglar',
+      text: 'Cuando el programa esté listo, ejecútalo y mira a Bit caminar. ¡Equivocarse es parte de programar!',
+      items: [
+        ['Ejecutar', 'pone en marcha tu programa'],
+        ['Bloque con "!"', 'muestra dónde se equivocó Bit'],
+        ['Pista', 'pide ayuda cuando te trabes'],
+        ['Intentar de nuevo', 'tu programa sigue ahí'],
+      ],
+    },
+    energy: {
+      title: 'Energía',
+      text: `Tienes hasta ${ENERGY_MAX} de energía. Cada ejecución que sale mal gasta 1. Un programa vacío o una regla incompleta no gastan.`,
+      items: [
+        ['Se recarga sola', `+1 cada ${ENERGY_REGEN_MS / 60000} minutos`],
+        ['Ganar te devuelve', '+1 de energía por desafío completado'],
+        ['Recarga rápida', `${ECONOMY.energyRefillPrice} monedas la llenan toda`],
+      ],
+    },
+    rewards: {
+      title: 'Recompensas',
+      text: 'Menos errores y menos bloques, más estrellas. Cada desafío ganado da XP y monedas.',
+      items: [
+        ['Estrellas', 'hasta 3 por desafío'],
+        ['Monedas', `${REWARDS.coinsPerStar} por estrella, +${REWARDS.faseBonusCoins} por fase`],
+        ['Racha', 'juega todos los días para aumentarla'],
+        ['Medallas', 'logros especiales'],
+      ],
+    },
+    mentors: {
+      title: 'Mentores y Aprender',
+      text: 'Personas reales de la computación te acompañan. Completa fases para desbloquear nuevos mentores.',
+      items: [
+        ['Mentores', 'Ada, Grace, Alan y Katherine'],
+        ['Aprender', 'mentores, conceptos y medallas'],
+        ['Colores de pantalla', 'cada color nuevo trae una música nueva'],
+      ],
+    },
+    controls: {
+      title: 'Controles',
+      text: 'Toca la pantalla para jugar. También puedes usar la cruceta, los botones A y B o el teclado.',
+      items: [
+        ['Flechas', 'mover el cursor'],
+        ['A', 'confirmar (Z o Enter)'],
+        ['B', 'volver o borrar (X o Esc)'],
+        ['Espacio', 'ejecutar el programa'],
+        ['Shift', 'pedir pista'],
+      ],
+    },
+  },
+  feedback: {
+    failures: {
+      empty: { title: 'Tu programa está vacío', hint: 'Toca los comandos de abajo para armar el camino.' },
+      empty_loop: { title: 'El Repetir está vacío', hint: 'Pon al menos un comando dentro del Repetir.' },
+      incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
+      too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
+      edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },
+      hit_wall: { title: '¡Bonk! Bit chocó con la pared.', hint: 'Antes de la pared, prueba Girar.' },
+      hit_rock: { title: '¡Bit tropezó con la piedra!', hint: 'Las piedras son bajitas: usa Saltar.' },
+      jump_wall: { title: '¡Esa pared es demasiado alta!', hint: 'Solo se pueden saltar piedras. Ante una pared, gira.' },
+      bad_landing: { title: 'No se puede aterrizar ahí.', hint: 'Bit salta 2 casillas. Mira dónde va a caer.' },
+      not_reached: { title: 'Los comandos se acabaron antes de la bandera.', hint: '¡Falta poco! Agrega más comandos.' },
+      stuck_loop: { title: '¡Bit está dando vueltas en círculos!', hint: '¿Será que la curva es para el otro lado?' },
+      too_long: { title: 'Bit caminó demasiado y se perdió.', hint: 'Revisa las reglas: ¿llega a la bandera?' },
+    },
+    encouragements: [
+      'Equivocarse es parte de aprender.',
+      'Todo programador prueba y arregla.',
+      '¿Encontraste un bug? ¡Ahora solo falta corregirlo!',
+      'Casi lo logras. ¡Inténtalo de nuevo!',
+    ],
+    praise: ['¡Muy bien!', '¡Programa perfecto!', '¡Guau, funcionó!', '¡Qué lógica tan afilada!'],
+  },
+};
+
+return { ES };
+})();
+// ── src/content/locales/index.js
+__m["src/content/locales/index.js"] = (() => {
+const { EN } = __m["src/content/locales/en.js"];
+const { ES } = __m["src/content/locales/es.js"];
+/**
+ * Translations of the game content, keyed by the same ids as the Portuguese
+ * source. Only text is translated: maps, solutions, prices and rules stay
+ * in the source, so every language plays exactly the same game.
+ */
+const CONTENT_LOCALES = { en: EN, es: ES };
+
+const pickText = (base, overlay = {}, fields) =>
+  Object.fromEntries(fields.map((f) => [f, overlay[f] ?? base[f]]));
+
+function localizeFase(fase, t = {}) {
+  return {
+    ...fase,
+    title: t.title ?? fase.title,
+    concept: { ...fase.concept, ...pickText(fase.concept, t.concept, ['title', 'summary']) },
+    lesson: fase.lesson.map((slide, i) => ({ ...slide, text: t.lesson?.[i] ?? slide.text })),
+    challenges: fase.challenges.map((c) => {
+      const ct = t.challenges?.[c.id] ?? {};
+      return { ...c, ...pickText(c, ct, ['title', 'goal', 'hints', 'successMessage']) };
+    }),
+  };
+}
+
+function localizeGuide(slide, t = {}) {
+  return {
+    ...slide,
+    title: t.title ?? slide.title,
+    text: t.text ?? slide.text,
+    items: slide.items.map(([iconName, label, detail], i) => {
+      const [tLabel, tDetail] = t.items?.[i] ?? [];
+      return [iconName, tLabel ?? label, tDetail ?? detail];
+    }),
+  };
+}
+
+/** Returns the content in `lang` (Portuguese is the source and comes back unchanged). */
+function localizeContent(content, lang) {
+  const t = CONTENT_LOCALES[lang];
+  if (!t) return content;
+  const byId = (list, map, fields) => list.map((item) => ({ ...item, ...pickText(item, map?.[item.id], fields) }));
+  const { feedback } = content;
+  return Object.freeze({
+    ...content,
+    fases: content.fases.map((f) => localizeFase(f, t.fases?.[f.id])),
+    mentors: byId(content.mentors, t.mentors, ['area', 'intro', 'fact', 'message', 'unlockText']),
+    achievements: byId(content.achievements, t.achievements, ['title', 'description']),
+    palettes: byId(content.palettes, t.palettes, ['name', 'songName']),
+    guide: content.guide.map((s) => localizeGuide(s, t.guide?.[s.id])),
+    feedback: {
+      failures: Object.fromEntries(Object.entries(feedback.failures).map(([code, copy]) => [code, { ...copy, ...t.feedback?.failures?.[code] }])),
+      encouragements: t.feedback?.encouragements ?? feedback.encouragements,
+      praise: t.feedback?.praise ?? feedback.praise,
+    },
+  });
+}
+
+return { CONTENT_LOCALES, localizeContent };
 })();
 // ── src/core/EventBus.js
 __m["src/core/EventBus.js"] = (() => {
@@ -4347,6 +5335,88 @@ const SONGS = {
       },
     ],
   },
+  // "Passeio" (Bolso): relaxed stroll in G major.
+  pocket: {
+    bpm: 116,
+    loop: true,
+    gain: 0.045,
+    voices: [
+      {
+        wave: 'square',
+        notes: [
+          ['G5', 0.5], ['B5', 0.5], ['D6', 1], ['B5', 1], ['G5', 1], ['A5', 0.5], ['B5', 0.5], ['A5', 1], ['E5', 2],
+          ['C6', 1], ['B5', 0.5], ['A5', 0.5], ['G5', 1], ['E5', 1], ['D5', 1], ['E5', 0.5], ['G5', 0.5], ['A5', 2],
+          ['G5', 0.5], ['B5', 0.5], ['D6', 1], ['E6', 1], ['D6', 1], ['B5', 0.5], ['D6', 0.5], ['C6', 1], ['A5', 2],
+          ['B5', 1], ['A5', 0.5], ['G5', 0.5], ['A5', 1], ['D5', 1], ['F#5', 1], ['A5', 1], ['G5', 2],
+        ],
+      },
+      {
+        wave: 'triangle',
+        gain: 3,
+        notes: [
+          ['G2', 2], ['G2', 2], ['D3', 2], ['D3', 2],
+          ['C3', 2], ['C3', 2], ['D3', 2], ['D3', 2],
+          ['G2', 2], ['G2', 2], ['C3', 2], ['A2', 2],
+          ['D3', 2], ['D3', 2], ['G2', 2], ['G2', 2],
+        ],
+      },
+    ],
+  },
+  // "Entardecer" (Pôr do sol): slow and warm, in A minor.
+  sunset: {
+    bpm: 92,
+    loop: true,
+    gain: 0.042,
+    voices: [
+      {
+        wave: 'square',
+        notes: [
+          ['A5', 1.5], ['C6', 0.5], ['B5', 1], ['A5', 1], ['E5', 2], ['r', 1], ['G5', 1],
+          ['F5', 1.5], ['A5', 0.5], ['G5', 1], ['F5', 1], ['E5', 3], ['r', 1],
+          ['A5', 1.5], ['C6', 0.5], ['E6', 1], ['D6', 1], ['C6', 1], ['B5', 1], ['A5', 1], ['G5', 1],
+          ['F5', 1], ['E5', 1], ['D5', 1], ['B4', 1], ['A4', 3], ['r', 1],
+        ],
+      },
+      {
+        wave: 'triangle',
+        gain: 3,
+        notes: [
+          ['A2', 2], ['A2', 2], ['E2', 2], ['E2', 2],
+          ['F2', 2], ['F2', 2], ['E2', 2], ['E2', 2],
+          ['A2', 2], ['A2', 2], ['C3', 2], ['G2', 2],
+          ['D3', 2], ['E2', 2], ['A2', 2], ['A2', 2],
+        ],
+      },
+    ],
+  },
+  // "Maré" (Oceano): flowing arpeggios like waves, in D major.
+  ocean: {
+    bpm: 126,
+    loop: true,
+    gain: 0.045,
+    voices: [
+      {
+        wave: 'triangle',
+        gain: 2.4,
+        notes: [
+          ['D5', 0.5], ['F#5', 0.5], ['A5', 0.5], ['D6', 0.5], ['A5', 0.5], ['F#5', 0.5], ['A5', 1], ['B5', 0.5], ['G5', 0.5], ['D5', 0.5], ['G5', 0.5], ['B5', 2],
+          ['A5', 0.5], ['E5', 0.5], ['C#5', 0.5], ['E5', 0.5], ['A5', 1], ['G5', 0.5], ['F#5', 0.5], ['E5', 1], ['F#5', 0.5], ['G5', 0.5], ['A5', 2],
+          ['D6', 0.5], ['A5', 0.5], ['F#5', 0.5], ['A5', 0.5], ['D6', 1], ['E6', 0.5], ['F#6', 0.5], ['G6', 1], ['F#6', 0.5], ['E6', 0.5], ['D6', 2],
+          ['B5', 0.5], ['G5', 0.5], ['E5', 0.5], ['G5', 0.5], ['A5', 1], ['F#5', 0.5], ['E5', 0.5], ['D5', 4],
+        ],
+      },
+      {
+        wave: 'square',
+        gain: 0.8,
+        notes: [
+          ['D3', 2], ['D3', 2], ['G2', 2], ['G2', 2],
+          ['A2', 2], ['A2', 2], ['A2', 2], ['A2', 2],
+          ['D3', 2], ['D3', 2], ['G2', 2], ['G2', 2],
+          ['A2', 2], ['A2', 2], ['D3', 2], ['D3', 2],
+        ],
+      },
+    ],
+  },
 };
 
 return { SFX, SONGS };
@@ -4444,7 +5514,9 @@ function append(el, children) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+/** System preference or the in-game "less animation" setting. */
+const reducedMotion = () => Boolean(globalThis.document?.body?.classList.contains('is-calm'))
+  || (globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
 
 function formatCountdown(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));
@@ -4521,16 +5593,17 @@ __m["src/presentation/AudioDirector.js"] = (() => {
 /**
  * Connects presentation events to the audio port and keeps it in sync with
  * the player's settings. Screens never call the synthesiser directly.
+ * `resolveSong` turns a screen's music role (e.g. 'theme') into a song id.
  */
 class AudioDirector {
-  constructor({ bus, audio, store }) {
-    Object.assign(this, { bus, audio, store });
+  constructor({ bus, audio, store, resolveSong = (id) => id }) {
+    Object.assign(this, { bus, audio, store, resolveSong });
   }
 
   start() {
     this.bus.on('sfx', (id) => id && this.audio.play(id));
     this.bus.on('song', (id) => this.audio.playSong(id));
-    this.bus.on('screen:changed', ({ music }) => (music ? this.audio.playSong(music) : this.audio.stopMusic()));
+    this.bus.on('screen:changed', ({ music }) => (music ? this.audio.playSong(this.resolveSong(music)) : this.audio.stopMusic()));
     const sync = ({ settings }) => {
       this.audio.setSfxEnabled(settings.sfx);
       this.audio.setMusicEnabled(settings.music);
@@ -4627,7 +5700,7 @@ class Toaster {
     this.showing = false;
   }
 
-  show({ title, text = '', iconName = 'star', duration = 2200 }) {
+  show({ title, text = '', iconName = 'star', duration = text ? 4000 : 2400 }) {
     this.queue.push({ title, text, iconName, duration });
     if (!this.showing) this.next();
   }
@@ -4654,6 +5727,745 @@ class Toaster {
 }
 
 return { Toaster };
+})();
+// ── src/presentation/i18n/en.js
+__m["src/presentation/i18n/en.js"] = (() => {
+/** Interface copy — English. Keys mirror pt.js. */
+const EN = {
+  'legend.choose': 'choose',
+  'legend.back': 'back',
+  'legend.next': 'next',
+  'legend.map': 'map',
+  'legend.on': 'power',
+  'legend.pages': 'pages',
+  'legend.exit': 'exit',
+  'legend.erase': 'erase',
+  'legend.continue': 'continue',
+  'boot.on': 'Power on',
+  'boot.tagline': 'Learn to code by playing',
+  'home.settings': 'Settings',
+  'home.howToPlay': 'How to play',
+  'home.streakAria': 'Streak: {n} days',
+  'home.day.one': 'day',
+  'home.day.other': 'days',
+  'common.coins': 'Coins',
+  'home.soundOff': 'Turn sound off',
+  'home.soundOn': 'Turn sound on',
+  'home.play': 'Play',
+  'home.learn': 'Learn',
+  'home.challenges': '{done}/{total} challenges',
+  'home.colors': 'Colors',
+  'home.colorsAria': 'Screen colors: using {name}.',
+  'home.colorsForSale': '{n} to unlock.',
+  'home.greet.done': 'You finished every stage! How about getting 3 stars on everything?',
+  'home.greet.first': 'Hi! I help you teach Bit. Tap Play!',
+  'home.greet.newFase': 'New stage unlocked: {title}. Ready?',
+  'home.greet.next': 'Next challenge: {title}.',
+  'guide.title': 'How to play',
+  'guide.close': 'Close',
+  'guide.skip': 'Skip',
+  'guide.prev': 'Back',
+  'guide.next': 'Next',
+  'guide.start': 'Start',
+  'guide.count': '{n} of {total}',
+  'status.locked': 'locked',
+  'status.available': 'available',
+  'status.completed': 'completed',
+  'map.title': 'Map',
+  'map.lesson': 'Lesson',
+  'map.fase': 'Stage {n}',
+  'map.faseAria': 'Stage {n}: {title}',
+  'map.rewardOpen': '{name} unlocked',
+  'map.rewardLocked': 'Finish the stage to meet a new mentor',
+  'map.lockedHint': 'Finish the {title} stage to open',
+  'map.locked': 'Still locked',
+  'map.lockedLesson': 'Finish the previous stage first.',
+  'map.lockedChallenge': 'Do the lesson and the previous challenge.',
+  'energy.timer': '+1 in {time}',
+  'energy.aria': 'Energy {value} of {max}',
+  'energy.openAria': 'See energy and refill',
+  'stars.aria': '{n} of {max} stars',
+  'xp.level': 'Level {n}',
+  'xp.short': 'Lv {n}',
+  'common.back': 'Back',
+  'energy.title': 'Energy',
+  'energy.full': 'Energy is full! Great time to play.',
+  'energy.next': 'The next energy arrives in {time}.',
+  'energy.count': '{value} of {max}',
+  'energy.ruleFail': 'A run that goes wrong costs 1.',
+  'energy.ruleRegen': 'Refills by itself: +1 every {min} minutes.',
+  'energy.ruleWin': 'Winning a challenge gives 1 back.',
+  'energy.missing': 'Quick refill: you need {n} more coins.',
+  'energy.refill': 'Fill it up: {price} coins',
+  'common.close': 'Close',
+  'energy.refilled': 'Energy is full!',
+  'energy.empty': 'Out of energy! Bit needs a rest.',
+  'common.backToMap': 'Back to map',
+  'lesson.kicker': 'Stage {n} · Lesson',
+  'lesson.start': 'Start challenges',
+  'lesson.next': 'Next',
+  'lesson.demo': 'Animated example',
+  'challenge.mapAria': 'Challenge map. {goal}',
+  'challenge.hint': 'Get a hint',
+  'challenge.run': 'Run',
+  'challenge.clear': 'Clear all',
+  'challenge.maps': 'Maps',
+  'challenge.mapTab': 'Map {n}',
+  'challenge.kicker': 'Stage {n} · {index}/3',
+  'challenge.success': 'You did it!',
+  'challenge.unknownTitle': 'Something went wrong.',
+  'challenge.unknownHint': 'Try another way.',
+  'challenge.whereStep': 'At step {step}.',
+  'challenge.whereStepMap': 'At step {step} of map {map}.',
+  'challenge.energyLost': '−1 energy.',
+  'challenge.hintBtn': 'Hint',
+  'challenge.retry': 'Try again',
+  'challenge.ok': 'OK',
+  'challenge.hintTitle': 'Hint',
+  'challenge.gotIt': 'Got it',
+  'result.faseKicker': 'Stage {n}: {title}',
+  'result.faseDone': 'Stage complete!',
+  'result.challengeDone': 'Challenge complete!',
+  'result.faseBonus': 'Stage bonus included: +{xp} XP and +{coins} coins',
+  'result.levelUp': 'You reached level {n}!',
+  'result.newMedal': 'New medal: ',
+  'result.newMentor': 'A new mentor wants to meet you!',
+  'result.again': 'Play again',
+  'result.meetMentor': 'Meet mentor',
+  'result.continue': 'Continue',
+  'result.fewerBlocks': 'It worked! You can do it with fewer blocks.',
+  'result.firstTry': 'It worked! Get it right on the first try to earn 3 stars.',
+  'result.savingsAria': 'Without a loop: {commands} commands. With a loop: {blocks} blocks.',
+  'result.withoutLoop': 'Without loop',
+  'result.withLoop': 'With loop',
+  'result.saved': 'You saved {n} blocks!',
+  'mentor.portraitOf': 'Portrait of {name}',
+  'mentor.unlocked': 'New mentor unlocked!',
+  'mentor.nowGuide': '{name} is now your guide',
+  'mentor.choose': 'Choose as guide',
+  'mentor.continue': 'Continue',
+  'mentor.alreadyGuide': 'Already your guide',
+  'mentor.locked': 'Locked mentor',
+  'mentor.lockedAria': 'Locked mentor. {text}',
+  'mentor.yourGuide': 'Your guide',
+  'mentor.portrait': 'Mentor portrait',
+  'mentor.fact': 'Fun fact',
+  'mentor.disclaimer': 'Line written for the game. Not a historical quote.',
+  'library.mentors': 'Mentors',
+  'library.concepts': 'Concepts',
+  'library.medals': 'Medals',
+  'library.sections': 'Sections',
+  'library.title': 'Learn',
+  'library.review': 'Review lesson',
+  'library.lockedConcept': 'Do the lesson of the {title} stage.',
+  'settings.title': 'Settings',
+  'settings.on': 'On',
+  'settings.off': 'Off',
+  'settings.reset': 'Erase progress',
+  'settings.resetArmed': 'Tap again to erase everything',
+  'settings.resetDone': 'Progress erased',
+  'settings.resetDoneText': 'A new adventure begins!',
+  'settings.colors': 'Screen color',
+  'settings.colorsNote': 'Each color comes with its own background music.',
+  'settings.sound': 'Sound',
+  'settings.sfx': 'Effects',
+  'settings.music': 'Music',
+  'settings.controls': 'Controls',
+  'settings.progress': 'Progress',
+  'settings.language': 'Language',
+  'settings.using': 'In use',
+  'settings.use': 'Use',
+  'settings.price': '{price} coins',
+  'settings.swatchAria': '{name}, song {song}: {status}',
+  'settings.bought': '{name} screen bought!',
+  'settings.newSong': 'New song: {song}',
+  'settings.noCoins': 'Not enough coins',
+  'settings.noCoinsText': 'You need {n} more. Finish challenges to earn more.',
+  'controls.touch': 'Touch',
+  'controls.touchDo': 'choose and build blocks',
+  'controls.dpad': 'D-pad / arrows',
+  'controls.dpadDo': 'move the cursor',
+  'controls.aDo': 'confirm',
+  'controls.bDo': 'go back or erase a block',
+  'controls.space': 'Space',
+  'controls.spaceDo': 'run the program',
+  'controls.shiftDo': 'get a hint',
+  'kw.if': 'IF',
+  'kw.then': 'THEN',
+  'rules.default': 'Otherwise, Bit walks: ',
+  'rules.title': 'Your rules',
+  'rules.palette': 'Rule pieces',
+  'rules.slotFilled': 'Tap to erase',
+  'rules.chooseIf': 'Choose the IF',
+  'rules.chooseThen': 'Choose the THEN',
+  'rules.rule': 'Rule {n}',
+  'seq.title': 'Your program',
+  'seq.add': 'Add {what}',
+  'seq.palette': 'Commands',
+  'seq.limit': 'Blocks {n}/{max}',
+  'seq.blocks.one': '{n} block',
+  'seq.blocks.other': '{n} blocks',
+  'seq.empty': 'Tap the commands below to build the path.',
+  'seq.remove': '{what}. Tap to remove.',
+  'seq.loopAdd': 'Put blocks inside Repeat',
+  'seq.loopRemove': 'Remove Repeat',
+  'seq.repeat': 'Repeat',
+  'seq.loopTimes': 'Repeat {n} times. Tap to change.',
+  'seq.loopClose': 'Close the Repeat',
+  'cmd.walk.label': 'Walk',
+  'cmd.walk.aria': 'Walk forward',
+  'cmd.turnLeft.label': 'Turn',
+  'cmd.turnLeft.detail': 'left',
+  'cmd.turnLeft.aria': 'Turn left',
+  'cmd.turnRight.label': 'Turn',
+  'cmd.turnRight.detail': 'right',
+  'cmd.turnRight.aria': 'Turn right',
+  'cmd.jump.label': 'Jump',
+  'cmd.jump.aria': 'Jump over',
+  'cmd.repeat.label': 'Repeat',
+  'cmd.repeat.aria': 'Repeat commands',
+  'sensor.rockAhead.label': 'Rock',
+  'sensor.rockAhead.detail': 'ahead',
+  'sensor.rockAhead.aria': 'Rock ahead',
+  'sensor.wallAhead.label': 'Wall',
+  'sensor.wallAhead.detail': 'ahead',
+  'sensor.wallAhead.aria': 'Wall ahead',
+  'shell.console': 'Bit Quest console',
+  'shell.powerLed': 'Power light',
+  'shell.caption': 'Pixel screen · 4 shades',
+  'shell.legend': 'Button legend',
+  'shell.tagline': 'code for explorers',
+  'shell.controls': 'Console buttons',
+  'shell.dpad': 'D-pad',
+  'shell.up': 'Up',
+  'shell.left': 'Left',
+  'shell.right': 'Right',
+  'shell.down': 'Down',
+  'shell.actions': 'Action buttons',
+  'shell.b': 'B: back',
+  'shell.a': 'A: confirm',
+  'shell.description': 'Bit Quest: learn programming logic by playing. Sequences, decisions and loops on a retro handheld console.',
+  'shell.language': 'Language: {name}. Tap to change',
+  'settings.a11y': 'Accessibility',
+  'settings.largeText': 'Larger text',
+  'settings.plainFont': 'Easy-to-read font',
+  'settings.calmMotion': 'Less animation',
+  'world.describe': 'Map of {w} by {h} squares. Bit is in column {x}, row {y}, facing {dir}. The flag is in column {gx}, row {gy}. There are {rocks} rocks and {walls} walls.',
+  'dir.N': 'up',
+  'dir.E': 'right',
+  'dir.S': 'down',
+  'dir.W': 'left',
+};
+
+return { EN };
+})();
+// ── src/presentation/i18n/es.js
+__m["src/presentation/i18n/es.js"] = (() => {
+/** Interface copy — Spanish. Keys mirror pt.js. */
+const ES = {
+  'legend.choose': 'elegir',
+  'legend.back': 'volver',
+  'legend.next': 'siguiente',
+  'legend.map': 'mapa',
+  'legend.on': 'encender',
+  'legend.pages': 'páginas',
+  'legend.exit': 'salir',
+  'legend.erase': 'borrar',
+  'legend.continue': 'seguir',
+  'boot.on': 'Encender',
+  'boot.tagline': 'Aprende a programar jugando',
+  'home.settings': 'Ajustes',
+  'home.howToPlay': 'Cómo jugar',
+  'home.streakAria': 'Racha: {n} días',
+  'home.day.one': 'día',
+  'home.day.other': 'días',
+  'common.coins': 'Monedas',
+  'home.soundOff': 'Apagar sonido',
+  'home.soundOn': 'Encender sonido',
+  'home.play': 'Jugar',
+  'home.learn': 'Aprender',
+  'home.challenges': '{done}/{total} desafíos',
+  'home.colors': 'Colores',
+  'home.colorsAria': 'Colores de la pantalla: usando {name}.',
+  'home.colorsForSale': '{n} por desbloquear.',
+  'home.greet.done': '¡Completaste todas las fases! ¿Y si buscas 3 estrellas en todo?',
+  'home.greet.first': '¡Hola! Yo te ayudo a enseñarle a Bit. ¡Toca Jugar!',
+  'home.greet.newFase': 'Nueva fase desbloqueada: {title}. ¿Vamos?',
+  'home.greet.next': 'Próximo desafío: {title}.',
+  'guide.title': 'Cómo jugar',
+  'guide.close': 'Cerrar',
+  'guide.skip': 'Saltar',
+  'guide.prev': 'Atrás',
+  'guide.next': 'Siguiente',
+  'guide.start': 'Empezar',
+  'guide.count': '{n} de {total}',
+  'status.locked': 'bloqueado',
+  'status.available': 'disponible',
+  'status.completed': 'completado',
+  'map.title': 'Mapa',
+  'map.lesson': 'Lección',
+  'map.fase': 'Fase {n}',
+  'map.faseAria': 'Fase {n}: {title}',
+  'map.rewardOpen': '{name} desbloqueado',
+  'map.rewardLocked': 'Completa la fase para conocer a un nuevo mentor',
+  'map.lockedHint': 'Completa la fase {title} para abrir',
+  'map.locked': 'Todavía bloqueado',
+  'map.lockedLesson': 'Primero completa la fase anterior.',
+  'map.lockedChallenge': 'Haz la lección y el desafío anterior.',
+  'energy.timer': '+1 en {time}',
+  'energy.aria': 'Energía {value} de {max}',
+  'energy.openAria': 'Ver energía y recargar',
+  'stars.aria': '{n} de {max} estrellas',
+  'xp.level': 'Nivel {n}',
+  'xp.short': 'Nv {n}',
+  'common.back': 'Volver',
+  'energy.title': 'Energía',
+  'energy.full': '¡Energía llena! Buen momento para jugar.',
+  'energy.next': 'La próxima energía llega en {time}.',
+  'energy.count': '{value} de {max}',
+  'energy.ruleFail': 'Cada ejecución que sale mal gasta 1.',
+  'energy.ruleRegen': 'Se recarga sola: +1 cada {min} minutos.',
+  'energy.ruleWin': 'Ganar un desafío te devuelve 1.',
+  'energy.missing': 'Recarga rápida: te faltan {n} monedas.',
+  'energy.refill': 'Llenar todo: {price} monedas',
+  'common.close': 'Cerrar',
+  'energy.refilled': '¡Energía llena!',
+  'energy.empty': '¡Sin energía! Bit necesita descansar.',
+  'common.backToMap': 'Volver al mapa',
+  'lesson.kicker': 'Fase {n} · Lección',
+  'lesson.start': 'Empezar desafíos',
+  'lesson.next': 'Siguiente',
+  'lesson.demo': 'Ejemplo animado',
+  'challenge.mapAria': 'Mapa del desafío. {goal}',
+  'challenge.hint': 'Pedir pista',
+  'challenge.run': 'Ejecutar',
+  'challenge.clear': 'Borrar todo',
+  'challenge.maps': 'Mapas',
+  'challenge.mapTab': 'Mapa {n}',
+  'challenge.kicker': 'Fase {n} · {index}/3',
+  'challenge.success': '¡Lo lograste!',
+  'challenge.unknownTitle': 'Algo salió mal.',
+  'challenge.unknownHint': 'Prueba otro camino.',
+  'challenge.whereStep': 'En el paso {step}.',
+  'challenge.whereStepMap': 'En el paso {step} del mapa {map}.',
+  'challenge.energyLost': '−1 energía.',
+  'challenge.hintBtn': 'Pista',
+  'challenge.retry': 'Intentar de nuevo',
+  'challenge.ok': 'Ok',
+  'challenge.hintTitle': 'Pista',
+  'challenge.gotIt': 'Entendido',
+  'result.faseKicker': 'Fase {n}: {title}',
+  'result.faseDone': '¡Fase completa!',
+  'result.challengeDone': '¡Desafío completo!',
+  'result.faseBonus': 'Bono de fase incluido: +{xp} XP y +{coins} monedas',
+  'result.levelUp': '¡Subiste al nivel {n}!',
+  'result.newMedal': 'Nueva medalla: ',
+  'result.newMentor': '¡Un nuevo mentor quiere conocerte!',
+  'result.again': 'Jugar de nuevo',
+  'result.meetMentor': 'Conocer mentor',
+  'result.continue': 'Continuar',
+  'result.fewerBlocks': '¡Funcionó! Se puede hacer con menos bloques.',
+  'result.firstTry': '¡Funcionó! Acierta a la primera para ganar 3 estrellas.',
+  'result.savingsAria': 'Sin loop: {commands} comandos. Con loop: {blocks} bloques.',
+  'result.withoutLoop': 'Sin loop',
+  'result.withLoop': 'Con loop',
+  'result.saved': '¡Ahorraste {n} bloques!',
+  'mentor.portraitOf': 'Retrato de {name}',
+  'mentor.unlocked': '¡Nuevo mentor desbloqueado!',
+  'mentor.nowGuide': '{name} ahora es tu guía',
+  'mentor.choose': 'Elegir como guía',
+  'mentor.continue': 'Continuar',
+  'mentor.alreadyGuide': 'Ya es tu guía',
+  'mentor.locked': 'Mentor bloqueado',
+  'mentor.lockedAria': 'Mentor bloqueado. {text}',
+  'mentor.yourGuide': 'Tu guía',
+  'mentor.portrait': 'Retrato del mentor',
+  'mentor.fact': 'Dato curioso',
+  'mentor.disclaimer': 'Frase creada para el juego. No es una cita histórica.',
+  'library.mentors': 'Mentores',
+  'library.concepts': 'Conceptos',
+  'library.medals': 'Medallas',
+  'library.sections': 'Secciones',
+  'library.title': 'Aprender',
+  'library.review': 'Repasar lección',
+  'library.lockedConcept': 'Haz la lección de la fase {title}.',
+  'settings.title': 'Ajustes',
+  'settings.on': 'Encendido',
+  'settings.off': 'Apagado',
+  'settings.reset': 'Borrar progreso',
+  'settings.resetArmed': 'Toca otra vez para borrar todo',
+  'settings.resetDone': 'Progreso borrado',
+  'settings.resetDoneText': '¡Empieza una nueva aventura!',
+  'settings.colors': 'Color de la pantalla',
+  'settings.colorsNote': 'Cada color trae su propia música de fondo.',
+  'settings.sound': 'Sonido',
+  'settings.sfx': 'Efectos',
+  'settings.music': 'Música',
+  'settings.controls': 'Controles',
+  'settings.progress': 'Progreso',
+  'settings.language': 'Idioma',
+  'settings.using': 'En uso',
+  'settings.use': 'Usar',
+  'settings.price': '{price} monedas',
+  'settings.swatchAria': '{name}, música {song}: {status}',
+  'settings.bought': '¡Pantalla {name} comprada!',
+  'settings.newSong': 'Nueva música: {song}',
+  'settings.noCoins': 'Monedas insuficientes',
+  'settings.noCoinsText': 'Te faltan {n}. Completa desafíos para ganar más.',
+  'controls.touch': 'Toque',
+  'controls.touchDo': 'elegir y armar bloques',
+  'controls.dpad': 'Cruceta / flechas',
+  'controls.dpadDo': 'mover el cursor',
+  'controls.aDo': 'confirmar',
+  'controls.bDo': 'volver o borrar bloque',
+  'controls.space': 'Espacio',
+  'controls.spaceDo': 'ejecutar programa',
+  'controls.shiftDo': 'pedir pista',
+  'kw.if': 'SI',
+  'kw.then': 'ENTONCES',
+  'rules.default': 'Si no, Bit camina: ',
+  'rules.title': 'Tus reglas',
+  'rules.palette': 'Piezas de las reglas',
+  'rules.slotFilled': 'Toca para borrar',
+  'rules.chooseIf': 'Elegir el SI',
+  'rules.chooseThen': 'Elegir el ENTONCES',
+  'rules.rule': 'Regla {n}',
+  'seq.title': 'Tu programa',
+  'seq.add': 'Agregar {what}',
+  'seq.palette': 'Comandos',
+  'seq.limit': 'Bloques {n}/{max}',
+  'seq.blocks.one': '{n} bloque',
+  'seq.blocks.other': '{n} bloques',
+  'seq.empty': 'Toca los comandos de abajo para armar el camino.',
+  'seq.remove': '{what}. Toca para quitar.',
+  'seq.loopAdd': 'Poner bloques dentro de Repetir',
+  'seq.loopRemove': 'Quitar Repetir',
+  'seq.repeat': 'Repetir',
+  'seq.loopTimes': 'Repetir {n} veces. Toca para cambiar.',
+  'seq.loopClose': 'Cerrar el Repetir',
+  'cmd.walk.label': 'Caminar',
+  'cmd.walk.aria': 'Caminar hacia adelante',
+  'cmd.turnLeft.label': 'Girar',
+  'cmd.turnLeft.detail': 'izq.',
+  'cmd.turnLeft.aria': 'Girar a la izquierda',
+  'cmd.turnRight.label': 'Girar',
+  'cmd.turnRight.detail': 'der.',
+  'cmd.turnRight.aria': 'Girar a la derecha',
+  'cmd.jump.label': 'Saltar',
+  'cmd.jump.aria': 'Saltar por encima',
+  'cmd.repeat.label': 'Repetir',
+  'cmd.repeat.aria': 'Repetir comandos',
+  'sensor.rockAhead.label': 'Piedra',
+  'sensor.rockAhead.detail': 'adelante',
+  'sensor.rockAhead.aria': 'Piedra adelante',
+  'sensor.wallAhead.label': 'Pared',
+  'sensor.wallAhead.detail': 'adelante',
+  'sensor.wallAhead.aria': 'Pared adelante',
+  'shell.console': 'Consola Bit Quest',
+  'shell.powerLed': 'Luz de encendido',
+  'shell.caption': 'Pantalla de píxeles · 4 tonos',
+  'shell.legend': 'Leyenda de los botones',
+  'shell.tagline': 'código para exploradores',
+  'shell.controls': 'Botones de la consola',
+  'shell.dpad': 'Cruceta',
+  'shell.up': 'Arriba',
+  'shell.left': 'Izquierda',
+  'shell.right': 'Derecha',
+  'shell.down': 'Abajo',
+  'shell.actions': 'Botones de acción',
+  'shell.b': 'B: volver',
+  'shell.a': 'A: confirmar',
+  'shell.description': 'Bit Quest: aprende lógica de programación jugando. Secuencias, decisiones y loops en una consola portátil retro.',
+  'shell.language': 'Idioma: {name}. Toca para cambiar',
+  'settings.a11y': 'Accesibilidad',
+  'settings.largeText': 'Texto más grande',
+  'settings.plainFont': 'Letra fácil de leer',
+  'settings.calmMotion': 'Menos animación',
+  'world.describe': 'Mapa de {w} por {h} casillas. Bit está en la columna {x}, fila {y}, mirando {dir}. La bandera está en la columna {gx}, fila {gy}. Hay {rocks} piedras y {walls} paredes.',
+  'dir.N': 'hacia arriba',
+  'dir.E': 'a la derecha',
+  'dir.S': 'hacia abajo',
+  'dir.W': 'a la izquierda',
+};
+
+return { ES };
+})();
+// ── src/presentation/i18n/pt.js
+__m["src/presentation/i18n/pt.js"] = (() => {
+/** Interface copy — Portuguese (source language). Keys are grouped by screen. */
+const PT = {
+  'legend.choose': 'escolher',
+  'legend.back': 'voltar',
+  'legend.next': 'próximo',
+  'legend.map': 'mapa',
+  'legend.on': 'ligar',
+  'legend.pages': 'páginas',
+  'legend.exit': 'sair',
+  'legend.erase': 'apagar',
+  'legend.continue': 'continuar',
+  'boot.on': 'Ligar',
+  'boot.tagline': 'Aprenda a programar jogando',
+  'home.settings': 'Ajustes',
+  'home.howToPlay': 'Como jogar',
+  'home.streakAria': 'Sequência: {n} dias',
+  'home.day.one': 'dia',
+  'home.day.other': 'dias',
+  'common.coins': 'Moedas',
+  'home.soundOff': 'Desligar som',
+  'home.soundOn': 'Ligar som',
+  'home.play': 'Jogar',
+  'home.learn': 'Aprender',
+  'home.challenges': '{done}/{total} desafios',
+  'home.colors': 'Cores',
+  'home.colorsAria': 'Cores da tela: usando {name}.',
+  'home.colorsForSale': '{n} para desbloquear.',
+  'home.greet.done': 'Você completou todas as fases! Que tal buscar 3 estrelas em tudo?',
+  'home.greet.first': 'Oi! Eu ajudo você a ensinar o Bit. Toque em Jogar!',
+  'home.greet.newFase': 'Nova fase liberada: {title}. Vamos lá?',
+  'home.greet.next': 'Próximo desafio: {title}.',
+  'guide.title': 'Como jogar',
+  'guide.close': 'Fechar',
+  'guide.skip': 'Pular',
+  'guide.prev': 'Voltar',
+  'guide.next': 'Próximo',
+  'guide.start': 'Começar',
+  'guide.count': '{n} de {total}',
+  'status.locked': 'bloqueado',
+  'status.available': 'disponível',
+  'status.completed': 'concluído',
+  'map.title': 'Mapa',
+  'map.lesson': 'Lição',
+  'map.fase': 'Fase {n}',
+  'map.faseAria': 'Fase {n}: {title}',
+  'map.rewardOpen': '{name} desbloqueado',
+  'map.rewardLocked': 'Complete a fase para conhecer um novo mentor',
+  'map.lockedHint': 'Complete a fase {title} para abrir',
+  'map.locked': 'Ainda bloqueado',
+  'map.lockedLesson': 'Complete a fase anterior primeiro.',
+  'map.lockedChallenge': 'Faça a lição e o desafio anterior.',
+  'energy.timer': '+1 em {time}',
+  'energy.aria': 'Energia {value} de {max}',
+  'energy.openAria': 'Ver energia e recarregar',
+  'stars.aria': '{n} de {max} estrelas',
+  'xp.level': 'Nível {n}',
+  'xp.short': 'Nv {n}',
+  'common.back': 'Voltar',
+  'energy.title': 'Energia',
+  'energy.full': 'Energia cheia! Bom momento para jogar.',
+  'energy.next': 'A próxima energia chega em {time}.',
+  'energy.count': '{value} de {max}',
+  'energy.ruleFail': 'Execução que dá errado gasta 1.',
+  'energy.ruleRegen': 'Recarrega sozinha: +1 a cada {min} minutos.',
+  'energy.ruleWin': 'Vencer um desafio devolve 1.',
+  'energy.missing': 'Recarga rápida: faltam {n} moedas.',
+  'energy.refill': 'Encher tudo: {price} moedas',
+  'common.close': 'Fechar',
+  'energy.refilled': 'Energia cheia!',
+  'energy.empty': 'Sem energia! O Bit precisa descansar.',
+  'common.backToMap': 'Voltar ao mapa',
+  'lesson.kicker': 'Fase {n} · Lição',
+  'lesson.start': 'Começar desafios',
+  'lesson.next': 'Próximo',
+  'lesson.demo': 'Exemplo animado',
+  'challenge.mapAria': 'Mapa do desafio. {goal}',
+  'challenge.hint': 'Pedir dica',
+  'challenge.run': 'Executar',
+  'challenge.clear': 'Apagar tudo',
+  'challenge.maps': 'Mapas',
+  'challenge.mapTab': 'Mapa {n}',
+  'challenge.kicker': 'Fase {n} · {index}/3',
+  'challenge.success': 'Conseguiu!',
+  'challenge.unknownTitle': 'Algo deu errado.',
+  'challenge.unknownHint': 'Tente outro caminho.',
+  'challenge.whereStep': 'No passo {step}.',
+  'challenge.whereStepMap': 'No passo {step} do mapa {map}.',
+  'challenge.energyLost': '−1 energia.',
+  'challenge.hintBtn': 'Dica',
+  'challenge.retry': 'Tentar de novo',
+  'challenge.ok': 'Ok',
+  'challenge.hintTitle': 'Dica',
+  'challenge.gotIt': 'Entendi',
+  'result.faseKicker': 'Fase {n}: {title}',
+  'result.faseDone': 'Fase completa!',
+  'result.challengeDone': 'Desafio completo!',
+  'result.faseBonus': 'Bônus de fase incluído: +{xp} XP e +{coins} moedas',
+  'result.levelUp': 'Você subiu para o nível {n}!',
+  'result.newMedal': 'Nova medalha: ',
+  'result.newMentor': 'Um novo mentor quer conhecer você!',
+  'result.again': 'Jogar de novo',
+  'result.meetMentor': 'Conhecer mentor',
+  'result.continue': 'Continuar',
+  'result.fewerBlocks': 'Funcionou! Dá para fazer com menos blocos.',
+  'result.firstTry': 'Funcionou! Acerte de primeira para ganhar 3 estrelas.',
+  'result.savingsAria': 'Sem loop: {commands} comandos. Com loop: {blocks} blocos.',
+  'result.withoutLoop': 'Sem loop',
+  'result.withLoop': 'Com loop',
+  'result.saved': 'Você economizou {n} blocos!',
+  'mentor.portraitOf': 'Retrato de {name}',
+  'mentor.unlocked': 'Novo mentor desbloqueado!',
+  'mentor.nowGuide': '{name} agora é seu guia',
+  'mentor.choose': 'Escolher como guia',
+  'mentor.continue': 'Continuar',
+  'mentor.alreadyGuide': 'Já é seu guia',
+  'mentor.locked': 'Mentor bloqueado',
+  'mentor.lockedAria': 'Mentor bloqueado. {text}',
+  'mentor.yourGuide': 'Seu guia',
+  'mentor.portrait': 'Retrato do mentor',
+  'mentor.fact': 'Curiosidade',
+  'mentor.disclaimer': 'Frase criada para o jogo. Não é uma citação histórica.',
+  'library.mentors': 'Mentores',
+  'library.concepts': 'Conceitos',
+  'library.medals': 'Medalhas',
+  'library.sections': 'Seções',
+  'library.title': 'Aprender',
+  'library.review': 'Rever lição',
+  'library.lockedConcept': 'Faça a lição da fase {title}.',
+  'settings.title': 'Ajustes',
+  'settings.on': 'Ligado',
+  'settings.off': 'Desligado',
+  'settings.reset': 'Apagar progresso',
+  'settings.resetArmed': 'Toque de novo para apagar tudo',
+  'settings.resetDone': 'Progresso apagado',
+  'settings.resetDoneText': 'Uma nova aventura começa!',
+  'settings.colors': 'Cor da tela',
+  'settings.colorsNote': 'Cada cor vem com a sua própria música de fundo.',
+  'settings.sound': 'Som',
+  'settings.sfx': 'Efeitos',
+  'settings.music': 'Música',
+  'settings.controls': 'Controles',
+  'settings.progress': 'Progresso',
+  'settings.language': 'Idioma',
+  'settings.using': 'Usando',
+  'settings.use': 'Usar',
+  'settings.price': '{price} moedas',
+  'settings.swatchAria': '{name}, música {song}: {status}',
+  'settings.bought': 'Tela {name} comprada!',
+  'settings.newSong': 'Nova música: {song}',
+  'settings.noCoins': 'Moedas insuficientes',
+  'settings.noCoinsText': 'Faltam {n}. Complete desafios para ganhar mais.',
+  'controls.touch': 'Toque',
+  'controls.touchDo': 'escolher e montar blocos',
+  'controls.dpad': 'D-pad / setas',
+  'controls.dpadDo': 'mover o cursor',
+  'controls.aDo': 'confirmar',
+  'controls.bDo': 'voltar ou apagar bloco',
+  'controls.space': 'Espaço',
+  'controls.spaceDo': 'executar programa',
+  'controls.shiftDo': 'pedir dica',
+  'kw.if': 'SE',
+  'kw.then': 'ENTÃO',
+  'rules.default': 'Senão, o Bit anda: ',
+  'rules.title': 'Suas regras',
+  'rules.palette': 'Peças das regras',
+  'rules.slotFilled': 'Toque para apagar',
+  'rules.chooseIf': 'Escolher o SE',
+  'rules.chooseThen': 'Escolher o ENTÃO',
+  'rules.rule': 'Regra {n}',
+  'seq.title': 'Seu programa',
+  'seq.add': 'Adicionar {what}',
+  'seq.palette': 'Comandos',
+  'seq.limit': 'Blocos {n}/{max}',
+  'seq.blocks.one': '{n} bloco',
+  'seq.blocks.other': '{n} blocos',
+  'seq.empty': 'Toque nos comandos abaixo para montar o caminho.',
+  'seq.remove': '{what}. Toque para remover.',
+  'seq.loopAdd': 'Colocar blocos dentro do Repetir',
+  'seq.loopRemove': 'Remover Repetir',
+  'seq.repeat': 'Repetir',
+  'seq.loopTimes': 'Repetir {n} vezes. Toque para mudar.',
+  'seq.loopClose': 'Fechar o Repetir',
+  'cmd.walk.label': 'Andar',
+  'cmd.walk.aria': 'Andar para a frente',
+  'cmd.turnLeft.label': 'Virar',
+  'cmd.turnLeft.detail': 'esq.',
+  'cmd.turnLeft.aria': 'Virar para a esquerda',
+  'cmd.turnRight.label': 'Virar',
+  'cmd.turnRight.detail': 'dir.',
+  'cmd.turnRight.aria': 'Virar para a direita',
+  'cmd.jump.label': 'Pular',
+  'cmd.jump.aria': 'Pular por cima',
+  'cmd.repeat.label': 'Repetir',
+  'cmd.repeat.aria': 'Repetir comandos',
+  'sensor.rockAhead.label': 'Pedra',
+  'sensor.rockAhead.detail': 'à frente',
+  'sensor.rockAhead.aria': 'Pedra à frente',
+  'sensor.wallAhead.label': 'Parede',
+  'sensor.wallAhead.detail': 'à frente',
+  'sensor.wallAhead.aria': 'Parede à frente',
+  'shell.console': 'Console Bit Quest',
+  'shell.powerLed': 'Luz de energia',
+  'shell.caption': 'Tela de pixels · 4 tons',
+  'shell.legend': 'Legenda dos botões',
+  'shell.tagline': 'código para exploradores',
+  'shell.controls': 'Botões do console',
+  'shell.dpad': 'Direcional',
+  'shell.up': 'Cima',
+  'shell.left': 'Esquerda',
+  'shell.right': 'Direita',
+  'shell.down': 'Baixo',
+  'shell.actions': 'Botões de ação',
+  'shell.b': 'B: voltar',
+  'shell.a': 'A: confirmar',
+  'shell.description': 'Bit Quest: aprenda lógica de programação jogando. Sequências, decisões e loops em um console portátil retrô.',
+  'shell.language': 'Idioma: {name}. Toque para trocar',
+  'settings.a11y': 'Acessibilidade',
+  'settings.largeText': 'Texto maior',
+  'settings.plainFont': 'Letra fácil de ler',
+  'settings.calmMotion': 'Menos animação',
+  'world.describe': 'Mapa de {w} por {h} casas. O Bit está na coluna {x}, linha {y}, virado {dir}. A bandeira está na coluna {gx}, linha {gy}. Há {rocks} pedras e {walls} paredes.',
+  'dir.N': 'para cima',
+  'dir.E': 'para a direita',
+  'dir.S': 'para baixo',
+  'dir.W': 'para a esquerda',
+};
+
+return { PT };
+})();
+// ── src/presentation/i18n/index.js
+__m["src/presentation/i18n/index.js"] = (() => {
+const { EN } = __m["src/presentation/i18n/en.js"];
+const { ES } = __m["src/presentation/i18n/es.js"];
+const { PT } = __m["src/presentation/i18n/pt.js"];
+/**
+ * Interface copy in pt / en / es. The language is chosen once at startup
+ * (changing it saves the setting and reloads), so `t()` reads a module-level
+ * dictionary instead of threading the locale through every component.
+ */
+const LANGUAGES = [
+  { id: 'pt', label: 'Português', short: 'PT', htmlLang: 'pt-BR' },
+  { id: 'en', label: 'English', short: 'EN', htmlLang: 'en' },
+  { id: 'es', label: 'Español', short: 'ES', htmlLang: 'es' },
+];
+
+const DICTIONARIES = { pt: PT, en: EN, es: ES };
+
+let current = 'pt';
+
+/** Saved choice first, then the browser languages, then Portuguese. */
+function resolveLanguage(saved, preferred = []) {
+  if (DICTIONARIES[saved]) return saved;
+  const match = preferred.map((tag) => String(tag).slice(0, 2).toLowerCase()).find((id) => DICTIONARIES[id]);
+  return match ?? 'pt';
+}
+
+function setLanguage(id) {
+  current = DICTIONARIES[id] ? id : 'pt';
+  return current;
+}
+
+const currentLanguage = () => LANGUAGES.find((l) => l.id === current);
+
+/** t('home.play') or t('result.level', { level: 3 }). Falls back to Portuguese, then to `fallback`. */
+function t(key, params = {}, fallback = key) {
+  const text = DICTIONARIES[current][key] ?? PT[key];
+  if (text == null) return fallback;
+  return text.replace(/\{(\w+)\}/g, (_, name) => String(params[name] ?? ''));
+}
+
+/** Plural-aware lookup: uses `${key}.one` when n === 1, `${key}.other` otherwise; `{n}` is filled in. */
+const tn = (key, n, params = {}) => t(`${key}.${n === 1 ? 'one' : 'other'}`, { n, ...params });
+
+return { LANGUAGES, DICTIONARIES, resolveLanguage, setLanguage, currentLanguage, t, tn };
 })();
 // ── src/presentation/input/FocusNavigator.js
 __m["src/presentation/input/FocusNavigator.js"] = (() => {
@@ -4735,7 +6547,8 @@ const DIRECTIONS = new Set(['up', 'down', 'left', 'right']);
 
 /**
  * Maps the virtual console buttons and the keyboard to screen intents:
- * D-pad → focus movement, A → activate, B → back, START/SELECT → screen hooks.
+ * D-pad → focus movement, A → activate, B → back; Space/Shift (keyboard only)
+ * reach the screen's start/select hooks.
  */
 class InputController {
   constructor({ buttons, navigator, sfx, onFirstInteraction }) {
@@ -4828,6 +6641,7 @@ class Modal {
   }
 
   open(root) {
+    this.returnFocus = document.activeElement;
     root.append(this.el);
     (this.el.querySelector('[data-autofocus]') ?? this.el.querySelector('button'))?.focus({ preventScroll: true });
     return this.done;
@@ -4835,6 +6649,7 @@ class Modal {
 
   close(value = null) {
     this.el.remove();
+    if (this.returnFocus?.isConnected) this.returnFocus.focus({ preventScroll: true });
     this.resolve(value);
   }
 }
@@ -4844,6 +6659,7 @@ return { Modal };
 // ── src/presentation/Screen.js
 __m["src/presentation/Screen.js"] = (() => {
 const { Modal } = __m["src/presentation/components/Modal.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 /**
  * Base contract for every screen. The App and the InputController only talk
  * to screens through this interface (mount/unmount + hardware-button hooks).
@@ -4890,14 +6706,14 @@ class Screen {
     return value;
   }
 
-  /** Background song for this screen (null = silence). */
+  /** Background song for this screen ('theme' = the current palette's song, null = silence). */
   get music() {
     return 'theme';
   }
 
   /** Legend printed under the LCD: [[button, action], ...]. */
   get legend() {
-    return [['A', 'escolher'], ['B', 'voltar']];
+    return [['A', t('legend.choose')], ['B', t('legend.back')]];
   }
 
   handleBack() {
@@ -4916,10 +6732,33 @@ class Screen {
 
 return { Screen };
 })();
+// ── src/presentation/components/languagePicker.js
+__m["src/presentation/components/languagePicker.js"] = (() => {
+const { LANGUAGES, currentLanguage, t } = __m["src/presentation/i18n/index.js"];
+const { h } = __m["src/presentation/ui/dom.js"];
+/** PT / EN / ES switch. Choosing another language saves it and restarts the UI in that language. */
+function languagePicker(ctx, { compact = false } = {}) {
+  const active = currentLanguage().id;
+  return h('div', { class: `langs ${compact ? 'langs--compact' : ''}`, role: 'group', 'aria-label': t('settings.language') },
+    LANGUAGES.map((lang) => h('button', {
+      class: `langs__btn ${lang.id === active ? 'is-current' : ''}`,
+      type: 'button',
+      lang: lang.htmlLang,
+      'aria-pressed': String(lang.id === active),
+      'aria-label': lang.label,
+      title: lang.label,
+      onClick: () => lang.id !== active && ctx.changeLanguage(lang.id),
+    }, compact ? lang.short : [h('b', {}, lang.short), h('span', {}, lang.label)])));
+}
+
+return { languagePicker };
+})();
 // ── src/presentation/screens/BootScreen.js
 __m["src/presentation/screens/BootScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
+const { languagePicker } = __m["src/presentation/components/languagePicker.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h, reducedMotion } = __m["src/presentation/ui/dom.js"];
 /** Power-on: the first tap unlocks audio, the logo drops in, the chime plays. */
 class BootScreen extends Screen {
@@ -4928,16 +6767,17 @@ class BootScreen extends Screen {
   }
 
   get legend() {
-    return [['A', 'ligar']];
+    return [['A', t('legend.on')]];
   }
 
   render() {
     this.logo = h('div', { class: 'boot__logo', 'aria-hidden': 'true' }, 'Bit Quest');
-    this.powerBtn = h('button', { class: 'pbtn pbtn--primary boot__power', type: 'button', 'data-autofocus': '', onClick: () => this.powerOn() }, icon('play'), 'Ligar');
+    this.powerBtn = h('button', { class: 'pbtn pbtn--primary boot__power', type: 'button', 'data-autofocus': '', onClick: () => this.powerOn() }, icon('play'), t('boot.on'));
     this.root.append(
+      languagePicker(this.ctx, { compact: true }),
       h('h1', { class: 'sr-only' }, 'Bit Quest'),
       this.logo,
-      h('div', { class: 'boot__prompt' }, this.powerBtn, h('p', {}, 'Aprenda a programar jogando')),
+      h('div', { class: 'boot__prompt' }, this.powerBtn, h('p', {}, t('boot.tagline'))),
     );
   }
 
@@ -4948,7 +6788,8 @@ class BootScreen extends Screen {
     this.root.classList.add('is-booting');
     const fast = reducedMotion();
     this.later(() => this.ctx.sfx('boot'), fast ? 0 : 1100);
-    this.later(() => this.ctx.nav.go('home'), fast ? 400 : 2100);
+    const next = this.ctx.game.store.get().settings.guideSeen ? 'home' : 'guide';
+    this.later(() => this.ctx.nav.go(next), fast ? 400 : 2100);
   }
 
   onStart() {
@@ -4960,49 +6801,28 @@ class BootScreen extends Screen {
 
 return { BootScreen };
 })();
-// ── src/content/feedback.js
-__m["src/content/feedback.js"] = (() => {
-/** Kid-friendly copy for each failure code produced by the engine (SPEC-001..004). */
-const FAILURES = {
-  empty: { title: 'Seu programa está vazio', hint: 'Toque nos comandos lá embaixo para montar o caminho.' },
-  empty_loop: { title: 'O Repetir está vazio', hint: 'Coloque pelo menos um comando dentro do Repetir.' },
-  incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
-  too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
-  edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
-  hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
-  hit_rock: { title: 'O Bit tropeçou na pedra!', hint: 'Pedras são baixinhas: use Pular.' },
-  jump_wall: { title: 'Essa parede é alta demais!', hint: 'Só dá para pular pedras. Para paredes, vire.' },
-  bad_landing: { title: 'Não dá para pousar ali.', hint: 'O Bit pula 2 casas. Veja onde ele vai cair.' },
-  not_reached: { title: 'Os comandos acabaram antes da bandeira.', hint: 'Falta pouco! Adicione mais comandos.' },
-  stuck_loop: { title: 'O Bit está andando em círculos!', hint: 'Será que a curva é para o outro lado?' },
-  too_long: { title: 'O Bit andou demais e se perdeu.', hint: 'Confira as regras: ele chega na bandeira?' },
-};
-
-const ENCOURAGEMENTS = [
-  'Errar faz parte de aprender.',
-  'Todo programador testa e conserta.',
-  'Achou um bug? Agora é só corrigir!',
-  'Quase lá. Tente de novo!',
-];
-
-const PRAISE = ['Mandou bem!', 'Programa perfeito!', 'Uau, funcionou!', 'Que lógica afiada!'];
-
-return { FAILURES, ENCOURAGEMENTS, PRAISE };
-})();
 // ── src/presentation/ui/catalog.js
 __m["src/presentation/ui/catalog.js"] = (() => {
-/** How domain ids are shown to kids (labels + icons). */
+const { t } = __m["src/presentation/i18n/index.js"];
+/** How domain ids are shown to kids (labels + icons). Text is looked up on access, in the current language. */
+const entry = (prefix, iconName) => ({
+  icon: iconName,
+  get label() { return t(`${prefix}.label`); },
+  get detail() { return t(`${prefix}.detail`, {}, ''); },
+  get aria() { return t(`${prefix}.aria`); },
+});
+
 const COMMAND_UI = {
-  walk: { label: 'Andar', icon: 'walk', aria: 'Andar para a frente' },
-  turnLeft: { label: 'Virar', detail: 'esq.', icon: 'turnLeft', aria: 'Virar para a esquerda' },
-  turnRight: { label: 'Virar', detail: 'dir.', icon: 'turnRight', aria: 'Virar para a direita' },
-  jump: { label: 'Pular', icon: 'jump', aria: 'Pular por cima' },
-  repeat: { label: 'Repetir', icon: 'repeat', aria: 'Repetir comandos' },
+  walk: entry('cmd.walk', 'walk'),
+  turnLeft: entry('cmd.turnLeft', 'turnLeft'),
+  turnRight: entry('cmd.turnRight', 'turnRight'),
+  jump: entry('cmd.jump', 'jump'),
+  repeat: entry('cmd.repeat', 'repeat'),
 };
 
 const SENSOR_UI = {
-  rockAhead: { label: 'Pedra', detail: 'à frente', icon: 'rock', aria: 'Pedra à frente' },
-  wallAhead: { label: 'Parede', detail: 'à frente', icon: 'wall', aria: 'Parede à frente' },
+  rockAhead: entry('sensor.rockAhead', 'rock'),
+  wallAhead: entry('sensor.wallAhead', 'wall'),
 };
 
 return { COMMAND_UI, SENSOR_UI };
@@ -5010,6 +6830,7 @@ return { COMMAND_UI, SENSOR_UI };
 // ── src/presentation/components/blocks.js
 __m["src/presentation/components/blocks.js"] = (() => {
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { COMMAND_UI, SENSOR_UI } = __m["src/presentation/ui/catalog.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 /** Inner content of a command/sensor chip: icon + label (+ small detail). */
@@ -5030,8 +6851,8 @@ function programStrip(nodes, { compact = false } = {}) {
     }
     if (node.type === 'rule') {
       return h('span', { class: 'strip__rule', dataset: { nodeId: node.id } },
-        h('b', { class: 'kw' }, 'SE'), h('span', { class: 'chip chip--sensor' }, sensorChip(node.condition)),
-        h('b', { class: 'kw' }, 'ENTÃO'), h('span', { class: 'chip chip--cmd' }, commandChip(node.action)));
+        h('b', { class: 'kw' }, t('kw.if')), h('span', { class: 'chip chip--sensor' }, sensorChip(node.condition)),
+        h('b', { class: 'kw' }, t('kw.then')), h('span', { class: 'chip chip--cmd' }, commandChip(node.action)));
     }
     return h('span', { class: `chip chip--cmd chip--${node.command}`, dataset: { nodeId: node.id } }, commandChip(node.command));
   };
@@ -5063,6 +6884,7 @@ return { chipContent, commandChip, sensorChip, programStrip, highlightStep, clea
 __m["src/presentation/components/RuleEditor.js"] = (() => {
 const { isCompleteRule, rule } = __m["src/domain/program.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { COMMAND_UI, SENSOR_UI } = __m["src/presentation/ui/catalog.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 const { clearHighlights, commandChip, highlightStep, sensorChip } = __m["src/presentation/components/blocks.js"];
@@ -5081,9 +6903,9 @@ class RuleEditor {
 
     this.list = h('div', { class: 'rules', role: 'list' });
     this.defaultRule = h('span', { class: 'rule-default', dataset: { nodeId: 'default' } },
-      'Senão, o Bit anda: ', icon('walk'));
-    this.programEl = h('section', { class: 'program program--rules', 'aria-label': 'Suas regras' },
-      h('header', { class: 'program__head' }, h('span', {}, 'Suas regras'), this.defaultRule), this.list);
+      t('rules.default'), icon('walk'));
+    this.programEl = h('section', { class: 'program program--rules', 'aria-label': t('rules.title') },
+      h('header', { class: 'program__head' }, h('span', {}, t('rules.title')), this.defaultRule), this.list);
 
     const button = (kind, id, content, aria) => h('button', {
       class: `chip chip--${kind === 'condition' ? 'sensor' : 'cmd'} palette__btn`,
@@ -5095,16 +6917,16 @@ class RuleEditor {
     }, content);
 
     this.paletteButtons = [
-      ...challenge.sensors.map((id) => button('condition', id, sensorChip(id), `SE ${SENSOR_UI[id].aria}`)),
-      ...challenge.actions.map((id) => button('action', id, commandChip(id), `ENTÃO ${COMMAND_UI[id].aria}`)),
+      ...challenge.sensors.map((id) => button('condition', id, sensorChip(id), `${t('kw.if')} ${SENSOR_UI[id].aria}`)),
+      ...challenge.actions.map((id) => button('action', id, commandChip(id), `${t('kw.then')} ${COMMAND_UI[id].aria}`)),
     ];
     const group = (slot, keyword) => {
       const buttons = this.paletteButtons.filter((b) => b.dataset.slot === slot);
       return h('div', { class: 'palette__group', style: { '--cols': buttons.length } },
         h('b', { class: 'kw' }, keyword), h('div', { class: 'palette__items' }, buttons));
     };
-    this.paletteEl = h('div', { class: 'palette palette--rules', role: 'group', 'aria-label': 'Peças das regras', style: { '--split': `${challenge.sensors.length}fr ${challenge.actions.length}fr` } },
-      group('condition', 'SE'), group('action', 'ENTÃO'));
+    this.paletteEl = h('div', { class: 'palette palette--rules', role: 'group', 'aria-label': t('rules.palette'), style: { '--split': `${challenge.sensors.length}fr ${challenge.actions.length}fr` } },
+      group('condition', t('kw.if')), group('action', t('kw.then')));
     this.render();
   }
 
@@ -5196,12 +7018,12 @@ class RuleEditor {
           type: 'button',
           'data-sound': 'none',
           disabled: this.locked,
-          'aria-label': value ? 'Toque para apagar' : `Escolher ${slot === 'condition' ? 'o SE' : 'o ENTÃO'}`,
+          'aria-label': value ? t('rules.slotFilled') : t(slot === 'condition' ? 'rules.chooseIf' : 'rules.chooseThen'),
           onClick: () => this.select(r.id, slot),
         }, content);
       };
-      return h('div', { class: 'rule', role: 'listitem', dataset: { nodeId: r.id }, 'aria-label': `Regra ${i + 1}` },
-        h('b', { class: 'kw' }, 'SE'), slotButton('condition'), h('b', { class: 'kw' }, 'ENTÃO'), slotButton('action'));
+      return h('div', { class: 'rule', role: 'listitem', dataset: { nodeId: r.id }, 'aria-label': t('rules.rule', { n: i + 1 }) },
+        h('b', { class: 'kw' }, t('kw.if')), slotButton('condition'), h('b', { class: 'kw' }, t('kw.then')), slotButton('action'));
     });
     this.list.replaceChildren(...cards);
   }
@@ -5213,6 +7035,7 @@ return { RuleEditor };
 __m["src/presentation/components/SequenceEditor.js"] = (() => {
 const { REPEAT_LIMITS, cmd, countBlocks, repeat } = __m["src/domain/program.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t, tn } = __m["src/presentation/i18n/index.js"];
 const { COMMAND_UI } = __m["src/presentation/ui/catalog.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 const { clearHighlights, commandChip, highlightStep } = __m["src/presentation/components/blocks.js"];
@@ -5235,17 +7058,17 @@ class SequenceEditor {
 
     this.counter = h('span', { class: 'program__count', 'aria-live': 'polite' });
     this.list = h('div', { class: 'program__list', role: 'list' });
-    this.programEl = h('section', { class: 'program', 'aria-label': 'Seu programa' },
-      h('header', { class: 'program__head' }, h('span', {}, 'Seu programa'), this.counter), this.list);
+    this.programEl = h('section', { class: 'program', 'aria-label': t('seq.title') },
+      h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), this.counter), this.list);
     this.paletteButtons = challenge.palette.map((id) => h('button', {
       class: `chip chip--cmd chip--${id} palette__btn`,
       type: 'button',
-      'aria-label': `Adicionar ${COMMAND_UI[id].aria}`,
+      'aria-label': t('seq.add', { what: COMMAND_UI[id].aria }),
       'data-sound': 'none',
       dataset: { command: id },
       onClick: () => this.add(id),
     }, commandChip(id)));
-    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': 'Comandos', style: { '--cols': challenge.palette.length } }, this.paletteButtons);
+    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length } }, this.paletteButtons);
     this.render();
   }
 
@@ -5360,14 +7183,14 @@ class SequenceEditor {
 
   render() {
     const blocks = this.blocks;
-    this.counter.textContent = this.challenge.maxBlocks ? `Blocos ${blocks}/${this.limit}` : `${blocks} ${blocks === 1 ? 'bloco' : 'blocos'}`;
+    this.counter.textContent = this.challenge.maxBlocks ? t('seq.limit', { n: blocks, max: this.limit }) : tn('seq.blocks', blocks);
     this.counter.classList.toggle('is-full', blocks >= this.limit);
     this.paletteButtons.forEach((btn) => (btn.disabled = !this.canAdd(btn.dataset.command)));
 
     const items = this.nodes.map((node) => (node.type === 'repeat' ? this.renderLoop(node) : this.renderBlock(node)));
     if (!this.loop && !this.locked) items.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
     if (this.nodes.length === 0) {
-      items.unshift(h('p', { class: 'program__empty' }, 'Toque nos comandos abaixo para montar o caminho.'));
+      items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
     this.list.replaceChildren(...items);
   }
@@ -5378,7 +7201,7 @@ class SequenceEditor {
       type: 'button',
       role: 'listitem',
       'data-sound': 'none',
-      'aria-label': `${COMMAND_UI[node.command].aria}. Toque para remover.`,
+      'aria-label': t('seq.remove', { what: COMMAND_UI[node.command].aria }),
       dataset: { nodeId: node.id },
       disabled: this.locked,
       onClick: () => this.remove(node.id),
@@ -5390,14 +7213,14 @@ class SequenceEditor {
     const body = node.body.map((child) => this.renderBlock(child));
     if (open) body.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
     else if (node.body.length < LOOP_BODY_MAX && !this.locked) {
-      body.push(h('button', { class: 'loop__add', type: 'button', 'aria-label': 'Colocar blocos dentro do Repetir', onClick: () => this.setTarget(node.id) }, '+'));
+      body.push(h('button', { class: 'loop__add', type: 'button', 'aria-label': t('seq.loopAdd'), onClick: () => this.setTarget(node.id) }, '+'));
     }
     return h('div', { class: `loop ${open ? 'is-open' : ''}`, role: 'listitem', dataset: { nodeId: node.id } },
       h('div', { class: 'loop__head' },
-        h('button', { class: 'loop__remove', type: 'button', 'data-sound': 'none', 'aria-label': 'Remover Repetir', disabled: this.locked, onClick: () => this.remove(node.id) }, icon('repeat', 'chip__icon'), 'Repetir'),
-        h('button', { class: 'loop__times', type: 'button', 'data-sound': 'none', 'aria-label': `Repetir ${node.times} vezes. Toque para mudar.`, disabled: this.locked, onClick: () => this.cycleTimes(node) }, `${node.times}×`),
+        h('button', { class: 'loop__remove', type: 'button', 'data-sound': 'none', 'aria-label': t('seq.loopRemove'), disabled: this.locked, onClick: () => this.remove(node.id) }, icon('repeat', 'chip__icon'), t('seq.repeat')),
+        h('button', { class: 'loop__times', type: 'button', 'data-sound': 'none', 'aria-label': t('seq.loopTimes', { n: node.times }), disabled: this.locked, onClick: () => this.cycleTimes(node) }, `${node.times}×`),
         h('span', { class: 'loop__iter', 'data-iteration': '' }),
-        open ? h('button', { class: 'loop__close', type: 'button', 'aria-label': 'Fechar o Repetir', onClick: () => this.setTarget(null) }, icon('check')) : null),
+        open ? h('button', { class: 'loop__close', type: 'button', 'aria-label': t('seq.loopClose'), onClick: () => this.setTarget(null) }, icon('check')) : null),
       h('div', { class: 'loop__body' }, body));
   }
 }
@@ -5426,12 +7249,16 @@ return { createEditor };
 __m["src/presentation/components/hud.js"] = (() => {
 const { ENERGY_MAX } = __m["src/domain/energy.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { formatCountdown, h } = __m["src/presentation/ui/dom.js"];
-/** Energy as battery cells. */
-function energyMeter(energy) {
+/** Energy as battery cells. With `onClick` it becomes a button that opens the energy dialog. */
+function energyMeter(energy, { onClick } = {}) {
   const cells = Array.from({ length: ENERGY_MAX }, (_, i) => h('span', { class: `energy__cell ${i < energy.value ? 'is-full' : ''}` }));
-  const label = `Energia ${energy.value} de ${energy.max}`;
-  return h('span', { class: 'energy', title: label, 'aria-label': label, role: 'img' }, icon('energy', 'energy__icon'), cells);
+  const label = t('energy.aria', { value: energy.value, max: energy.max });
+  if (!onClick) return h('span', { class: 'energy', title: label, 'aria-label': label, role: 'img' }, icon('energy', 'energy__icon'), cells);
+  const low = energy.value < energy.max;
+  return h('button', { class: `energy energy--btn ${low ? 'is-low' : ''}`, type: 'button', 'aria-label': `${label}. ${t('energy.openAria')}`, onClick },
+    icon('energy', 'energy__icon'), cells, low ? h('b', { class: 'energy__plus', 'aria-hidden': 'true' }, '+') : null);
 }
 
 function statChip(iconName, value, label) {
@@ -5439,27 +7266,73 @@ function statChip(iconName, value, label) {
 }
 
 function starRow(count, max = 3, className = '') {
-  return h('span', { class: `stars ${className}`, role: 'img', 'aria-label': `${count} de ${max} estrelas` },
+  return h('span', { class: `stars ${className}`, role: 'img', 'aria-label': t('stars.aria', { n: count, max }) },
     Array.from({ length: max }, (_, i) => icon('star', i < count ? 'star is-on' : 'star')));
 }
 
 function xpBar(summary) {
-  return h('div', { class: 'xpbar', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': summary.needed, 'aria-valuenow': summary.current, 'aria-label': `Nível ${summary.level}` },
-    h('span', { class: 'xpbar__level' }, `Nv ${summary.level}`),
+  return h('div', { class: 'xpbar', role: 'progressbar', 'aria-valuemin': 0, 'aria-valuemax': summary.needed, 'aria-valuenow': summary.current, 'aria-label': t('xp.level', { n: summary.level }) },
+    h('span', { class: 'xpbar__level' }, t('xp.short', { n: summary.level })),
     h('span', { class: 'xpbar__track' }, h('span', { class: 'xpbar__fill', style: { '--fill': `${(summary.current / summary.needed) * 100}%` } })),
     h('span', { class: 'xpbar__value' }, `${summary.current}/${summary.needed} XP`));
 }
 
 /** Shared top bar: back button, title, energy and coins. */
-function topBar({ title, onBack, summary, backIcon = 'back', extra = null }) {
-  const energyText = summary.energy.value < summary.energy.max ? h('span', { class: 'topbar__timer', 'data-energy-timer': '' }, `+1 em ${formatCountdown(summary.energy.msUntilNext)}`) : null;
+function topBar({ title, onBack, summary, backIcon = 'back', extra = null, onEnergy }) {
+  const energyText = summary.energy.value < summary.energy.max ? h('span', { class: 'topbar__timer', 'data-energy-timer': '' }, t('energy.timer', { time: formatCountdown(summary.energy.msUntilNext) })) : null;
   return h('header', { class: 'topbar' },
-    h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar', onClick: onBack }, icon(backIcon)),
+    h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.back'), onClick: onBack }, icon(backIcon)),
     h('h1', { class: 'topbar__title' }, title),
-    h('div', { class: 'topbar__stats' }, extra, energyMeter(summary.energy), energyText, statChip('coin', summary.coins, 'Moedas')));
+    h('div', { class: 'topbar__stats' }, extra, energyMeter(summary.energy, { onClick: onEnergy }), energyText, statChip('coin', summary.coins, t('common.coins'))));
 }
 
 return { energyMeter, statChip, starRow, xpBar, topBar };
+})();
+// ── src/presentation/components/energyDialog.js
+__m["src/presentation/components/energyDialog.js"] = (() => {
+const { ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
+const { formatCountdown, h } = __m["src/presentation/ui/dom.js"];
+const { energyMeter } = __m["src/presentation/components/hud.js"];
+/**
+ * Energy status + refill, shared by every screen that shows the energy bar.
+ * Resolves with 'refilled', the `leave` action value, or null (closed).
+ */
+async function openEnergyDialog(screen, { title = t('energy.title'), leave = null } = {}) {
+  const { game, sfx, toast } = screen.ctx;
+  const price = game.content.economy.energyRefillPrice;
+  const { energy, coins } = game.playerSummary.execute();
+  const full = energy.value >= energy.max;
+  const canRefill = !full && coins >= price;
+  const status = full
+    ? t('energy.full')
+    : t('energy.next', { time: formatCountdown(energy.msUntilNext) });
+
+  const choice = await screen.ask({
+    title,
+    iconName: 'energy',
+    body: h('div', { class: 'energy-dialog' },
+      h('div', { class: 'energy-dialog__meter' }, energyMeter(energy), h('strong', {}, t('energy.count', { value: energy.value, max: energy.max }))),
+      h('p', {}, status),
+      h('ul', { class: 'energy-dialog__rules' },
+        h('li', {}, t('energy.ruleFail')),
+        h('li', {}, t('energy.ruleRegen', { min: ENERGY_REGEN_MS / 60000 })),
+        h('li', {}, t('energy.ruleWin'))),
+      !full && !canRefill ? h('p', { class: 'energy-dialog__missing' }, t('energy.missing', { n: price - coins })) : null),
+    actions: [
+      canRefill ? { label: t('energy.refill', { price }), value: 'refill', primary: true, icon: 'coin' } : null,
+      leave ?? { label: t('common.close'), value: null, primary: !canRefill },
+    ].filter(Boolean),
+  });
+
+  if (choice !== 'refill') return choice;
+  if (!game.refillEnergy.execute().ok) return null;
+  sfx('coin');
+  toast.show({ title: t('energy.refilled'), iconName: 'energy' });
+  return 'refilled';
+}
+
+return { openEnergyDialog };
 })();
 // ── src/presentation/pixel/draw.js
 __m["src/presentation/pixel/draw.js"] = (() => {
@@ -5495,6 +7368,84 @@ function spriteCanvas(rows, colors, scale = 4, options = {}) {
 }
 
 return { drawSprite, spritePixels, spriteCanvas };
+})();
+// ── src/presentation/pixel/portraits.js
+__m["src/presentation/pixel/portraits.js"] = (() => {
+/**
+ * Character portraits (32×32 pixel art, transparent PNG) generated from
+ * assets/personagens by tools/portraits.mjs — do not edit by hand.
+ */
+const PORTRAIT_SIZE = 32;
+
+const PORTRAITS = {
+  hero: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC4klEQVR4nMVWPWhTURT+oqUUDB36HjTdQuBlSAuhJV0LQkYNZAqY1awSB13F1Qw+XF/XCpkCMWNA6NqgFGyHFIJOSWjqUCqUgj4HvY9zzz33+oqC33T/zjnf+bnnXuA/I5P2YM4PYjWeLc4ydO5a+2sCVGnRy2J8cQU6311fwcHpwrnmIuIkkPOD2GaEE7HN1dhG4o6LAADNeNHLAgDGF1coelkUvSyaJV8zxue76ytO/Uu2DeU9Na4UN0u+FhG+L81zfhBLURAjwPNOvQaAo/m11agCPS/pVRDzIh10QYqIDTwKBgFaeEfz68QTOqfgUVBrAIxaUPKUhJUAr2LuMSXTLPnavuvG8ChYCVAPJEUuo2pPuj1OArbcK+PcqA0Hp4s/1oUiYVxDKki9frW2CsxuUhEor61i//dNkfSligA3fpxbNsL89Ps9AMDru9+MvfLsBs+/XkLSRwkYfUDqdsCvsE7Px9oalyt6WUzPx0YRUn0cBgFaaK6ic4GetelTcPYBmrvHsdk0j3PLAICyUBv7mR+JUdcLadSA1APSPCoctIlRIrwIxRSofNKQqf4PQLxedI2eVZAaEmB5DfnBty/u49HL98lcuuNSjYzePETlyTvJhEyAf6ukKKhU2IpS8t6mD0jRinlNAHDWgyIgPdNSH9AiIBWhzQgnQT3n8q6HTYyAzTvqkRQF6bnm4P8B8Uek/na2eRqCaeWtPyLaA3g+Z0seWu02ojDU5NTa5fyLdl7KvZNAIrxZjQGgsldN1kaHQ/gbBSymE/gbBe38YjpJxlwGAMYnw3QEOtEgBoAoDDVFALC9s4WPHz4lSikqe9Vkn2J0OESr3QYAPGs9cP8JO9EgpoY/n020/XqjZhjgBHvdvraWDwraPiWhEehEg7jX7SMfFAzD/wL5oIDtnS1EYZikIyFQ3KzGPKe3Ba0BAEaN1Bs19Lp91Bu1hERGGadCqsBoJLjy20AR4TrGJ8PMT4jMAVK6ApIbAAAAAElFTkSuQmCC',
+  ada: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABW0lEQVR4nNWXMQ7CMAxFewgGLkAZmBATIHXqWTgAiIXjMDBwCnZWRsZOHIC1yJUsuVbsOE4zYMkSJG7+y3fTQlX9U8xni96SxYSb5XqUp2Y7JB+fFIQKc7EQAP2eDaGJaw7AWLdv+2u98UPExDUASBDPcgIBJAHaa2ker00GSBEvAhEDQNHP6z6kBpEMkCo+OYQGIInHIMwAMfHudhTFMaHGDQGTWMgfKBZxCYKuKQJYd49jXJSOu1zgALQ4ZfchF0Jruu2PnQJ3G6wOQEgAEJM4UKoFWQ58z5egSAgOaovdA8WOoucUwDsfcvJTUOpB5HKAQ2ggOM8fQiYHtPuAA8RSA3C/C2gNd4IKc0eTACSIEIDUd62lST9K+B+NetX2mBwCxWmNtI456GK79jBKOmetyxZ+PN9DYsBn7D0fh3SBaLvhAFKEAEwQmjiFsABI14sQFvGYE9LOYxA/ruInfJW5QNkAAAAASUVORK5CYII=',
+  grace: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADW0lEQVR4nMWXX0hTURzHv1th2CCkbrRhEO0fo8Hawx2YU7ZkPtlryHoJwpRefCh7Gj2FT/7BpyK3gnpIUvAl91SsCUWDSYyhMHQuAmWlQyKwUMhfD3ou99y/0wl9X7Zz7rm/7+f8zu+eey7wn2UxumgXPHQcJt9rK7o+J42Mz1y4dBz+AEB6ICoAu+AhZiw4nKhVK5oRS49/AgB8j1oMnQWHkwNRQmhmoB7zndzWwX8YgtSqFcNYqpTIM2CmerPA9OvHN9UyaAIAwNc7f3Gq7Wxdgc20k9vC5RcnAKjrgGscV9WbSQ7BAWTzZYqILswvrCJfKCEU9OFK85eGzM77b3LxIqILFotF8uWKMF8oAQAiogsA4F55AgTaGgJYn3qASHyMiy+XBEBExEgZxPpKQ96S5hdWpUnlCyVk82WKhtwWDkA5CADcAF5+Ps0Fu33tt6GZcnzcps6sPBPcEoym0hjq6+ECJCcmFO39349v+rn+jt5JTaB4IoBQ0KcbXxIRUTZfpmy+TCPJOSIi8vpjtLE4TRuL02QXPGQXPFJbfs1sHIsnj898rezP/MKqlJ6hvh6pzVTdXFZBd/ROas5cOVYej8VnkpYgGnJbiIgYjFbFKsWWQS/9TCweM5Y/hlblwIjokp5ZuTaXZlDMDnN9u8Ucdos5rq+YHcbm0gzXx+LJC51JtREB+9U6mkojbsuga7ioOat6izCTCKA1PobRVFqaFHsEVQAAMJKco1DQh3yhhLgtg6YGN6LdYg5T211gMR/evcF5WrVu0jPfLeYQiCZ0zQLRhGpJmgJtiNsyujWleVQaSc6R2eyVIMr6UIJPbXepZq8LAABrr+9To+mXA1y8Na7pZXgobRTEyLhuADkIANOiZDVgZnxoACWMVoHWa3poAK8/Ju3dgsOJT++eAdh/1wNA68H7Ptw9wB0+l5fem8bXPRXLTfUkDr4FAFQPAIxi6MGo9gGvP0btsX5d81q1gnD3gKo/3D2A6T8VLA8+RWeqGZkW/np7rJ+0JiVRef0xYh8Remd4uQSHE5XCBwCAM3gdtWoFnalmPC+OY+3VPZwLV3A17VTdw+KzjFiOYq4HUO99cgjr3qx4aHP2QWLWpyXmITic2JsVybI3KxJQ/9cN01EzwMSA/wH1pOFo6Kt9NAAAAABJRU5ErkJggg==',
+  turing: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAChUlEQVR4nMWWMWhTQRjHfy0iHUKh5IUki5VAnmBKFlMqLsbSJYOTCoUiOIl0CAiCSAanIgWh4CCOguhSnbKKtItEjEswgwmG6pKWRARxkCzPId7z8nJ3794r4n96vPvu+//v/333cfCfMRN1Q8bJe6b1w2E3Uk7rYEHsJhMALKfnAHh/9MuP6Xz7GVnIrC25m0z45DrIMWFOWQsQ5DJUpw8KsRVhFKAiVwlRYeOsg5tMhIow1imKAJ0bMO4NXU+cMAmQ8fLVPf/76pUHE6TL6bnQsuhg5YBMHoQQI4QIBG9HbAde3L9kXFc5EwXWJbBB0CkbQaECThbPA1As1/x/rb0tZawqxmS/UUDGyXvNR5f9xOLbBDmmWK7R2tti1GpQqtY9nQjlz4yT955uFFhayfkOAKQK18im3AkHRq3GhEv9QYdBe3di/eO7Hjeet5VOWI3ifwmtgKWV3NS/QXtXW38Y110+vSmXUcDhsDtTqta1mwRGrUZoDECpWtc2YuggMp3YBsVyzXgLQnvA9pRx90YeRNubOzzcf6tcu3PxAncf346UL/TVIuaBfB23N3eUsTL5n/sf+jKydkC+72GnjFK20B6Qb4RNYhFjc3qI8SgV41YuSZBYCLfJG+tZLsa0DNO4PZYAt7A29ab7cfSF/qDDszMlAK5/apJNucynF6f2d9qv4zWhW1jznOz0CB32ewDsNz8DsJpa8L8Bgnuc7E1v2O9phSibUEcuCOSTvhl8B2A+vThFLu9ROakUECQ/nZ9O6mRzrFcqwNiB9UpFSS7v1YmYsEVFftDtqYQDcOvrBwCenDqnjQnmCJbDdyAqucBqasG4ftDtGZ2YPQ45/O2BuCJ+A59YKbsjn0FNAAAAAElFTkSuQmCC',
+  katherine: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAC30lEQVR4nMVWv2tTURT+WjpEeVMTSARdlGRoXIQmxRYsQhwFXVyyBP+AKvhjUJzEDFqX/AHSJUtXl0gLJYKRpoE6GIcnLQQK7cO8DOFROwSew/Pc3Hd/vHefiH7T/XHe+b5zz7nnXeA/YyaJcS6T903sTobfjf3OJSEupK3QeimbCs33nLPfo8DeREisgFwm7+uIp4TBmigIyPtxImZNyfXRTue0RraFtBWbNq06MXJV1ABgux6qCxlJWCmbYmPb9bTpUC4SOe9EhO16obmYJlMRkTWgiwYANqpFZldr9kOCqguZUEqiIClSRS9Gy5OLqDX7LCViAKpT0J7AnnOGUjaF5rehETFvU2v22VyVGh6Rt+DWtSxzUkhbqLcGsQLqrQGzBxBZR4CQArHyT+bSkWSNSmC7tu1F2uUmLhuLaZBOQLzvuYmLsTNAo2Jh7AzYmIiJXNwfO4MQsdykNAIo97xiyv3xDztk26hYTAyBbDaqRVa8UWlgAvjjN7k+JiDhvD+xO7Jc6JrP5FKJjYfHh2wsRs7XQebCZTY+/LID8kti+DqQBABy4+k1buPr7pScsLXvAJjeFh5XlwIRi2vvpauoFKA6BT7/fwLqB7wA7S0w6f+i47g1/icFBCcr1kCoE9quB9v1UEhbnNKi9DsVux2tqRD4CILjuypB+S8Ifwy0HtwxeorxoPp4+/HzjMqnVoAOSUTw5HG2iR6lj25c91UVL5KbECcWcPrkmQ8AL3Z3AKiv3ta+g5dLNwEA59/UjXzHPkqJuHvvPlYXr2AdwOPVZYkYANbbHQBAu3eAU8A3EaLdJGKenMeHh3eV5IR27wDlzXdsrhOiXOTJeREAmJCfT59j1OkCAOaXyzj3+hUjBhAijxIhpUBFzjtsIxBSFvajiHnfoojQ5Gil4s8vi64DjDpd6PaS2I46XVz8tC234r9FDgQpofSo9o5WKuyUZ4k8zmFSxH1DnJGP0n+BX0eHrCdHMlLpAAAAAElFTkSuQmCC',
+};
+
+return { PORTRAIT_SIZE, PORTRAITS };
+})();
+// ── src/presentation/pixel/portrait.js
+__m["src/presentation/pixel/portrait.js"] = (() => {
+const { PORTRAITS, PORTRAIT_SIZE } = __m["src/presentation/pixel/portraits.js"];
+/**
+ * Full-color 32×32 character art. Always scaled by a whole number with
+ * smoothing off, so every art pixel stays a crisp square.
+ */
+const images = new Map();
+
+function image(id) {
+  if (!images.has(id)) {
+    const img = new Image();
+    img.src = PORTRAITS[id];
+    images.set(id, img.decode().then(() => img));
+  }
+  return images.get(id);
+}
+
+const hasPortrait = (id) => Boolean(PORTRAITS[id]);
+
+/** Canvas of `PORTRAIT_SIZE × scale` px. `silhouette` paints every opaque pixel in that color (locked mentors). */
+function portraitCanvas(id, { scale = 2, silhouette = null } = {}) {
+  const size = PORTRAIT_SIZE * Math.max(1, Math.round(scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  canvas.className = 'sprite pixelart';
+  image(id).then((img) => {
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(img, 0, 0, size, size);
+    if (silhouette) {
+      ctx.globalCompositeOperation = 'source-in';
+      ctx.fillStyle = silhouette;
+      ctx.fillRect(0, 0, size, size);
+    }
+  }).catch(() => {});
+  return canvas;
+}
+
+/** Opaque pixels as [x, y, 'rgba(...)'] at art scale — used by the mentor reveal animation. */
+async function portraitPixels(id) {
+  const img = await image(id);
+  const canvas = document.createElement('canvas');
+  canvas.width = PORTRAIT_SIZE;
+  canvas.height = PORTRAIT_SIZE;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  const { data } = ctx.getImageData(0, 0, PORTRAIT_SIZE, PORTRAIT_SIZE);
+  const pixels = [];
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] === 0) continue;
+    const p = i / 4;
+    pixels.push([p % PORTRAIT_SIZE, Math.floor(p / PORTRAIT_SIZE), `rgba(${data[i]},${data[i + 1]},${data[i + 2]},${data[i + 3] / 255})`]);
+  }
+  return pixels;
+}
+
+return { hasPortrait, portraitCanvas, portraitPixels };
 })();
 // ── src/presentation/pixel/sprites.js
 __m["src/presentation/pixel/sprites.js"] = (() => {
@@ -5701,14 +7652,22 @@ return { ROBOT, ROCK, TREE, FLAG, MENTOR_SPRITES };
 })();
 // ── src/presentation/components/mentorViews.js
 __m["src/presentation/components/mentorViews.js"] = (() => {
+const { t } = __m["src/presentation/i18n/index.js"];
 const { spriteCanvas } = __m["src/presentation/pixel/draw.js"];
+const { hasPortrait, portraitCanvas } = __m["src/presentation/pixel/portrait.js"];
 const { MENTOR_SPRITES } = __m["src/presentation/pixel/sprites.js"];
 const { h, reducedMotion, sleep } = __m["src/presentation/ui/dom.js"];
+/**
+ * `scale` is in 16-px sprite units (scale 2 = 32 px on screen). Mentors with
+ * 32×32 art use it at half the scale, rounded up so it stays a whole number.
+ */
 function mentorPortrait(mentorId, colors, { scale = 4, locked = false } = {}) {
-  const canvas = spriteCanvas(MENTOR_SPRITES[mentorId], colors, scale, locked ? { tone: colors[1] } : {});
+  const canvas = hasPortrait(mentorId)
+    ? portraitCanvas(mentorId, { scale: Math.ceil(scale / 2), silhouette: locked ? colors[1] : null })
+    : spriteCanvas(MENTOR_SPRITES[mentorId], colors, scale, locked ? { tone: colors[1] } : {});
   canvas.classList.add('portrait');
   canvas.setAttribute('role', 'img');
-  canvas.setAttribute('aria-label', locked ? 'Mentor bloqueado' : 'Retrato do mentor');
+  canvas.setAttribute('aria-label', locked ? t('mentor.locked') : t('mentor.portrait'));
   return canvas;
 }
 
@@ -5716,10 +7675,11 @@ function mentorPortrait(mentorId, colors, { scale = 4, locked = false } = {}) {
 class MentorSpeech {
   constructor({ mentor, colors, sfx, compact = false }) {
     this.sfx = sfx;
-    this.text = h('p', { class: 'speech__text', 'aria-live': 'polite' });
+    this.text = h('p', { class: 'speech__text', 'aria-hidden': 'true' });
+    this.spoken = h('p', { class: 'sr-only', 'aria-live': 'polite' });
     this.el = h('div', { class: `speech ${compact ? 'speech--compact' : ''}` },
       h('div', { class: 'speech__who' }, mentorPortrait(mentor.id, colors, { scale: compact ? 2 : 3 }), h('span', { class: 'speech__name' }, mentor.name.split(' ')[0])),
-      h('div', { class: 'speech__balloon' }, this.text));
+      h('div', { class: 'speech__balloon' }, this.text, this.spoken));
     this.el.addEventListener('click', () => (this.skip = true));
   }
 
@@ -5727,6 +7687,7 @@ class MentorSpeech {
     this.skip = false;
     const token = {};
     this.token = token;
+    this.spoken.textContent = line;
     if (reducedMotion()) {
       this.text.textContent = line;
       return;
@@ -5827,6 +7788,7 @@ __m["src/presentation/components/WorldView.js"] = (() => {
 const { Tile } = __m["src/domain/tiles.js"];
 const { World } = __m["src/domain/World.js"];
 const { drawSprite } = __m["src/presentation/pixel/draw.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { SCENERIES } = __m["src/presentation/pixel/sceneries.js"];
 const { FLAG, ROBOT, ROCK } = __m["src/presentation/pixel/sprites.js"];
 const { h, reducedMotion, sleep, tween } = __m["src/presentation/ui/dom.js"];
@@ -5839,10 +7801,11 @@ const MOTION_SOUND = { walk: 'step', turn: 'turn', jump: 'jump', bump: 'bump' };
  * trace (`steps`) produced by the domain runners.
  */
 class WorldView {
-  constructor({ theme, sfx, scenery = 'meadow', label = 'Mapa' }) {
+  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title') }) {
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
+    this.label = label;
     this.canvas = h('canvas', { class: 'world__canvas', role: 'img', 'aria-label': label });
     this.el = h('div', { class: 'world' }, this.canvas);
     this.ctx = this.canvas.getContext('2d');
@@ -5861,6 +7824,7 @@ class WorldView {
     this.world = new World(rows);
     this.canvas.width = this.world.width * T;
     this.canvas.height = this.world.height * T;
+    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world)}`);
     this.reset();
     this.fit();
   }
@@ -6049,18 +8013,41 @@ class WorldView {
   }
 }
 
-return { WorldView };
+/** Spoken summary of a map for screen readers: size, where Bit and the flag are, obstacles. */
+function describeWorld(world) {
+  let rocks = 0;
+  let walls = 0;
+  world.tiles.forEach((tile) => {
+    if (tile === Tile.ROCK) rocks += 1;
+    else if (tile === Tile.WALL) walls += 1;
+  });
+  const { start, goal } = world;
+  return t('world.describe', {
+    w: world.width,
+    h: world.height,
+    x: start.x + 1,
+    y: start.y + 1,
+    dir: t(`dir.${start.dir}`),
+    gx: goal.x + 1,
+    gy: goal.y + 1,
+    rocks,
+    walls,
+  });
+}
+
+return { WorldView, describeWorld };
 })();
 // ── src/presentation/screens/ChallengeScreen.js
 __m["src/presentation/screens/ChallengeScreen.js"] = (() => {
-const { ENCOURAGEMENTS, FAILURES } = __m["src/content/feedback.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
 const { createEditor } = __m["src/presentation/components/editors.js"];
+const { openEnergyDialog } = __m["src/presentation/components/energyDialog.js"];
 const { energyMeter } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { WorldView } = __m["src/presentation/components/WorldView.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
-const { formatCountdown, h, pick, sleep } = __m["src/presentation/ui/dom.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
+const { h, pick, sleep } = __m["src/presentation/ui/dom.js"];
 /**
  * SPEC-002/003/004 screen states: editing → running → (success | failure) → editing.
  * The verdict always comes from the domain (`session.submit`); this screen
@@ -6072,7 +8059,7 @@ class ChallengeScreen extends Screen {
   }
 
   get legend() {
-    return [['A', 'escolher'], ['B', 'apagar'], ['START', 'executar'], ['SELECT', 'dica']];
+    return [['A', t('legend.choose')], ['B', t('legend.erase')]];
   }
 
   render() {
@@ -6090,27 +8077,27 @@ class ChallengeScreen extends Screen {
 
     this.editor = createEditor(challenge, { sfx });
     this.editor.onChange = () => this.onProgramChange();
-    this.view = new WorldView({ theme, sfx, scenery: fase.scenery, label: `Mapa do desafio. ${challenge.goal}` });
+    this.view = new WorldView({ theme, sfx, scenery: fase.scenery, label: t('challenge.mapAria', { goal: challenge.goal }) });
     this.track(() => this.view.destroy());
 
     this.energySlot = h('div', { class: 'challenge__energy' });
-    this.hintBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Pedir dica', onClick: () => this.showHint() }, icon('hint'));
-    this.runBtn = h('button', { class: 'pbtn pbtn--primary pbtn--run', type: 'button', onClick: () => this.run() }, icon('play'), 'Executar');
-    this.clearBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Apagar tudo', onClick: () => this.clearAll() }, icon('trash'));
+    this.hintBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'));
+    this.runBtn = h('button', { class: 'pbtn pbtn--primary pbtn--run', type: 'button', onClick: () => this.run() }, icon('play'), t('challenge.run'));
+    this.clearBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.clear'), onClick: () => this.clearAll() }, icon('trash'));
     this.feedbackLayer = h('div', { class: 'feedback-layer' });
     this.controls = h('div', { class: 'challenge__controls' },
       this.editor.paletteEl,
       h('div', { class: 'challenge__actions' }, this.clearBtn, this.runBtn),
       this.feedbackLayer);
     this.tabs = challenge.maps.length > 1
-      ? h('div', { class: 'maptabs', role: 'tablist', 'aria-label': 'Mapas' }, challenge.maps.map((_, i) =>
-        h('button', { class: 'maptab', type: 'button', role: 'tab', 'aria-selected': String(i === 0), onClick: () => this.showMap(i) }, `Mapa ${i + 1}`)))
+      ? h('div', { class: 'maptabs', role: 'tablist', 'aria-label': t('challenge.maps') }, challenge.maps.map((_, i) =>
+        h('button', { class: 'maptab', type: 'button', role: 'tab', 'aria-selected': String(i === 0), onClick: () => this.showMap(i) }, t('challenge.mapTab', { n: i + 1 }))))
       : null;
 
     this.root.append(
       h('header', { class: 'topbar' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar ao mapa', onClick: () => this.ctx.nav.go('map') }, icon('back')),
-        h('div', { class: 'topbar__title' }, h('span', { class: 'fase__number' }, `Fase ${fase.number} · ${index + 1}/3`), h('h1', {}, challenge.title)),
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.backToMap'), onClick: () => this.ctx.nav.go('map') }, icon('back')),
+        h('div', { class: 'topbar__title' }, h('span', { class: 'fase__number' }, t('challenge.kicker', { n: fase.number, index: index + 1 })), h('h1', {}, challenge.title)),
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
@@ -6125,11 +8112,16 @@ class ChallengeScreen extends Screen {
   }
 
   renderEnergy() {
-    this.energySlot.replaceChildren(energyMeter(this.ctx.game.playerSummary.execute().energy));
+    const { energy } = this.ctx.game.playerSummary.execute();
+    this.energySlot.replaceChildren(energyMeter(energy, { onClick: () => this.showEnergy() }));
   }
 
+  /** Map tab chosen by the player; ignored mid-run so the replay stays on the right map. */
   showMap(index) {
-    if (this.state === 'running') return;
+    if (this.state !== 'running') this.displayMap(index);
+  }
+
+  displayMap(index) {
     this.tabs?.querySelectorAll('.maptab').forEach((tab, i) => tab.setAttribute('aria-selected', String(i === index)));
     this.view.setWorld(this.challenge.maps[index]);
   }
@@ -6149,7 +8141,7 @@ class ChallengeScreen extends Screen {
     if (this.state === 'running') return;
     if (this.state === 'failed') this.retry();
     const outcome = this.session.submit(this.editor.getProgram());
-    if (outcome.status === 'no_energy') return this.noEnergy(outcome);
+    if (outcome.status === 'no_energy') return this.noEnergy();
 
     const { evaluation } = outcome;
     if (!evaluation.success && evaluation.failure.stepIndex < 0) {
@@ -6165,7 +8157,7 @@ class ChallengeScreen extends Screen {
 
     for (const run of evaluation.runs) {
       if (this.challenge.maps.length > 1) {
-        this.showMap(run.mapIndex);
+        this.displayMap(run.mapIndex);
         await sleep(350);
       } else {
         this.view.reset();
@@ -6191,24 +8183,25 @@ class ChallengeScreen extends Screen {
   succeed(outcome) {
     this.state = 'done';
     this.ctx.sfx('correct');
-    this.feedbackLayer.replaceChildren(h('div', { class: 'banner', role: 'status' }, 'Conseguiu!'));
+    this.feedbackLayer.replaceChildren(h('div', { class: 'banner', role: 'status' }, t('challenge.success')));
     this.later(() => this.ctx.nav.go('result', { challengeId: this.challenge.id, outcome }), 1100);
   }
 
   showFailure(evaluation, energyLost) {
     const { failure } = evaluation;
-    const copy = FAILURES[failure.code] ?? { title: 'Algo deu errado.', hint: 'Tente outro caminho.' };
+    const { failures, encouragements } = this.ctx.game.content.feedback;
+    const copy = failures[failure.code] ?? { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
-    const where = failure.stepIndex >= 0 ? `No passo ${failure.stepIndex + 1}${multiMap ? ` do mapa ${failure.mapIndex + 1}` : ''}.` : null;
+    const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
     this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= 2);
 
     const card = h('div', { class: 'feedback panel', role: 'alert' },
       h('div', { class: 'feedback__head' }, icon(energyLost ? 'bug' : 'hint', 'feedback__icon'), h('strong', {}, copy.title)),
       h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
-      energyLost ? h('p', { class: 'feedback__note' }, icon('energy'), ` −1 energia. ${pick(ENCOURAGEMENTS)}`) : null,
+      energyLost ? h('p', { class: 'feedback__note' }, icon('energy'), ` ${t('challenge.energyLost')} ${pick(encouragements)}`) : null,
       h('div', { class: 'feedback__actions' },
-        h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), 'Dica'),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, energyLost ? 'Tentar de novo' : 'Ok')));
+        h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, energyLost ? t('challenge.retry') : t('challenge.ok'))));
     this.feedbackLayer.replaceChildren(card);
     this.controls.classList.add('has-feedback');
     if (energyLost) this.state = 'failed';
@@ -6227,34 +8220,23 @@ class ChallengeScreen extends Screen {
     if (this.state === 'running') return;
     this.ctx.sfx('lesson');
     await this.ask({
-      title: 'Dica',
+      title: t('challenge.hintTitle'),
       body: h('div', { class: 'hint' }, mentorPortrait(this.mentor.id, this.ctx.theme.colors, { scale: 3 }),
         h('div', {}, h('strong', {}, this.mentor.name), h('p', {}, this.session.nextHint()))),
-      actions: [{ label: 'Entendi', value: true, primary: true }],
+      actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
     });
   }
 
-  async noEnergy(outcome) {
-    const { game, sfx, toast } = this.ctx;
-    const price = game.content.economy.energyRefillPrice;
-    const { coins } = game.playerSummary.execute();
+  async showEnergy() {
+    if (this.state === 'running') return;
+    if (await openEnergyDialog(this) === 'refilled') this.renderEnergy();
+  }
+
+  async noEnergy() {
     this.ctx.sfx('wrong');
-    const choice = await this.ask({
-      title: 'Sem energia!',
-      iconName: 'energy',
-      body: h('p', {}, `O Bit precisa descansar. A próxima energia chega em ${formatCountdown(outcome.msUntilNext)}.`),
-      actions: [
-        coins >= price ? { label: `Recarregar: ${price} moedas`, value: 'refill', primary: true, icon: 'coin' } : null,
-        { label: 'Voltar ao mapa', value: 'map', primary: coins < price },
-      ].filter(Boolean),
-    });
-    if (choice === 'refill' && game.refillEnergy.execute().ok) {
-      sfx('coin');
-      toast.show({ title: 'Energia cheia!', iconName: 'energy' });
-      this.renderEnergy();
-    } else if (choice === 'map') {
-      this.ctx.nav.go('map');
-    }
+    const choice = await openEnergyDialog(this, { title: t('energy.empty'), leave: { label: t('common.backToMap'), value: 'map' } });
+    if (choice === 'refilled') this.renderEnergy();
+    else if (choice === 'map') this.ctx.nav.go('map');
   }
 
   onBack() {
@@ -6275,18 +8257,118 @@ class ChallengeScreen extends Screen {
 
 return { ChallengeScreen };
 })();
+// ── src/presentation/screens/GuideScreen.js
+__m["src/presentation/screens/GuideScreen.js"] = (() => {
+const { Screen } = __m["src/presentation/Screen.js"];
+const { spriteCanvas } = __m["src/presentation/pixel/draw.js"];
+const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
+const { portraitCanvas } = __m["src/presentation/pixel/portrait.js"];
+const { ROBOT } = __m["src/presentation/pixel/sprites.js"];
+const { h } = __m["src/presentation/ui/dom.js"];
+/** "Como jogar": paged tour of every feature. Shown once after boot, then from the "?" on home. */
+class GuideScreen extends Screen {
+  get legend() {
+    return [['A', t('legend.next')], ['◀▶', t('legend.pages')], ['B', t('legend.exit')]];
+  }
+
+  render() {
+    this.slides = this.ctx.game.content.guide;
+    this.index = 0;
+    this.page = h('div', { class: 'guide__page', 'aria-live': 'polite' });
+    this.dots = h('div', { class: 'lesson__dots', 'aria-hidden': 'true' });
+    this.prevBtn = h('button', { class: 'pbtn', type: 'button', onClick: () => this.prev() }, icon('back'), t('guide.prev'));
+    this.nextBtn = h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.next() });
+
+    this.root.append(
+      h('header', { class: 'topbar' },
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('guide.close'), onClick: () => this.finish() }, icon('close')),
+        h('h1', { class: 'topbar__title' }, t('guide.title')),
+        h('button', { class: 'pbtn guide__skip', type: 'button', onClick: () => this.finish() }, t('guide.skip'))),
+      this.page,
+      h('footer', { class: 'lesson__foot' }, this.prevBtn, this.dots, this.nextBtn),
+    );
+    this.show();
+  }
+
+  show() {
+    const slide = this.slides[this.index];
+    const last = this.index === this.slides.length - 1;
+    this.prevBtn.disabled = this.index === 0;
+    this.nextBtn.replaceChildren(...(last ? [icon('play'), t('guide.start')] : [t('guide.next')]));
+    this.dots.replaceChildren(...this.slides.map((_, i) => h('span', { class: i === this.index ? 'is-on' : '' })));
+    this.page.replaceChildren(
+      h('p', { class: 'guide__count' }, t('guide.count', { n: this.index + 1, total: this.slides.length })),
+      ...(slide.robot ? [this.robot()] : []),
+      h('h2', { class: 'guide__title' }, slide.title),
+      h('p', { class: 'guide__text' }, slide.text),
+      h('ul', { class: 'guide__items' }, slide.items.map(([iconName, label, detail]) => h('li', { class: 'guide__item panel' },
+        iconName === 'key' ? h('b', { class: 'guide__key' }, label) : [icon(iconName, 'guide__icon'), h('strong', {}, label)],
+        h('span', {}, detail)))),
+    );
+    this.page.scrollTop = 0;
+  }
+
+  robot() {
+    const robot = spriteCanvas(ROBOT.S[0], this.ctx.theme.colors, 4);
+    robot.classList.add('guide__robot');
+    const heroArt = portraitCanvas('hero', { scale: 2 });
+    heroArt.classList.add('guide__robot');
+    const hero = h('figure', { class: 'home__mary' }, heroArt, h('figcaption', {}, this.ctx.game.content.hero.name));
+    return h('div', { class: 'guide__duo', 'aria-hidden': 'true' }, hero, robot);
+  }
+
+  next() {
+    if (this.index === this.slides.length - 1) return this.finish();
+    this.index += 1;
+    this.ctx.sfx('lesson');
+    this.show();
+  }
+
+  prev() {
+    if (this.index === 0) return;
+    this.index -= 1;
+    this.show();
+  }
+
+  finish() {
+    this.ctx.game.updateSettings.execute({ guideSeen: true });
+    this.ctx.nav.go('home');
+  }
+
+  onDirection(direction) {
+    if (direction === 'right') this.next();
+    else if (direction === 'left') this.prev();
+    else return false;
+    return true;
+  }
+
+  onStart() {
+    this.next();
+  }
+
+  onBack() {
+    this.finish();
+  }
+}
+
+return { GuideScreen };
+})();
 // ── src/presentation/screens/HomeScreen.js
 __m["src/presentation/screens/HomeScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
+const { openEnergyDialog } = __m["src/presentation/components/energyDialog.js"];
 const { energyMeter, statChip, xpBar } = __m["src/presentation/components/hud.js"];
 const { MentorSpeech } = __m["src/presentation/components/mentorViews.js"];
 const { spriteCanvas } = __m["src/presentation/pixel/draw.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t, tn } = __m["src/presentation/i18n/index.js"];
+const { portraitCanvas } = __m["src/presentation/pixel/portrait.js"];
 const { ROBOT } = __m["src/presentation/pixel/sprites.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 class HomeScreen extends Screen {
   get legend() {
-    return [['A', 'escolher'], ['START', 'jogar']];
+    return [['A', t('legend.choose')]];
   }
 
   render() {
@@ -6297,21 +8379,27 @@ class HomeScreen extends Screen {
     const robot = spriteCanvas(ROBOT.S[0], theme.colors, 4);
     robot.classList.add('home__robot');
     robot.setAttribute('aria-hidden', 'true');
+    const heroArt = portraitCanvas('hero', { scale: 2 });
+    heroArt.classList.add('home__hero-art');
+    heroArt.setAttribute('aria-hidden', 'true');
+    const hero = h('figure', { class: 'home__mary' }, heroArt, h('figcaption', {}, game.content.hero.name));
 
     const speech = new MentorSpeech({ mentor: s.mentor, colors: theme.colors, sfx, compact: true });
     this.track(() => speech.stop());
 
     this.root.append(
       h('div', { class: 'home__top' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Ajustes', onClick: () => this.ctx.nav.go('settings') }, icon('gear')),
+        h('div', { class: 'home__tools' },
+          h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('home.settings'), onClick: () => this.ctx.nav.go('settings') }, icon('gear')),
+          h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('home.howToPlay'), onClick: () => this.ctx.nav.go('guide') }, icon('hint'))),
         h('div', { class: 'home__chips' },
-          h('span', { class: 'stat stat--streak', 'aria-label': `Sequência: ${s.streak} dias` }, icon('flame'), h('span', { class: 'stat__value' }, s.streak), h('small', {}, s.streak === 1 ? 'dia' : 'dias')),
-          statChip('coin', s.coins, 'Moedas'),
-          energyMeter(s.energy)),
+          h('span', { class: 'stat stat--streak', 'aria-label': t('home.streakAria', { n: s.streak }) }, icon('flame'), h('span', { class: 'stat__value' }, s.streak), h('small', {}, tn('home.day', s.streak))),
+          statChip('coin', s.coins, t('common.coins')),
+          energyMeter(s.energy, { onClick: () => this.showEnergy() })),
         h('button', {
           class: 'iconbtn',
           type: 'button',
-          'aria-label': soundOn ? 'Desligar som' : 'Ligar som',
+          'aria-label': soundOn ? t('home.soundOff') : t('home.soundOn'),
           'aria-pressed': String(soundOn),
           onClick: () => {
             game.updateSettings.execute({ sfx: !soundOn, music: !soundOn });
@@ -6320,32 +8408,54 @@ class HomeScreen extends Screen {
         }, icon(soundOn ? 'soundOn' : 'soundOff'))),
       h('div', { class: 'home__hero' },
         h('h1', { class: 'logo' }, h('span', { class: 'logo__bit' }, 'Bit'), h('span', { class: 'logo__quest' }, 'Quest')),
-        robot),
+        h('div', { class: 'home__duo' }, hero, robot)),
       speech.el,
       xpBar(s),
       h('div', { class: 'home__actions' },
-        h('button', { class: 'pbtn pbtn--primary pbtn--big', type: 'button', 'data-autofocus': '', onClick: () => this.ctx.nav.go('map') }, icon('play'), 'Jogar'),
-        h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('library') }, icon('book'), 'Aprender')),
+        h('button', { class: 'pbtn pbtn--primary pbtn--big', type: 'button', 'data-autofocus': '', onClick: () => this.ctx.nav.go('map') }, icon('play'), t('home.play')),
+        h('div', { class: 'home__row' },
+          h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('library') }, icon('book'), t('home.learn')),
+          this.colorsButton(s))),
       h('p', { class: 'home__progress' },
-        h('span', {}, icon('flag'), ` ${s.completedChallenges}/${s.totalChallenges} desafios`),
+        h('span', {}, icon('flag'), ` ${t('home.challenges', { done: s.completedChallenges, total: s.totalChallenges })}`),
         h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`)),
     );
 
     this.later(() => speech.say(this.greeting(s)), 250);
   }
 
+  /** Shortcut to the palettes, previewing the current one so colors (and their songs) are easy to find. */
+  colorsButton(summary) {
+    const { palettes } = this.ctx.game.content;
+    const current = palettes.find((p) => p.id === summary.palettes.current) ?? palettes[0];
+    const forSale = palettes.length - summary.palettes.owned.length;
+    return h('button', {
+      class: 'pbtn home__colors',
+      type: 'button',
+      'aria-label': `${t('home.colorsAria', { name: current.name })}${forSale ? ` ${t('home.colorsForSale', { n: forSale })}` : ''}`,
+      onClick: () => this.ctx.nav.go('settings', { focus: 'colors' }),
+    },
+    h('span', { class: 'home__swatch', 'aria-hidden': 'true' }, current.colors.map((c) => h('i', { style: { background: c } }))),
+    t('home.colors'),
+    forSale ? h('b', { class: 'home__badge', 'aria-hidden': 'true' }, forSale) : null);
+  }
+
+  async showEnergy() {
+    if (await openEnergyDialog(this) === 'refilled') this.ctx.nav.refresh();
+  }
+
   greeting(summary) {
     const { game } = this.ctx;
     const next = game.mapOverview.execute().next;
-    if (!next) return 'Você completou todas as fases! Que tal buscar 3 estrelas em tudo?';
+    if (!next) return t('home.greet.done');
     const fase = game.curriculum.fase(next.faseId);
     if (next.type === 'lesson') {
       return summary.completedChallenges === 0
-        ? 'Oi! Eu ajudo você a ensinar o Bit. Toque em Jogar!'
-        : `Nova fase liberada: ${fase.title}. Vamos lá?`;
+        ? t('home.greet.first')
+        : t('home.greet.newFase', { title: fase.title });
     }
     const { challenge } = game.curriculum.findChallenge(next.challengeId);
-    return `Próximo desafio: ${challenge.title}.`;
+    return t('home.greet.next', { title: challenge.title });
   }
 
   onStart() {
@@ -6364,11 +8474,12 @@ const { clearHighlights, highlightStep, programStrip } = __m["src/presentation/c
 const { MentorSpeech } = __m["src/presentation/components/mentorViews.js"];
 const { WorldView } = __m["src/presentation/components/WorldView.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h, sleep } = __m["src/presentation/ui/dom.js"];
 /** Fase intro: 3 short slides, one with a live demo of a program running. */
 class LessonScreen extends Screen {
   get legend() {
-    return [['A', 'próximo'], ['B', 'mapa']];
+    return [['A', t('legend.next')], ['B', t('legend.map')]];
   }
 
   render() {
@@ -6386,8 +8497,8 @@ class LessonScreen extends Screen {
 
     this.root.append(
       h('header', { class: 'lesson__head' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar ao mapa', onClick: () => this.onBack() }, icon('back')),
-        h('div', {}, h('span', { class: 'fase__number' }, `Fase ${this.fase.number} · Lição`), h('h1', { class: 'lesson__title' }, this.fase.title))),
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.backToMap'), onClick: () => this.onBack() }, icon('back')),
+        h('div', {}, h('span', { class: 'fase__number' }, t('lesson.kicker', { n: this.fase.number })), h('h1', { class: 'lesson__title' }, this.fase.title))),
       this.speech.el,
       this.stage,
       h('footer', { class: 'lesson__foot' }, this.dots, this.nextBtn),
@@ -6400,7 +8511,7 @@ class LessonScreen extends Screen {
     const last = this.index === this.fase.lesson.length - 1;
     this.stopDemo();
     this.stage.replaceChildren();
-    this.nextBtn.replaceChildren(...(last ? [icon('play'), 'Começar desafios'] : ['Próximo']));
+    this.nextBtn.replaceChildren(...(last ? [icon('play'), t('lesson.start')] : [t('lesson.next')]));
     this.dots.replaceChildren(...this.fase.lesson.map((_, i) => h('span', { class: i === this.index ? 'is-on' : '' })));
     this.speech.say(slide.text);
 
@@ -6418,7 +8529,7 @@ class LessonScreen extends Screen {
   }
 
   async startDemo(demo) {
-    const view = new WorldView({ theme: this.ctx.theme, sfx: () => {}, scenery: this.fase.scenery, label: 'Exemplo animado' });
+    const view = new WorldView({ theme: this.ctx.theme, sfx: () => {}, scenery: this.fase.scenery, label: t('lesson.demo') });
     const strip = programStrip(demo.program, { compact: true });
     this.stage.append(h('div', { class: 'lesson__demo' }, view.el, strip));
     view.setWorld(demo.map);
@@ -6467,6 +8578,7 @@ return { LessonScreen };
 // ── src/presentation/screens/mentorCard.js
 __m["src/presentation/screens/mentorCard.js"] = (() => {
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 /** Mentor story block, shared by the unlock screen and the library. */
 function mentorCard(mentor) {
@@ -6474,10 +8586,10 @@ function mentorCard(mentor) {
     h('h2', { class: 'mentor-card__name' }, mentor.name),
     h('p', { class: 'mentor-card__meta' }, h('span', {}, mentor.years), h('span', {}, mentor.area)),
     h('p', {}, mentor.intro),
-    h('div', { class: 'mentor-card__fact panel' }, h('strong', {}, icon('star'), ' Curiosidade'), h('p', {}, mentor.fact)),
+    h('div', { class: 'mentor-card__fact panel' }, h('strong', {}, icon('star'), ` ${t('mentor.fact')}`), h('p', {}, mentor.fact)),
     h('blockquote', { class: 'mentor-card__message' },
       h('p', {}, mentor.message),
-      h('footer', {}, 'Frase criada para o jogo. Não é uma citação histórica.')));
+      h('footer', {}, t('mentor.disclaimer'))));
 }
 
 return { mentorCard };
@@ -6488,12 +8600,13 @@ const { Screen } = __m["src/presentation/Screen.js"];
 const { programStrip } = __m["src/presentation/components/blocks.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
 const { mentorCard } = __m["src/presentation/screens/mentorCard.js"];
 const TABS = [
-  { id: 'mentors', label: 'Mentores', icon: 'person' },
-  { id: 'concepts', label: 'Conceitos', icon: 'book' },
-  { id: 'medals', label: 'Medalhas', icon: 'trophy' },
+  { id: 'mentors', icon: 'person' },
+  { id: 'concepts', icon: 'book' },
+  { id: 'medals', icon: 'trophy' },
 ];
 
 /** "Aprender": mentors, concepts already learned and medals. */
@@ -6502,12 +8615,12 @@ class LibraryScreen extends Screen {
     this.tab = this.params.tab ?? 'mentors';
     this.detail = null;
     this.body = h('div', { class: 'library__body', role: 'tabpanel' });
-    this.tabBar = h('div', { class: 'tabs', role: 'tablist', 'aria-label': 'Seções' }, TABS.map((t) =>
-      h('button', { class: 'tab', type: 'button', role: 'tab', dataset: { tab: t.id }, onClick: () => this.select(t.id) }, icon(t.icon), t.label)));
+    this.tabBar = h('div', { class: 'tabs', role: 'tablist', 'aria-label': t('library.sections') }, TABS.map((tab) =>
+      h('button', { class: 'tab', type: 'button', role: 'tab', dataset: { tab: tab.id }, onClick: () => this.select(tab.id) }, icon(tab.icon), t(`library.${tab.id}`))));
     this.root.append(
       h('header', { class: 'topbar' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar', onClick: () => this.handleBack() }, icon('back')),
-        h('h1', { class: 'topbar__title' }, 'Aprender')),
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.back'), onClick: () => this.handleBack() }, icon('back')),
+        h('h1', { class: 'topbar__title' }, t('library.title'))),
       this.tabBar,
       this.body,
     );
@@ -6531,12 +8644,12 @@ class LibraryScreen extends Screen {
       return h('button', {
         class: `mentor-tile ${unlocked ? '' : 'is-locked'} ${s.mentor.id === m.id ? 'is-current' : ''}`,
         type: 'button',
-        'aria-label': unlocked ? m.name : `Mentor bloqueado. ${m.unlockText}`,
-        onClick: () => (unlocked ? this.openMentor(m) : this.ctx.toast.show({ title: 'Mentor bloqueado', text: m.unlockText, iconName: 'lock' })),
+        'aria-label': unlocked ? m.name : t('mentor.lockedAria', { text: m.unlockText }),
+        onClick: () => (unlocked ? this.openMentor(m) : this.ctx.toast.show({ title: t('mentor.locked'), text: m.unlockText, iconName: 'lock' })),
       },
       mentorPortrait(m.id, theme.colors, { scale: 3, locked: !unlocked }),
       h('strong', {}, unlocked ? m.name : '???'),
-      h('small', {}, unlocked ? (s.mentor.id === m.id ? 'Seu guia' : m.area) : m.unlockText));
+      h('small', {}, unlocked ? (s.mentor.id === m.id ? t('mentor.yourGuide') : m.area) : m.unlockText));
     }));
   }
 
@@ -6553,10 +8666,10 @@ class LibraryScreen extends Screen {
         disabled: isCurrent,
         onClick: () => {
           game.selectMentor.execute(mentor.id);
-          this.ctx.toast.show({ title: `${mentor.name} agora é seu guia`, iconName: 'person' });
+          this.ctx.toast.show({ title: t('mentor.nowGuide', { name: mentor.name }), iconName: 'person' });
           this.select('mentors');
         },
-      }, isCurrent ? 'Já é seu guia' : 'Escolher como guia')));
+      }, isCurrent ? t('mentor.alreadyGuide') : t('mentor.choose'))));
     this.body.scrollTop = 0;
     this.body.querySelector('button:not([disabled])')?.focus({ preventScroll: true });
   }
@@ -6570,8 +8683,8 @@ class LibraryScreen extends Screen {
         h('h2', {}, open ? fase.concept.title : '???'),
         open
           ? [h('p', {}, fase.concept.summary), programStrip(fase.concept.example, { compact: true }),
-            h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }, icon('book'), 'Rever lição')]
-          : h('p', {}, icon('lock'), ` Faça a lição da fase ${fase.title}.`));
+            h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }, icon('book'), t('library.review'))]
+          : h('p', {}, icon('lock'), ` ${t('library.lockedConcept', { title: fase.title })}`));
     }));
   }
 
@@ -6598,14 +8711,14 @@ return { LibraryScreen };
 __m["src/presentation/screens/MapScreen.js"] = (() => {
 const { NodeStatus } = __m["src/domain/ProgressionRules.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
+const { openEnergyDialog } = __m["src/presentation/components/energyDialog.js"];
 const { starRow, topBar } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { spriteCanvas } = __m["src/presentation/pixel/draw.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { ROBOT } = __m["src/presentation/pixel/sprites.js"];
 const { formatCountdown, h } = __m["src/presentation/ui/dom.js"];
-const STATUS_TEXT = { locked: 'bloqueado', available: 'disponível', completed: 'concluído' };
-
 class MapScreen extends Screen {
   render() {
     const { game, theme } = this.ctx;
@@ -6618,7 +8731,7 @@ class MapScreen extends Screen {
       const mentor = mentors.find((m) => m.id === fase.mentorId);
       const reward = mentors.find((m) => m.id === game.curriculum.fase(fase.id).reward.mentorId);
       const nodes = [
-        this.node({ key: `lesson-${fase.id}`, kind: 'lesson', label: 'Lição', status: fase.lesson.status, onOpen: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }),
+        this.node({ key: `lesson-${fase.id}`, kind: 'lesson', label: t('map.lesson'), status: fase.lesson.status, onOpen: () => this.ctx.nav.go('lesson', { faseId: fase.id }) }),
         ...fase.challenges.map((c) => this.node({
           key: c.id,
           kind: 'challenge',
@@ -6631,25 +8744,29 @@ class MapScreen extends Screen {
       ];
       const rewardUnlocked = summary.unlockedMentors.includes(reward.id);
 
-      return h('section', { class: `fase fase--${fase.scenery} ${fase.unlocked ? '' : 'is-locked'} ${fase.completed ? 'is-complete' : ''}`, 'aria-label': `Fase ${fase.number}: ${fase.title}` },
+      return h('section', { class: `fase fase--${fase.scenery} ${fase.unlocked ? '' : 'is-locked'} ${fase.completed ? 'is-complete' : ''}`, 'aria-label': t('map.faseAria', { n: fase.number, title: fase.title }) },
         h('header', { class: 'fase__banner' },
           fase.unlocked ? mentorPortrait(mentor.id, theme.colors, { scale: 2 }) : h('span', { class: 'fase__lock' }, icon('lock')),
           h('div', {},
-            h('span', { class: 'fase__number' }, `Fase ${fase.number}`),
+            h('span', { class: 'fase__number' }, t('map.fase', { n: fase.number })),
             h('h2', { class: 'fase__title' }, fase.title),
-            !fase.unlocked ? h('p', { class: 'fase__hint' }, fase.lockedHint) : null)),
+            !fase.unlocked && fase.previousTitle ? h('p', { class: 'fase__hint' }, t('map.lockedHint', { title: fase.previousTitle })) : null)),
         h('ol', { class: 'trail' }, nodes),
         h('div', { class: `fase__reward ${rewardUnlocked ? 'is-open' : ''}` },
           mentorPortrait(reward.id, theme.colors, { scale: 2, locked: !rewardUnlocked }),
-          h('span', {}, rewardUnlocked ? `${reward.name} desbloqueado` : 'Complete a fase para conhecer um novo mentor')));
+          h('span', {}, rewardUnlocked ? t('map.rewardOpen', { name: reward.name }) : t('map.rewardLocked'))));
     });
 
     this.root.append(
-      topBar({ title: 'Mapa', onBack: () => this.onBack(), summary, backIcon: 'home' }),
+      topBar({ title: t('map.title'), onBack: () => this.onBack(), summary, backIcon: 'home', onEnergy: () => this.showEnergy() }),
       h('div', { class: 'map', tabindex: '-1' }, sections),
     );
     this.every(() => this.updateTimer(), 1000);
     requestAnimationFrame(() => this.root.querySelector('.node.is-next')?.scrollIntoView({ block: 'center' }));
+  }
+
+  async showEnergy() {
+    if (await openEnergyDialog(this) === 'refilled') this.ctx.nav.refresh();
   }
 
   node({ key, kind, number, label, status, stars = 0, onOpen }) {
@@ -6662,7 +8779,7 @@ class MapScreen extends Screen {
       h('button', {
         class: 'node__btn',
         type: 'button',
-        'aria-label': `${label}, ${STATUS_TEXT[status]}`,
+        'aria-label': `${label}, ${t(`status.${status}`)}`,
         'data-autofocus': isNext ? '' : null,
         onClick: () => (status === NodeStatus.LOCKED ? this.explainLocked(kind) : onOpen()),
       }, badge),
@@ -6673,8 +8790,8 @@ class MapScreen extends Screen {
   explainLocked(kind) {
     this.ctx.sfx('wrong');
     this.ctx.toast.show({
-      title: 'Ainda bloqueado',
-      text: kind === 'lesson' ? 'Complete a fase anterior primeiro.' : 'Faça a lição e o desafio anterior.',
+      title: t('map.locked'),
+      text: kind === 'lesson' ? t('map.lockedLesson') : t('map.lockedChallenge'),
       iconName: 'lock',
     });
   }
@@ -6684,7 +8801,7 @@ class MapScreen extends Screen {
     if (!el) return;
     const { energy } = this.ctx.game.playerSummary.execute();
     if (energy.value >= energy.max) this.ctx.nav.refresh();
-    else el.textContent = `+1 em ${formatCountdown(energy.msUntilNext)}`;
+    else el.textContent = t('energy.timer', { time: formatCountdown(energy.msUntilNext) });
   }
 
   onBack() {
@@ -6697,12 +8814,15 @@ return { MapScreen };
 // ── src/presentation/screens/MentorUnlockScreen.js
 __m["src/presentation/screens/MentorUnlockScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
-const { drawSprite, spritePixels } = __m["src/presentation/pixel/draw.js"];
+const { spritePixels } = __m["src/presentation/pixel/draw.js"];
+const { PORTRAIT_SIZE } = __m["src/presentation/pixel/portraits.js"];
+const { hasPortrait, portraitPixels } = __m["src/presentation/pixel/portrait.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { MENTOR_SPRITES } = __m["src/presentation/pixel/sprites.js"];
 const { h, reducedMotion, sleep, tween } = __m["src/presentation/ui/dom.js"];
 const { mentorCard } = __m["src/presentation/screens/mentorCard.js"];
-const SCALE = 6;
+const FRAME = 96;
 
 /** SPEC-006: silhouette → pixels appear in random order → name and story. */
 class MentorUnlockScreen extends Screen {
@@ -6711,17 +8831,17 @@ class MentorUnlockScreen extends Screen {
   }
 
   get legend() {
-    return [['A', 'escolher'], ['B', 'mapa']];
+    return [['A', t('legend.choose')], ['B', t('legend.map')]];
   }
 
   render() {
     const { game } = this.ctx;
     this.mentor = game.content.mentors.find((m) => m.id === this.params.mentorId);
-    this.canvas = h('canvas', { class: 'portrait unlock__portrait', width: 16 * SCALE, height: 16 * SCALE, role: 'img', 'aria-label': `Retrato de ${this.mentor.name}` });
+    this.canvas = h('canvas', { class: 'portrait unlock__portrait', width: FRAME, height: FRAME, role: 'img', 'aria-label': t('mentor.portraitOf', { name: this.mentor.name }) });
     this.details = h('div', { class: 'unlock__details' });
 
     this.root.append(
-      h('p', { class: 'unlock__kicker' }, 'Novo mentor desbloqueado!'),
+      h('p', { class: 'unlock__kicker' }, t('mentor.unlocked')),
       h('div', { class: 'unlock__frame' }, this.canvas),
       this.details,
     );
@@ -6730,28 +8850,35 @@ class MentorUnlockScreen extends Screen {
 
   async reveal() {
     const { theme } = this.ctx;
+    const { id } = this.mentor;
+    // Both kinds of art become a list of [x, y, color] pixels: 32×32 portraits or 16×16 LCD sprites.
+    const art = hasPortrait(id)
+      ? { size: PORTRAIT_SIZE, pixels: await portraitPixels(id), color: (c) => c }
+      : { size: 16, pixels: spritePixels(MENTOR_SPRITES[id]), color: (c) => theme.colors[c] };
     const ctx = this.canvas.getContext('2d');
-    ctx.scale(SCALE, SCALE);
-    const sprite = MENTOR_SPRITES[this.mentor.id];
-    drawSprite(ctx, sprite, 0, 0, theme.colors, { tone: theme.colors[1] });
+    ctx.imageSmoothingEnabled = false;
+    ctx.scale(FRAME / art.size, FRAME / art.size);
+    const paint = (pixels, tone = null) => pixels.forEach(([x, y, c]) => {
+      ctx.fillStyle = tone ?? art.color(c);
+      ctx.fillRect(x, y, 1, 1);
+    });
+    paint(art.pixels, theme.colors[1]);
 
     if (!reducedMotion()) {
       await sleep(700);
       this.ctx.sfx('unlock');
-      const pixels = spritePixels(sprite).sort(() => Math.random() - 0.5);
+      const pixels = [...art.pixels].sort(() => Math.random() - 0.5);
       let drawn = 0;
-      await tween(1100, (t) => {
-        const target = Math.round(pixels.length * t);
-        for (; drawn < target; drawn += 1) {
-          const [x, y, c] = pixels[drawn];
-          ctx.fillStyle = theme.colors[c];
-          ctx.fillRect(x, y, 1, 1);
-        }
+      await tween(1100, (progress) => {
+        const target = Math.round(pixels.length * progress);
+        paint(pixels.slice(drawn, target));
+        drawn = target;
       });
     } else {
       this.ctx.sfx('unlock');
     }
-    drawSprite(ctx, sprite, 0, 0, theme.colors);
+    ctx.clearRect(0, 0, art.size, art.size);
+    paint(art.pixels);
     this.root.classList.add('is-revealed');
     this.showDetails();
   }
@@ -6767,10 +8894,10 @@ class MentorUnlockScreen extends Screen {
           type: 'button',
           onClick: () => {
             game.selectMentor.execute(this.mentor.id);
-            this.ctx.toast.show({ title: `${this.mentor.name} agora é seu guia`, iconName: 'person' });
+            this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
           },
-        }, icon('person'), 'Escolher como guia'),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, 'Continuar')),
+        }, icon('person'), t('mentor.choose')),
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.ctx.nav.go('map') }, t('mentor.continue'))),
     );
     this.details.querySelector('.pbtn--primary').focus({ preventScroll: true });
   }
@@ -6784,12 +8911,12 @@ return { MentorUnlockScreen };
 })();
 // ── src/presentation/screens/ResultScreen.js
 __m["src/presentation/screens/ResultScreen.js"] = (() => {
-const { PRAISE } = __m["src/content/feedback.js"];
 const { REWARDS } = __m["src/domain/scoring.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
 const { starRow } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h, pick, reducedMotion, tween } = __m["src/presentation/ui/dom.js"];
 class ResultScreen extends Screen {
   get music() {
@@ -6797,7 +8924,7 @@ class ResultScreen extends Screen {
   }
 
   get legend() {
-    return [['A', 'continuar'], ['B', 'mapa']];
+    return [['A', t('legend.continue')], ['B', t('legend.map')]];
   }
 
   render() {
@@ -6814,23 +8941,23 @@ class ResultScreen extends Screen {
 
     this.root.append(
       h('div', { class: `result ${outcome.faseCompleted ? 'result--fase' : ''}` },
-        h('p', { class: 'result__kicker' }, outcome.faseCompleted ? `Fase ${fase.number}: ${fase.title}` : challenge.title),
-        h('h1', { class: 'result__title' }, outcome.faseCompleted ? 'Fase completa!' : 'Desafio completo!'),
+        h('p', { class: 'result__kicker' }, outcome.faseCompleted ? t('result.faseKicker', { n: fase.number, title: fase.title }) : challenge.title),
+        h('h1', { class: 'result__title' }, outcome.faseCompleted ? t('result.faseDone') : t('result.challengeDone')),
         this.stars,
-        h('p', { class: 'result__praise' }, outcome.stars === 3 ? pick(PRAISE) : this.starTip(challenge)),
+        h('p', { class: 'result__praise' }, outcome.stars === 3 ? pick(game.content.feedback.praise) : this.starTip(challenge)),
         h('div', { class: 'rewards' },
           h('div', { class: 'reward' }, h('span', { class: 'reward__label' }, 'XP'), this.xpEl),
           h('div', { class: 'reward' }, icon('coin'), this.coinEl)),
-        outcome.reward.faseBonus ? h('p', { class: 'result__note' }, `Bônus de fase incluído: +${REWARDS.faseBonusXp} XP e +${REWARDS.faseBonusCoins} moedas`) : null,
-        outcome.levelUp ? h('p', { class: 'result__note result__note--level' }, icon('trophy'), ` Você subiu para o nível ${outcome.level}!`) : null,
+        outcome.reward.faseBonus ? h('p', { class: 'result__note' }, t('result.faseBonus', { xp: REWARDS.faseBonusXp, coins: REWARDS.faseBonusCoins })) : null,
+        outcome.levelUp ? h('p', { class: 'result__note result__note--level' }, icon('trophy'), ` ${t('result.levelUp', { n: outcome.level })}`) : null,
         this.loopSavings(challenge),
         challenge.successMessage ? h('div', { class: 'result__message panel' }, mentorPortrait(mentor.id, theme.colors, { scale: 2 }), h('p', {}, challenge.successMessage)) : null,
         outcome.achievements.length ? h('ul', { class: 'medals-earned' }, outcome.achievements.map((a) =>
-          h('li', {}, icon(a.icon), h('span', {}, h('strong', {}, 'Nova medalha: '), a.title)))) : null,
-        outcome.mentorUnlocked ? h('p', { class: 'result__note result__note--mentor' }, icon('person'), ' Um novo mentor quer conhecer você!') : null,
+          h('li', {}, icon(a.icon), h('span', {}, h('strong', {}, t('result.newMedal')), a.title)))) : null,
+        outcome.mentorUnlocked ? h('p', { class: 'result__note result__note--mentor' }, icon('person'), ` ${t('result.newMentor')}`) : null,
         h('div', { class: 'result__actions' },
-          h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('challenge', { challengeId }) }, 'Jogar de novo'),
-          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, outcome.mentorUnlocked ? 'Conhecer mentor' : 'Continuar'))),
+          h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('challenge', { challengeId }) }, t('result.again')),
+          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, outcome.mentorUnlocked ? t('result.meetMentor') : t('result.continue')))),
     );
 
     if (outcome.faseCompleted) this.ctx.bus.emit('song', 'victory');
@@ -6839,8 +8966,8 @@ class ResultScreen extends Screen {
 
   starTip(challenge) {
     const { evaluation } = this.outcome;
-    if (challenge.optimalBlocks && evaluation.blocksUsed > challenge.optimalBlocks) return 'Funcionou! Dá para fazer com menos blocos.';
-    return 'Funcionou! Acerte de primeira para ganhar 3 estrelas.';
+    if (challenge.optimalBlocks && evaluation.blocksUsed > challenge.optimalBlocks) return t('result.fewerBlocks');
+    return t('result.firstTry');
   }
 
   /** SPEC-004: show how many commands the loop saved. */
@@ -6850,10 +8977,10 @@ class ResultScreen extends Screen {
     const { blocksUsed, commandsExecuted } = this.outcome.evaluation;
     if (commandsExecuted <= blocksUsed) return null;
     const pct = Math.max(8, Math.round((blocksUsed / commandsExecuted) * 100));
-    return h('div', { class: 'savings panel', 'aria-label': `Sem loop: ${commandsExecuted} comandos. Com loop: ${blocksUsed} blocos.` },
-      h('div', { class: 'savings__row' }, h('span', {}, 'Sem loop'), h('span', { class: 'savings__bar' }, h('i', { style: { '--w': '100%' } })), h('b', {}, commandsExecuted)),
-      h('div', { class: 'savings__row' }, h('span', {}, 'Com loop'), h('span', { class: 'savings__bar' }, h('i', { style: { '--w': `${pct}%` } })), h('b', {}, blocksUsed)),
-      h('p', {}, `Você economizou ${commandsExecuted - blocksUsed} blocos!`));
+    return h('div', { class: 'savings panel', 'aria-label': t('result.savingsAria', { commands: commandsExecuted, blocks: blocksUsed }) },
+      h('div', { class: 'savings__row' }, h('span', {}, t('result.withoutLoop')), h('span', { class: 'savings__bar' }, h('i', { style: { '--w': '100%' } })), h('b', {}, commandsExecuted)),
+      h('div', { class: 'savings__row' }, h('span', {}, t('result.withLoop')), h('span', { class: 'savings__bar' }, h('i', { style: { '--w': `${pct}%` } })), h('b', {}, blocksUsed)),
+      h('p', {}, t('result.saved', { n: commandsExecuted - blocksUsed })));
   }
 
   async animate() {
@@ -6865,7 +8992,7 @@ class ResultScreen extends Screen {
       starEls[i].classList.add('is-on', 'is-pop');
       this.ctx.sfx('star');
     }
-    this.stars.setAttribute('aria-label', `${stars} de 3 estrelas`);
+    this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
   }
@@ -6905,15 +9032,17 @@ return { ResultScreen };
 __m["src/presentation/screens/SettingsScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
 const { statChip } = __m["src/presentation/components/hud.js"];
+const { languagePicker } = __m["src/presentation/components/languagePicker.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
 const { h } = __m["src/presentation/ui/dom.js"];
-const CONTROLS = [
-  ['Toque', 'escolher e montar blocos'],
-  ['D-pad / setas', 'mover o cursor'],
-  ['A / Z / Enter', 'confirmar'],
-  ['B / X / Esc', 'voltar ou apagar bloco'],
-  ['START / Espaço', 'executar programa'],
-  ['SELECT / Shift', 'pedir dica'],
+const controls = () => [
+  [t('controls.touch'), t('controls.touchDo')],
+  [t('controls.dpad'), t('controls.dpadDo')],
+  ['A / Z / Enter', t('controls.aDo')],
+  ['B / X / Esc', t('controls.bDo')],
+  [t('controls.space'), t('controls.spaceDo')],
+  ['Shift', t('controls.shiftDo')],
 ];
 
 class SettingsScreen extends Screen {
@@ -6929,36 +9058,47 @@ class SettingsScreen extends Screen {
         game.updateSettings.execute({ [key]: !s.settings[key] });
         this.ctx.nav.refresh();
       },
-    }, icon(iconName), h('span', {}, label), h('b', { class: 'toggle__state' }, s.settings[key] ? 'Ligado' : 'Desligado'));
+    }, icon(iconName), h('span', {}, label), h('b', { class: 'toggle__state' }, s.settings[key] ? t('settings.on') : t('settings.off')));
 
-    this.resetBtn = h('button', { class: 'pbtn pbtn--danger', type: 'button', onClick: () => this.reset() }, icon('trash'), 'Apagar progresso');
+    this.resetBtn = h('button', { class: 'pbtn pbtn--danger', type: 'button', onClick: () => this.reset() }, icon('trash'), t('settings.reset'));
 
     this.root.append(
       h('header', { class: 'topbar' },
-        h('button', { class: 'iconbtn', type: 'button', 'aria-label': 'Voltar', onClick: () => this.onBack() }, icon('back')),
-        h('h1', { class: 'topbar__title' }, 'Ajustes'),
-        h('div', { class: 'topbar__stats' }, statChip('coin', s.coins, 'Moedas'))),
+        h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.back'), onClick: () => this.onBack() }, icon('back')),
+        h('h1', { class: 'topbar__title' }, t('settings.title')),
+        h('div', { class: 'topbar__stats' }, statChip('coin', s.coins, t('common.coins')))),
       h('div', { class: 'settings' },
-        h('section', {}, h('h2', {}, 'Som'), toggle('sfx', 'Efeitos', 'soundOn'), toggle('music', 'Música', 'music')),
-        h('section', {}, h('h2', {}, 'Cor da tela'), h('div', { class: 'swatches' }, game.content.palettes.map((p) => this.swatch(p, s)))),
-        h('section', {}, h('h2', {}, 'Controles'), h('dl', { class: 'controls-list' }, CONTROLS.map(([k, v]) => [h('dt', {}, k), h('dd', {}, v)]))),
-        h('section', {}, h('h2', {}, 'Progresso'), this.resetBtn)),
+        h('section', {}, h('h2', {}, t('settings.language')), languagePicker(this.ctx)),
+        h('section', { class: 'settings__colors' },
+          h('h2', {}, t('settings.colors')),
+          h('p', { class: 'settings__note' }, icon('music'), ` ${t('settings.colorsNote')}`),
+          h('div', { class: 'swatches' }, game.content.palettes.map((p) => this.swatch(p, s)))),
+        h('section', {}, h('h2', {}, t('settings.sound')), toggle('sfx', t('settings.sfx'), 'soundOn'), toggle('music', t('settings.music'), 'music')),
+        h('section', {}, h('h2', {}, t('settings.a11y')),
+          toggle('largeText', t('settings.largeText'), 'book'),
+          toggle('plainFont', t('settings.plainFont'), 'hint'),
+          toggle('calmMotion', t('settings.calmMotion'), 'flag')),
+        h('section', {}, h('h2', {}, t('settings.controls')), h('dl', { class: 'controls-list' }, controls().map(([k, v]) => [h('dt', {}, k), h('dd', {}, v)])),
+          h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('guide') }, icon('hint'), t('home.howToPlay'))),
+        h('section', {}, h('h2', {}, t('settings.progress')), this.resetBtn)),
     );
   }
 
   swatch(palette, summary) {
     const owned = summary.palettes.owned.includes(palette.id);
     const current = summary.palettes.current === palette.id;
-    const status = current ? 'Usando' : owned ? 'Usar' : `${palette.price} moedas`;
+    const status = current ? t('settings.using') : owned ? t('settings.use') : t('settings.price', { price: palette.price });
     return h('button', {
       class: `swatch ${current ? 'is-current' : ''} ${owned ? '' : 'is-for-sale'}`,
       type: 'button',
       'aria-pressed': String(current),
-      'aria-label': `${palette.name}: ${status}`,
+      'data-autofocus': current && this.params.focus === 'colors' ? '' : null,
+      'aria-label': t('settings.swatchAria', { name: palette.name, song: palette.songName, status }),
       onClick: () => this.choosePalette(palette, owned),
     },
     h('span', { class: 'swatch__colors' }, palette.colors.map((c) => h('i', { style: { background: c } }))),
     h('strong', {}, palette.name),
+    h('small', { class: 'swatch__song' }, icon('music'), ` ${palette.songName}`),
     h('small', {}, owned ? status : [icon('coin'), ` ${palette.price}`]));
   }
 
@@ -6968,27 +9108,27 @@ class SettingsScreen extends Screen {
     const result = game.purchasePalette.execute(palette.id);
     if (result.ok) {
       sfx('coin');
-      toast.show({ title: `Tela ${palette.name} comprada!`, iconName: 'palette' });
+      toast.show({ title: t('settings.bought', { name: palette.name }), text: t('settings.newSong', { song: palette.songName }), iconName: 'music' });
     } else {
       sfx('wrong');
-      toast.show({ title: 'Moedas insuficientes', text: `Faltam ${result.missing}. Complete desafios para ganhar mais.`, iconName: 'coin' });
+      toast.show({ title: t('settings.noCoins'), text: t('settings.noCoinsText', { n: result.missing }), iconName: 'coin' });
     }
   }
 
   reset() {
     if (!this.confirming) {
       this.confirming = true;
-      this.resetBtn.replaceChildren(icon('trash'), 'Toque de novo para apagar tudo');
+      this.resetBtn.replaceChildren(icon('trash'), t('settings.resetArmed'));
       this.resetBtn.classList.add('is-armed');
       this.later(() => {
         this.confirming = false;
         this.resetBtn.classList.remove('is-armed');
-        this.resetBtn.replaceChildren(icon('trash'), 'Apagar progresso');
+        this.resetBtn.replaceChildren(icon('trash'), t('settings.reset'));
       }, 3500);
       return;
     }
     this.ctx.game.resetProgress.execute();
-    this.ctx.toast.show({ title: 'Progresso apagado', text: 'Uma nova aventura começa!', iconName: 'check' });
+    this.ctx.toast.show({ title: t('settings.resetDone'), text: t('settings.resetDoneText'), iconName: 'check' });
     this.ctx.nav.go('home');
   }
 
@@ -7001,12 +9141,13 @@ return { SettingsScreen };
 })();
 // ── src/presentation/ThemeService.js
 __m["src/presentation/ThemeService.js"] = (() => {
-/** Applies the owned screen palette as CSS variables and exposes it to canvas code. */
+/** Applies the owned screen palette as CSS variables and exposes its colors (canvas) and song (audio). */
 class ThemeService {
   constructor({ palettes, store, bus, root = document.documentElement }) {
     Object.assign(this, { palettes, store, bus, root });
     this.currentId = null;
     this.colors = palettes[0].colors;
+    this.song = palettes[0].song;
   }
 
   start() {
@@ -7022,6 +9163,7 @@ class ThemeService {
     const palette = this.palettes.find((p) => p.id === paletteId) ?? this.palettes[0];
     this.currentId = palette.id;
     this.colors = palette.colors;
+    this.song = palette.song;
     palette.colors.forEach((color, i) => this.root.style.setProperty(`--c${i}`, color));
   }
 }
@@ -7036,6 +9178,7 @@ __m["src/main.js"] = (() => {
  */
 const { createGame } = __m["src/application/createGame.js"];
 const { CONTENT } = __m["src/content/index.js"];
+const { localizeContent } = __m["src/content/locales/index.js"];
 const { EventBus } = __m["src/core/EventBus.js"];
 const { ChiptuneAudio } = __m["src/infrastructure/audio/ChiptuneAudio.js"];
 const { SFX, SONGS } = __m["src/infrastructure/audio/soundBank.js"];
@@ -7045,10 +9188,12 @@ const { SystemClock } = __m["src/infrastructure/SystemClock.js"];
 const { App } = __m["src/presentation/App.js"];
 const { AudioDirector } = __m["src/presentation/AudioDirector.js"];
 const { Toaster } = __m["src/presentation/components/Toast.js"];
+const { currentLanguage, resolveLanguage, setLanguage, t } = __m["src/presentation/i18n/index.js"];
 const { FocusNavigator } = __m["src/presentation/input/FocusNavigator.js"];
 const { InputController } = __m["src/presentation/input/InputController.js"];
 const { BootScreen } = __m["src/presentation/screens/BootScreen.js"];
 const { ChallengeScreen } = __m["src/presentation/screens/ChallengeScreen.js"];
+const { GuideScreen } = __m["src/presentation/screens/GuideScreen.js"];
 const { HomeScreen } = __m["src/presentation/screens/HomeScreen.js"];
 const { LessonScreen } = __m["src/presentation/screens/LessonScreen.js"];
 const { LibraryScreen } = __m["src/presentation/screens/LibraryScreen.js"];
@@ -7061,17 +9206,22 @@ const $ = (selector) => document.querySelector(selector);
 
 const bus = new EventBus();
 const repository = LocalStorageRepository.isAvailable() ? new LocalStorageRepository() : new MemoryRepository();
-const game = createGame({ content: CONTENT, repository, clock: SystemClock, bus });
+// The language is fixed for the page's lifetime: switching saves it and reloads.
+const RESUME_KEY = 'bitquest:resume';
+const lang = setLanguage(resolveLanguage(repository.load()?.settings?.lang, navigator.languages ?? [navigator.language]));
+const game = createGame({ content: localizeContent(CONTENT, lang), repository, clock: SystemClock, bus });
+translateShell();
 
 const theme = new ThemeService({ palettes: CONTENT.palettes, store: game.store, bus });
 theme.start();
 
 const audio = new ChiptuneAudio({ sfx: SFX, songs: SONGS });
-new AudioDirector({ bus, audio, store: game.store }).start();
+// 'theme' = the background song that comes with the current screen palette.
+new AudioDirector({ bus, audio, store: game.store, resolveSong: (id) => (id === 'theme' ? theme.song : id) }).start();
 const sfx = (id) => bus.emit('sfx', id);
 
 const buttons = Object.fromEntries(
-  ['up', 'down', 'left', 'right', 'a', 'b', 'start', 'select'].map((name) => [name, $(`[data-btn="${name}"]`)]),
+  ['up', 'down', 'left', 'right', 'a', 'b'].map((name) => [name, $(`[data-btn="${name}"]`)]),
 );
 const input = new InputController({ buttons, navigator: new FocusNavigator(), sfx, onFirstInteraction: () => audio.unlock() });
 input.attach();
@@ -7084,6 +9234,7 @@ const app = new App({
   screens: {
     boot: BootScreen,
     home: HomeScreen,
+    guide: GuideScreen,
     map: MapScreen,
     lesson: LessonScreen,
     challenge: ChallengeScreen,
@@ -7093,7 +9244,12 @@ const app = new App({
     settings: SettingsScreen,
   },
 });
-app.setContext({ game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')) });
+const changeLanguage = (id) => {
+  game.updateSettings.execute({ lang: id });
+  try { sessionStorage.setItem(RESUME_KEY, app.currentName); } catch { /* storage blocked: restart at boot */ }
+  location.reload();
+};
+app.setContext({ game, bus, theme, sfx, nav: app, toast: new Toaster($('#overlay')), changeLanguage });
 bus.on('theme:changed', () => app.refresh());
 
 // Every on-screen button clicks, unless it plays its own sound.
@@ -7102,14 +9258,38 @@ $('#screen').addEventListener('click', (event) => {
   if (button && !button.disabled && button.dataset.sound !== 'none') sfx('press');
 });
 
-// The power LED doubles as a sound indicator.
-const syncLed = ({ settings }) => document.body.classList.toggle('is-muted', !settings.sfx && !settings.music);
-syncLed(game.store.get());
-game.store.subscribe(syncLed);
+// The power LED doubles as a sound indicator; accessibility settings become body classes.
+const syncBody = ({ settings }) => {
+  document.body.classList.toggle('is-muted', !settings.sfx && !settings.music);
+  document.body.classList.toggle('is-large-text', settings.largeText);
+  document.body.classList.toggle('is-plain-font', settings.plainFont);
+  document.body.classList.toggle('is-calm', settings.calmMotion);
+};
+syncBody(game.store.get());
+game.store.subscribe(syncBody);
 
-if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { game, app, bus };
+if (new URLSearchParams(location.search).has('debug')) window.bitQuest = { game, app, bus, audio };
 
-app.go('boot');
+/** Static text in index.html (console labels, ARIA) follows the chosen language. */
+function translateShell() {
+  document.documentElement.lang = currentLanguage().htmlLang;
+  document.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => el.setAttribute('title', t(el.dataset.i18nTitle)));
+  document.querySelectorAll('[data-i18n-content]').forEach((el) => el.setAttribute('content', t(el.dataset.i18nContent)));
+}
+
+let resume = null;
+try {
+  resume = sessionStorage.getItem(RESUME_KEY);
+  sessionStorage.removeItem(RESUME_KEY);
+} catch { /* storage blocked */ }
+if (resume === 'settings' || resume === 'home' || resume === 'guide') {
+  document.body.classList.add('is-powered');
+  app.go(resume);
+} else {
+  app.go('boot');
+}
 
 return {  };
 })();

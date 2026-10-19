@@ -23,7 +23,9 @@ function append(el, children) {
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+/** System preference or the in-game "less animation" setting. */
+export const reducedMotion = () => Boolean(globalThis.document?.body?.classList.contains('is-calm'))
+  || (globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
 
 export function formatCountdown(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));

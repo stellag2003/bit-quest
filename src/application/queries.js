@@ -49,7 +49,7 @@ export class MapOverviewQuery {
         scenery: fase.scenery,
         unlocked: this.rules.isFaseUnlocked(p, fase.id),
         completed: p.completedFases.includes(fase.id),
-        lockedHint: previous ? `Complete a fase ${previous.title} para abrir` : '',
+        previousTitle: previous?.title ?? null,
         lesson: { status: this.rules.lessonStatus(p, fase.id) },
         challenges: fase.challenges.map((c, index) => ({
           id: c.id,

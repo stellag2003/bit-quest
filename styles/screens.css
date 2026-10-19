@@ -102,6 +102,45 @@
   padding: 0 3px;
 }
 
+.home__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.home__colors {
+  position: relative;
+}
+
+.home__swatch {
+  display: inline-flex;
+  box-shadow: 0 0 0 2px var(--c0);
+}
+
+.home__swatch i {
+  width: 7px;
+  height: 16px;
+}
+
+.home__badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  background: var(--c0);
+  color: var(--c3);
+  font-size: 0.8em;
+}
+
+.settings__note {
+  margin: 0 0 8px;
+  font-size: 0.9em;
+}
+
 .home__progress {
   display: flex;
   justify-content: center;
@@ -152,7 +191,7 @@
 
 .fase__hint {
   margin: 2px 0 0;
-  font-size: 0.78em;
+  font-size: 0.8em;
 }
 
 .fase__lock {
@@ -356,6 +395,88 @@
   background: var(--c0);
 }
 
+/* ───────────── Guide (Como jogar) ───────────── */
+.home__tools {
+  display: flex;
+  gap: 6px;
+}
+
+.guide__skip {
+  min-height: 36px;
+  padding-inline: 0.8em;
+}
+
+.guide__page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 3px;
+  text-align: center;
+}
+
+.guide__count {
+  margin: 0;
+  font-size: 0.8em;
+  color: var(--c1);
+}
+
+.guide__robot {
+  width: 64px;
+  height: 64px;
+}
+
+.guide__title {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.guide__text {
+  max-width: 30em;
+  margin: 0;
+}
+
+.guide__items {
+  width: 100%;
+  max-width: 30em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.guide__item {
+  display: grid;
+  grid-template-columns: 22px minmax(6.5em, auto) 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.guide__item > span:last-child {
+  color: var(--c1);
+  font-size: 0.9em;
+}
+
+.guide__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.guide__key {
+  grid-column: span 2;
+  min-width: 4.5em;
+  padding: 2px 6px;
+  background: var(--c0);
+  color: var(--c3);
+  text-align: center;
+}
+
 /* ───────────── World view ───────────── */
 .world {
   position: relative;
@@ -432,7 +553,7 @@
 .program__head {
   display: flex;
   justify-content: space-between;
-  font-size: 0.78em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -860,7 +981,7 @@
 }
 
 .reward__label {
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 .result__message {
@@ -1055,7 +1176,7 @@
 
 .mentor-card__message footer {
   margin-top: 4px;
-  font-size: 0.72em;
+  font-size: 0.8em;
   opacity: 0.8;
 }
 
@@ -1114,7 +1235,7 @@
 }
 
 .mentor-tile small {
-  font-size: 0.72em;
+  font-size: 0.8em;
   color: var(--c1);
 }
 
@@ -1210,7 +1331,7 @@
 
 .medal small {
   display: block;
-  font-size: 0.78em;
+  font-size: 0.8em;
 }
 
 /* ───────────── Settings ───────────── */
@@ -1297,7 +1418,7 @@
 }
 
 .swatch small {
-  font-size: 0.75em;
+  font-size: 0.8em;
 }
 
 .swatch.is-current {
@@ -1372,4 +1493,69 @@
   .scr--home .home__robot { width: 48px; height: 48px; }
   .scr--home .pbtn { min-height: 40px; }
   .scr--home .pbtn--big { font-size: 1.1em; min-height: 44px; }
+}
+
+/* ───────────── Small LCDs: keep the larger type but tighten the layout ───────────── */
+.home__row > .pbtn { min-width: 0; padding-inline: 0.5em; }
+
+@container lcd (max-width: 340px) {
+  .home__chips { gap: 6px; }
+  .home__chips .stat small { display: none; }
+  .energy--btn { padding-inline: 5px; }
+  .energy--btn .energy__cell { width: 5px; }
+  .slot { min-width: 64px; }
+  .rule { gap: 4px; padding-inline: 4px; }
+}
+
+@container lcd (max-height: 480px) {
+  .scr { font-size: 15.5px; gap: 6px; }
+  .rule { flex-wrap: nowrap; }
+  .slot { min-width: 64px; }
+}
+
+/* Short portrait LCDs: the run button must stay on screen */
+@container lcd (max-height: 480px) and (max-aspect-ratio: 21 / 20) {
+  .scr--challenge { gap: 5px; }
+  .scr--challenge .goal { font-size: 0.85em; }
+  .scr--challenge .rules { max-height: 112px; }
+  .palette--grid .chip,
+  .palette__items .chip { min-height: 46px; }
+}
+
+/* Small phones held sideways */
+@container lcd (min-aspect-ratio: 21 / 20) and (max-width: 460px) {
+  .scr--challenge { font-size: 14px; column-gap: 8px; }
+  .scr--challenge .palette--rules { gap: 4px; }
+  .scr--challenge .palette__items .chip__label { font-size: 0.8em; }
+}
+
+/* ───────────── Main character next to Bit ───────────── */
+.home__duo,
+.guide__duo {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.home__hero-art {
+  width: 64px;
+  height: 64px;
+}
+
+.pixelart {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.home__mary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+}
+
+.home__mary figcaption {
+  font-size: 0.8em;
+  font-weight: 600;
 }
