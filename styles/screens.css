@@ -1498,7 +1498,7 @@
 /* ───────────── Small LCDs: keep the larger type but tighten the layout ───────────── */
 .home__row > .pbtn { min-width: 0; padding-inline: 0.5em; }
 
-@container lcd (max-width: 340px) {
+@container lcd (max-width: 380px) {
   .home__chips { gap: 6px; }
   .home__chips .stat small { display: none; }
   .energy--btn { padding-inline: 5px; }
@@ -1558,4 +1558,117 @@
 .home__mary figcaption {
   font-size: 0.8em;
   font-weight: 600;
+}
+
+/* ───────────── Challenge layout: the run button never leaves the screen ───────────── */
+/* The map takes the free space; the program shrinks first and scrolls inside itself. */
+.scr--challenge > .challenge__stage { flex: 1 1 0; min-height: 132px; }
+.scr--challenge > .program { flex: 0 1 auto; min-height: 84px; }
+.scr--challenge > .program > .program__list,
+.scr--challenge > .program > .rules { position: relative; flex: 0 1 auto; min-height: 46px; overscroll-behavior: contain; touch-action: pan-y; }
+.scr--challenge > .challenge__controls { flex: none; }
+
+/* Two maps side by side */
+.challenge__maps {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.challenge__map {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.challenge__map figcaption {
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.challenge__map .world.is-playing .world__canvas {
+  outline: 3px solid var(--c0);
+  outline-offset: 3px;
+}
+
+/* ───────────── Difficulty ───────────── */
+.scr--difficulty {
+  gap: 10px;
+}
+
+.difficulty__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.difficulty__title {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.difficulty__subtitle {
+  margin: 2px 0 0;
+  font-size: 0.85em;
+  color: var(--c1);
+}
+
+.difficulty__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 3px;
+}
+
+.difficulty-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.difficulty-card.is-current {
+  background: var(--c2);
+}
+
+.difficulty-card__icon .ico {
+  width: 28px;
+  height: 28px;
+}
+
+.difficulty-card__body strong {
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 4px;
+}
+
+.difficulty-card__body ul {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+}
+
+.home__level {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border: 0;
+  background: transparent;
+  box-shadow: var(--edge);
+  font-weight: 600;
+  cursor: pointer;
 }

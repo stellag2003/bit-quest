@@ -48,7 +48,7 @@ export class ResultScreen extends Screen {
           h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, outcome.mentorUnlocked ? t('result.meetMentor') : t('result.continue')))),
     );
 
-    if (outcome.faseCompleted) this.ctx.bus.emit('song', 'victory');
+    this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
     this.animate();
   }
 

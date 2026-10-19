@@ -196,6 +196,7 @@ body:not(.is-powered) .lcd::before {
 }
 
 .brand__tag {
+  white-space: nowrap;
   font-family: var(--font-brand);
   font-size: 9px;
   color: rgba(255, 255, 255, 0.6);

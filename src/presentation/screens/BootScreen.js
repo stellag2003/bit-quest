@@ -32,7 +32,8 @@ export class BootScreen extends Screen {
     this.root.classList.add('is-booting');
     const fast = reducedMotion();
     this.later(() => this.ctx.sfx('boot'), fast ? 0 : 1100);
-    const next = this.ctx.game.store.get().settings.guideSeen ? 'home' : 'guide';
+    const { settings } = this.ctx.game.store.get();
+    const next = !settings.difficulty ? 'difficulty' : settings.guideSeen ? 'home' : 'guide';
     this.later(() => this.ctx.nav.go(next), fast ? 400 : 2100);
   }
 

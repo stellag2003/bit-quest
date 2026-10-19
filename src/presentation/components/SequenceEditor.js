@@ -159,6 +159,9 @@ export class SequenceEditor {
       items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
     this.list.replaceChildren(...items);
+    // The list scrolls inside its own area: keep the cursor (where the next block goes) in view.
+    const cursor = this.list.querySelector('.cursor');
+    if (cursor) this.list.scrollTop = Math.max(0, cursor.offsetTop - this.list.clientHeight + cursor.offsetHeight + 8);
   }
 
   renderBlock(node) {

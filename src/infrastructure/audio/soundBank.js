@@ -7,8 +7,9 @@ export const SFX = {
   move: { wave: 'square', gain: 0.07, notes: [['E5', 0.025]] },
   place: { wave: 'square', gain: 0.12, notes: [['E5', 0.04], ['A5', 0.06]] },
   remove: { wave: 'square', gain: 0.1, notes: [['A4', 0.04], ['E4', 0.06]] },
-  step: { wave: 'triangle', gain: 0.22, notes: [['C3', 0.05]] },
-  turn: { wave: 'triangle', gain: 0.18, notes: [['G3', 0.04]] },
+  // Steps and turns must be audible on phone/laptop speakers: no deep bass, ~0.07 s.
+  step: { wave: 'square', gain: 0.09, notes: [['E5', 0.035], ['A4', 0.04]] },
+  turn: { wave: 'square', gain: 0.08, notes: [['C5', 0.03], ['G5', 0.04]] },
   jump: { wave: 'square', gain: 0.12, notes: [[260, 0.16]], slideTo: 900 },
   bump: { wave: 'square', gain: 0.16, notes: [[140, 0.16]], slideTo: 60 },
   wrong: { wave: 'square', gain: 0.13, notes: [['E4', 0.11], ['C4', 0.2]] },
@@ -28,6 +29,16 @@ export const SFX = {
 };
 
 export const SONGS = {
+  // Short "you did it!" for every solved challenge (the full victory song is for a whole fase).
+  win: {
+    bpm: 200,
+    loop: false,
+    gain: 0.1,
+    voices: [
+      { wave: 'square', notes: [['G5', 0.5], ['C6', 0.5], ['E6', 0.5], ['G6', 1.5]] },
+      { wave: 'triangle', gain: 2.2, notes: [['C4', 1], ['G3', 1], ['C4', 1]] },
+    ],
+  },
   victory: {
     bpm: 168,
     loop: false,

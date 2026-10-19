@@ -1,9 +1,10 @@
 /** One attempt-series at a challenge: counts failures (for stars) and cycles hints. */
 export class ChallengeSession {
-  constructor({ fase, challenge, index, submitProgram }) {
+  constructor({ fase, challenge, index, difficulty, submitProgram }) {
     this.fase = fase;
     this.challenge = challenge;
     this.index = index;
+    this.difficulty = difficulty;
     this.submitProgram = submitProgram;
     this.failures = 0;
     this.hintIndex = 0;
@@ -15,8 +16,13 @@ export class ChallengeSession {
       program,
       failuresSoFar: this.failures,
     });
-    if (outcome.status === 'failed' && outcome.energyLost) this.failures += 1;
+    if (outcome.status === 'failed' && outcome.executed) this.failures += 1;
     return outcome;
+  }
+
+  /** Failed runs still needed before the hint opens (0 = available). */
+  get hintsLockedFor() {
+    return Math.max(0, (this.difficulty?.hintAfter ?? 0) - this.failures);
   }
 
   nextHint() {

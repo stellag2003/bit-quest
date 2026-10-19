@@ -46,6 +46,8 @@ export class ChiptuneAudio {
   play(id) {
     const sound = this.sfx[id];
     if (!sound || !this.sfxEnabled || !this.ready) return;
+    // Phones suspend audio when the screen locks or the tab hides; wake it up again.
+    if (this.ctx.state !== 'running') this.ctx.resume?.();
     let t = this.ctx.currentTime + 0.005;
     for (const [note, duration] of sound.notes) {
       this.tone({ freq: noteToFreq(note), start: t, duration, wave: sound.wave, gain: sound.gain, slideTo: sound.slideTo });

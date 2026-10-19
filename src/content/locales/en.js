@@ -196,6 +196,7 @@ export const EN = {
         ['Refills by itself', `+1 every ${ENERGY_REGEN_MS / 60000} minutes`],
         ['Winning gives back', '+1 energy per challenge won'],
         ['Quick refill', `${ECONOMY.energyRefillPrice} coins fill it all up`],
+        ['Easy level', 'mistakes cost no energy'],
       ],
     },
     rewards: {
@@ -224,8 +225,6 @@ export const EN = {
         ['Arrows', 'move the cursor'],
         ['A', 'confirm (Z or Enter)'],
         ['B', 'go back or erase (X or Esc)'],
-        ['Space', 'run the program'],
-        ['Shift', 'get a hint'],
       ],
     },
   },

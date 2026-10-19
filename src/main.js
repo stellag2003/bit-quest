@@ -19,6 +19,7 @@ import { FocusNavigator } from './presentation/input/FocusNavigator.js';
 import { InputController } from './presentation/input/InputController.js';
 import { BootScreen } from './presentation/screens/BootScreen.js';
 import { ChallengeScreen } from './presentation/screens/ChallengeScreen.js';
+import { DifficultyScreen } from './presentation/screens/DifficultyScreen.js';
 import { GuideScreen } from './presentation/screens/GuideScreen.js';
 import { HomeScreen } from './presentation/screens/HomeScreen.js';
 import { LessonScreen } from './presentation/screens/LessonScreen.js';
@@ -62,6 +63,7 @@ const app = new App({
     boot: BootScreen,
     home: HomeScreen,
     guide: GuideScreen,
+    difficulty: DifficultyScreen,
     map: MapScreen,
     lesson: LessonScreen,
     challenge: ChallengeScreen,

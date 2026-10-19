@@ -61,7 +61,9 @@ export class HomeScreen extends Screen {
           this.colorsButton(s))),
       h('p', { class: 'home__progress' },
         h('span', {}, icon('flag'), ` ${t('home.challenges', { done: s.completedChallenges, total: s.totalChallenges })}`),
-        h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`)),
+        h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`),
+        h('button', { class: 'home__level', type: 'button', onClick: () => this.ctx.nav.go('difficulty', { from: 'settings' }) },
+          icon(game.currentDifficulty.execute().icon), ` ${t(`difficulty.${game.currentDifficulty.execute().id}`)}`)),
     );
 
     this.later(() => speech.say(this.greeting(s)), 250);

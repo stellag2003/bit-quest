@@ -15,7 +15,9 @@ const MOTION_SOUND = { walk: 'step', turn: 'turn', jump: 'jump', bump: 'bump' };
  * trace (`steps`) produced by the domain runners.
  */
 export class WorldView {
-  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title') }) {
+  /** `speed` stretches every animation (difficulty: easy is slower, hard faster). */
+  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title'), speed = 1 }) {
+    this.speed = speed;
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
@@ -32,6 +34,10 @@ export class WorldView {
     }, 420);
     this.resizeObserver = new ResizeObserver(() => this.fit());
     this.resizeObserver.observe(this.el);
+  }
+
+  ms(motion) {
+    return STEP_MS[motion] * this.speed;
   }
 
   setWorld(rows) {
@@ -83,10 +89,10 @@ export class WorldView {
     this.sfx(MOTION_SOUND[step.motion]);
     const robot = this.robot;
     if (step.motion === 'turn') {
-      await tween(STEP_MS.turn / 2, () => {});
+      await tween(this.ms('turn') / 2, () => {});
       robot.dir = step.to.dir;
       this.draw();
-      await tween(STEP_MS.turn / 2, () => {});
+      await tween(this.ms('turn') / 2, () => {});
       return;
     }
     if (step.motion === 'bump') return this.bump(step);
@@ -94,7 +100,7 @@ export class WorldView {
     const { x: fx, y: fy } = step.from;
     const { x: tx, y: ty } = step.to;
     const jumping = step.motion === 'jump';
-    await tween(STEP_MS[step.motion], (t) => {
+    await tween(this.ms(step.motion), (t) => {
       robot.x = fx + (tx - fx) * t;
       robot.y = fy + (ty - fy) * t;
       robot.hop = jumping ? Math.sin(Math.PI * t) * 12 : 0;
@@ -112,7 +118,7 @@ export class WorldView {
     const dy = Math.sign(step.target.y - step.from.y);
     this.marker = step.target;
     if (!reducedMotion()) this.el.classList.add('is-shaking');
-    await tween(STEP_MS.bump, (t) => {
+    await tween(this.ms('bump'), (t) => {
       const push = Math.sin(Math.PI * t) * 5;
       robot.nudge = { x: dx * push, y: dy * push };
       this.draw();

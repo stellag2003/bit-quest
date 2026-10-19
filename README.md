@@ -25,7 +25,7 @@ LocalStorage para salvar o progresso. Sem backend e sem dependências.
 ## Comandos
 
 ```bash
-npm test        # 52 testes: motor, regras, progressão e prova de que todo desafio tem solução
+npm test        # 59 testes: motor, regras, progressão e prova de que todo desafio tem solução
 npm run build   # gera dist/bitquest.html (bundle de arquivo único, sem dependências)
 npm start       # servidor estático local
 npm run portraits # converte a arte de assets/personagens em src/presentation/pixel/portraits.js
@@ -37,10 +37,13 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 
 - Tela **Como jogar** com 9 páginas explicando todas as funcionalidades: abre sozinha na primeira vez
   e depois pelo botão **?** da tela inicial ou em Ajustes.
+- **3 níveis de dificuldade**, escolhidos ao ligar o jogo (e trocáveis em Ajustes):
+  **Fácil** (errar não gasta energia, 3★ mesmo com 1 erro, Bit mais devagar), **Médio** (regras originais)
+  e **Difícil** (limite de blocos = melhor solução, dica só após 2 tentativas, +50% de XP e moedas).
 - **9 desafios** em 3 fases, cada fase com uma lição curta e um exemplo animado.
 - **Fase 1:** montar a sequência de comandos (Andar, Virar, Pular).
 - **Fase 2:** o Bit anda sozinho; a criança escreve regras SE/ENTÃO. O último desafio exige que as
-  **mesmas regras vençam dois mapas diferentes**: o programa reage ao ambiente.
+  **mesmas regras vençam dois mapas diferentes**, mostrados lado a lado: o programa reage ao ambiente.
 - **Fase 3:** o bloco Repetir com **limite de blocos**; a recompensa mostra quanto o loop economizou.
 - Feedback que não pune: o Bit para onde errou, o bloco culpado ganha um "!", aparece uma dica e
   "Tentar de novo" mantém o programa. Erros de montagem (programa vazio, regra incompleta) não gastam energia.

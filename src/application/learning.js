@@ -1,5 +1,6 @@
 import { newlyUnlockedAchievements } from '../domain/achievements.js';
 import { currentEnergy, gainEnergy, msUntilNextEnergy, spendEnergy } from '../domain/energy.js';
+import { applyDifficulty, findDifficulty } from '../domain/difficulty.js';
 import { NodeStatus } from '../domain/ProgressionRules.js';
 import { REWARDS, challengeReward, computeStars, levelFromXp } from '../domain/scoring.js';
 import { dayKey, registerActivity } from '../domain/streak.js';
@@ -20,9 +21,20 @@ export class CompleteLesson {
   }
 }
 
+/** The player's difficulty level (settings.difficulty), with the default before they choose. */
+export class CurrentDifficulty {
+  constructor({ store, difficulties, defaultId }) {
+    Object.assign(this, { store, difficulties, defaultId });
+  }
+
+  execute() {
+    return findDifficulty(this.difficulties, this.store.get().settings.difficulty, this.defaultId);
+  }
+}
+
 export class StartChallenge {
-  constructor({ store, curriculum, rules, submitProgram }) {
-    Object.assign(this, { store, curriculum, rules, submitProgram });
+  constructor({ store, curriculum, rules, submitProgram, currentDifficulty }) {
+    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty });
   }
 
   execute(challengeId) {
@@ -30,46 +42,53 @@ export class StartChallenge {
       throw new Error('Desafio bloqueado');
     }
     const { fase, challenge, index } = this.curriculum.findChallenge(challengeId);
-    return new ChallengeSession({ fase, challenge, index, submitProgram: this.submitProgram });
+    const difficulty = this.currentDifficulty.execute();
+    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram });
   }
 }
 
 /**
  * Runs the program, then applies consequences: energy on failure;
  * stars, XP, coins, streak, fase completion, mentor and medals on success.
+ * How much each of those weighs comes from the current difficulty.
  */
 export class SubmitProgram {
-  constructor({ store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount }) {
-    Object.assign(this, { store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount });
+  constructor({ store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount, currentDifficulty }) {
+    Object.assign(this, { store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount, currentDifficulty });
   }
 
   execute({ challengeId, program, failuresSoFar = 0 }) {
     const now = this.clock.now();
-    const { fase, challenge } = this.curriculum.findChallenge(challengeId);
+    const difficulty = this.currentDifficulty.execute();
+    const { fase, challenge: base } = this.curriculum.findChallenge(challengeId);
+    const challenge = applyDifficulty(base, difficulty);
     const energy = currentEnergy(this.store.get().energy, now);
-    if (energy.value <= 0) return { status: 'no_energy', msUntilNext: msUntilNextEnergy(energy, now) };
+    const usesEnergy = difficulty.energy.onFailure || difficulty.energy.onSetupError;
+    if (usesEnergy && energy.value <= 0) return { status: 'no_energy', msUntilNext: msUntilNextEnergy(energy, now) };
 
     const evaluation = this.evaluator.evaluate(challenge, program);
-    if (!evaluation.success) return this.applyFailure(evaluation, energy, now);
-    return this.applySuccess({ fase, challenge, evaluation, failuresSoFar, now });
+    if (!evaluation.success) return this.applyFailure(evaluation, energy, now, difficulty);
+    return this.applySuccess({ fase, challenge, evaluation, failuresSoFar, now, difficulty });
   }
 
-  applyFailure(evaluation, energy, now) {
-    const energyLost = evaluation.failure.stepIndex >= 0;
+  /** `executed`: Bit actually ran and went wrong (counts against stars). Setup errors never ran. */
+  applyFailure(evaluation, energy, now, difficulty) {
+    const executed = evaluation.failure.stepIndex >= 0;
+    const energyLost = executed ? difficulty.energy.onFailure : difficulty.energy.onSetupError;
     this.store.update((p) => {
       p.energy = energyLost ? spendEnergy(energy, now) : energy;
       p.stats.runs += 1;
-      if (energyLost) p.stats.failures += 1;
+      if (executed) p.stats.failures += 1;
     });
     this.bus.emit('run:failed', { code: evaluation.failure.code, energyLost });
-    return { status: 'failed', evaluation, energyLost };
+    return { status: 'failed', evaluation, energyLost, executed };
   }
 
-  applySuccess({ fase, challenge, evaluation, failuresSoFar, now }) {
+  applySuccess({ fase, challenge, evaluation, failuresSoFar, now, difficulty }) {
     const before = this.store.get();
-    const stars = computeStars({ failures: failuresSoFar, blocksUsed: evaluation.blocksUsed, optimalBlocks: challenge.optimalBlocks });
+    const stars = computeStars({ failures: failuresSoFar, blocksUsed: evaluation.blocksUsed, optimalBlocks: challenge.optimalBlocks }, difficulty.stars);
     const previousStars = before.stars[challenge.id] ?? 0;
-    const reward = challengeReward({ stars, previousStars });
+    const reward = challengeReward({ stars, previousStars, multiplier: difficulty.reward });
     const faseWasComplete = before.completedFases.includes(fase.id);
     let faseCompleted = false;
     let mentorUnlocked = null;
@@ -78,7 +97,7 @@ export class SubmitProgram {
       p.stars[challenge.id] = Math.max(previousStars, stars);
       p.xp += reward.xp;
       p.coins += reward.coins;
-      p.energy = gainEnergy(p.energy, now, 1);
+      if (difficulty.energy.refundOnWin) p.energy = gainEnergy(p.energy, now, difficulty.energy.refundOnWin);
       p.streak = registerActivity(p.streak, dayKey(now));
       p.stats.runs += 1;
       if (!faseWasComplete && this.rules.isFaseCompleted(p, fase.id)) {

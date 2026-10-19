@@ -67,6 +67,7 @@ export const GUIDE = [
       ['energy', 'Recarrega sozinha', `+1 a cada ${ENERGY_REGEN_MS / 60000} minutos`],
       ['check', 'Vencer devolve', '+1 energia por desafio concluído'],
       ['coin', 'Recarga rápida', `${ECONOMY.energyRefillPrice} moedas enchem tudo`],
+      ['star', 'Nível Fácil', 'errar não gasta energia'],
     ],
   },
   {
@@ -98,8 +99,6 @@ export const GUIDE = [
       ['key', 'Setas', 'mover o cursor'],
       ['key', 'A', 'confirmar (Z ou Enter)'],
       ['key', 'B', 'voltar ou apagar (X ou Esc)'],
-      ['key', 'Espaço', 'executar o programa'],
-      ['key', 'Shift', 'pedir dica'],
     ],
   },
 ];

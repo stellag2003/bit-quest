@@ -342,6 +342,7 @@ body:not(.is-powered) .lcd::before {
 }
 
 .brand__tag {
+  white-space: nowrap;
   font-family: var(--font-brand);
   font-size: 9px;
   color: rgba(255, 255, 255, 0.6);
@@ -2706,7 +2707,7 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
 /* ───────────── Small LCDs: keep the larger type but tighten the layout ───────────── */
 .home__row > .pbtn { min-width: 0; padding-inline: 0.5em; }
 
-@container lcd (max-width: 340px) {
+@container lcd (max-width: 380px) {
   .home__chips { gap: 6px; }
   .home__chips .stat small { display: none; }
   .energy--btn { padding-inline: 5px; }
@@ -2766,6 +2767,119 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
 .home__mary figcaption {
   font-size: 0.8em;
   font-weight: 600;
+}
+
+/* ───────────── Challenge layout: the run button never leaves the screen ───────────── */
+/* The map takes the free space; the program shrinks first and scrolls inside itself. */
+.scr--challenge > .challenge__stage { flex: 1 1 0; min-height: 132px; }
+.scr--challenge > .program { flex: 0 1 auto; min-height: 84px; }
+.scr--challenge > .program > .program__list,
+.scr--challenge > .program > .rules { position: relative; flex: 0 1 auto; min-height: 46px; overscroll-behavior: contain; touch-action: pan-y; }
+.scr--challenge > .challenge__controls { flex: none; }
+
+/* Two maps side by side */
+.challenge__maps {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.challenge__map {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.challenge__map figcaption {
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+.challenge__map .world.is-playing .world__canvas {
+  outline: 3px solid var(--c0);
+  outline-offset: 3px;
+}
+
+/* ───────────── Difficulty ───────────── */
+.scr--difficulty {
+  gap: 10px;
+}
+
+.difficulty__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.difficulty__title {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.difficulty__subtitle {
+  margin: 2px 0 0;
+  font-size: 0.85em;
+  color: var(--c1);
+}
+
+.difficulty__list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 3px;
+}
+
+.difficulty-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.difficulty-card.is-current {
+  background: var(--c2);
+}
+
+.difficulty-card__icon .ico {
+  width: 28px;
+  height: 28px;
+}
+
+.difficulty-card__body strong {
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: 4px;
+}
+
+.difficulty-card__body ul {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+}
+
+.home__level {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border: 0;
+  background: transparent;
+  box-shadow: var(--edge);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 </style>
@@ -3174,7 +3288,7 @@ function createInitialProgress(now, { firstMentor = 'ada', firstPalette = 'class
     streak: { count: 0, lastDay: null },
     achievements: [],
     palettes: { owned: [firstPalette], current: firstPalette },
-    settings: { sfx: true, music: true, guideSeen: false, lang: null, largeText: false, plainFont: false, calmMotion: false },
+    settings: { sfx: true, music: true, guideSeen: false, lang: null, difficulty: null, largeText: false, plainFont: false, calmMotion: false },
     stats: { runs: 0, failures: 0 },
   };
 }
@@ -3535,6 +3649,25 @@ function newlyUnlockedAchievements(progress, definitions, context) {
 
 return { newlyUnlockedAchievements };
 })();
+// ── src/domain/difficulty.js
+__m["src/domain/difficulty.js"] = (() => {
+/**
+ * Difficulty applied to a challenge. Pure: returns a new challenge object.
+ * "exactBlocks" turns the best solution's size into the block limit, so the
+ * editor stops at the shortest program (rule challenges already are exact).
+ */
+function applyDifficulty(challenge, difficulty) {
+  if (!difficulty?.exactBlocks || !challenge.optimalBlocks) return challenge;
+  const maxBlocks = Math.min(challenge.maxBlocks ?? Infinity, challenge.optimalBlocks);
+  return { ...challenge, maxBlocks };
+}
+
+function findDifficulty(difficulties, id, fallbackId) {
+  return difficulties.find((d) => d.id === id) ?? difficulties.find((d) => d.id === fallbackId) ?? difficulties[0];
+}
+
+return { applyDifficulty, findDifficulty };
+})();
 // ── src/domain/scoring.js
 __m["src/domain/scoring.js"] = (() => {
 /** Star and reward rules from SPEC-005. */
@@ -3549,18 +3682,22 @@ const REWARDS = Object.freeze({
 
 const XP_PER_LEVEL = 100;
 
-function computeStars({ failures, blocksUsed, optimalBlocks }) {
-  let stars = failures === 0 ? 3 : failures <= 2 ? 2 : 1;
-  if (optimalBlocks && blocksUsed > optimalBlocks) stars = Math.min(stars, 2);
+/** SPEC-005 defaults (the "medium" level); each difficulty passes its own thresholds. */
+const DEFAULT_STAR_RULES = Object.freeze({ threeMaxFailures: 0, twoMaxFailures: 2, capExtraBlocks: true });
+
+function computeStars({ failures, blocksUsed, optimalBlocks }, rules = DEFAULT_STAR_RULES) {
+  let stars = failures <= rules.threeMaxFailures ? 3 : failures <= rules.twoMaxFailures ? 2 : 1;
+  if (rules.capExtraBlocks && optimalBlocks && blocksUsed > optimalBlocks) stars = Math.min(stars, 2);
   return stars;
 }
 
-function challengeReward({ stars, previousStars = 0 }) {
+function challengeReward({ stars, previousStars = 0, multiplier = 1 }) {
+  const scale = (value) => Math.round(value * multiplier);
   if (previousStars > 0) {
     const improvement = Math.max(0, stars - previousStars);
-    return { xp: REWARDS.replayXp + improvement * REWARDS.xpPerStar, coins: improvement * REWARDS.coinsPerStar };
+    return { xp: scale(REWARDS.replayXp + improvement * REWARDS.xpPerStar), coins: scale(improvement * REWARDS.coinsPerStar) };
   }
-  return { xp: REWARDS.baseXp + stars * REWARDS.xpPerStar, coins: stars * REWARDS.coinsPerStar };
+  return { xp: scale(REWARDS.baseXp + stars * REWARDS.xpPerStar), coins: scale(stars * REWARDS.coinsPerStar) };
 }
 
 function levelFromXp(xp) {
@@ -3571,7 +3708,7 @@ function levelFromXp(xp) {
   };
 }
 
-return { REWARDS, XP_PER_LEVEL, computeStars, challengeReward, levelFromXp };
+return { REWARDS, XP_PER_LEVEL, DEFAULT_STAR_RULES, computeStars, challengeReward, levelFromXp };
 })();
 // ── src/domain/streak.js
 __m["src/domain/streak.js"] = (() => {
@@ -3606,10 +3743,11 @@ return { dayKey, registerActivity, visibleStreak };
 __m["src/application/ChallengeSession.js"] = (() => {
 /** One attempt-series at a challenge: counts failures (for stars) and cycles hints. */
 class ChallengeSession {
-  constructor({ fase, challenge, index, submitProgram }) {
+  constructor({ fase, challenge, index, difficulty, submitProgram }) {
     this.fase = fase;
     this.challenge = challenge;
     this.index = index;
+    this.difficulty = difficulty;
     this.submitProgram = submitProgram;
     this.failures = 0;
     this.hintIndex = 0;
@@ -3621,8 +3759,13 @@ class ChallengeSession {
       program,
       failuresSoFar: this.failures,
     });
-    if (outcome.status === 'failed' && outcome.energyLost) this.failures += 1;
+    if (outcome.status === 'failed' && outcome.executed) this.failures += 1;
     return outcome;
+  }
+
+  /** Failed runs still needed before the hint opens (0 = available). */
+  get hintsLockedFor() {
+    return Math.max(0, (this.difficulty?.hintAfter ?? 0) - this.failures);
   }
 
   nextHint() {
@@ -3639,6 +3782,7 @@ return { ChallengeSession };
 __m["src/application/learning.js"] = (() => {
 const { newlyUnlockedAchievements } = __m["src/domain/achievements.js"];
 const { currentEnergy, gainEnergy, msUntilNextEnergy, spendEnergy } = __m["src/domain/energy.js"];
+const { applyDifficulty, findDifficulty } = __m["src/domain/difficulty.js"];
 const { NodeStatus } = __m["src/domain/ProgressionRules.js"];
 const { REWARDS, challengeReward, computeStars, levelFromXp } = __m["src/domain/scoring.js"];
 const { dayKey, registerActivity } = __m["src/domain/streak.js"];
@@ -3658,9 +3802,20 @@ class CompleteLesson {
   }
 }
 
+/** The player's difficulty level (settings.difficulty), with the default before they choose. */
+class CurrentDifficulty {
+  constructor({ store, difficulties, defaultId }) {
+    Object.assign(this, { store, difficulties, defaultId });
+  }
+
+  execute() {
+    return findDifficulty(this.difficulties, this.store.get().settings.difficulty, this.defaultId);
+  }
+}
+
 class StartChallenge {
-  constructor({ store, curriculum, rules, submitProgram }) {
-    Object.assign(this, { store, curriculum, rules, submitProgram });
+  constructor({ store, curriculum, rules, submitProgram, currentDifficulty }) {
+    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty });
   }
 
   execute(challengeId) {
@@ -3668,46 +3823,53 @@ class StartChallenge {
       throw new Error('Desafio bloqueado');
     }
     const { fase, challenge, index } = this.curriculum.findChallenge(challengeId);
-    return new ChallengeSession({ fase, challenge, index, submitProgram: this.submitProgram });
+    const difficulty = this.currentDifficulty.execute();
+    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram });
   }
 }
 
 /**
  * Runs the program, then applies consequences: energy on failure;
  * stars, XP, coins, streak, fase completion, mentor and medals on success.
+ * How much each of those weighs comes from the current difficulty.
  */
 class SubmitProgram {
-  constructor({ store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount }) {
-    Object.assign(this, { store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount });
+  constructor({ store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount, currentDifficulty }) {
+    Object.assign(this, { store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount, currentDifficulty });
   }
 
   execute({ challengeId, program, failuresSoFar = 0 }) {
     const now = this.clock.now();
-    const { fase, challenge } = this.curriculum.findChallenge(challengeId);
+    const difficulty = this.currentDifficulty.execute();
+    const { fase, challenge: base } = this.curriculum.findChallenge(challengeId);
+    const challenge = applyDifficulty(base, difficulty);
     const energy = currentEnergy(this.store.get().energy, now);
-    if (energy.value <= 0) return { status: 'no_energy', msUntilNext: msUntilNextEnergy(energy, now) };
+    const usesEnergy = difficulty.energy.onFailure || difficulty.energy.onSetupError;
+    if (usesEnergy && energy.value <= 0) return { status: 'no_energy', msUntilNext: msUntilNextEnergy(energy, now) };
 
     const evaluation = this.evaluator.evaluate(challenge, program);
-    if (!evaluation.success) return this.applyFailure(evaluation, energy, now);
-    return this.applySuccess({ fase, challenge, evaluation, failuresSoFar, now });
+    if (!evaluation.success) return this.applyFailure(evaluation, energy, now, difficulty);
+    return this.applySuccess({ fase, challenge, evaluation, failuresSoFar, now, difficulty });
   }
 
-  applyFailure(evaluation, energy, now) {
-    const energyLost = evaluation.failure.stepIndex >= 0;
+  /** `executed`: Bit actually ran and went wrong (counts against stars). Setup errors never ran. */
+  applyFailure(evaluation, energy, now, difficulty) {
+    const executed = evaluation.failure.stepIndex >= 0;
+    const energyLost = executed ? difficulty.energy.onFailure : difficulty.energy.onSetupError;
     this.store.update((p) => {
       p.energy = energyLost ? spendEnergy(energy, now) : energy;
       p.stats.runs += 1;
-      if (energyLost) p.stats.failures += 1;
+      if (executed) p.stats.failures += 1;
     });
     this.bus.emit('run:failed', { code: evaluation.failure.code, energyLost });
-    return { status: 'failed', evaluation, energyLost };
+    return { status: 'failed', evaluation, energyLost, executed };
   }
 
-  applySuccess({ fase, challenge, evaluation, failuresSoFar, now }) {
+  applySuccess({ fase, challenge, evaluation, failuresSoFar, now, difficulty }) {
     const before = this.store.get();
-    const stars = computeStars({ failures: failuresSoFar, blocksUsed: evaluation.blocksUsed, optimalBlocks: challenge.optimalBlocks });
+    const stars = computeStars({ failures: failuresSoFar, blocksUsed: evaluation.blocksUsed, optimalBlocks: challenge.optimalBlocks }, difficulty.stars);
     const previousStars = before.stars[challenge.id] ?? 0;
-    const reward = challengeReward({ stars, previousStars });
+    const reward = challengeReward({ stars, previousStars, multiplier: difficulty.reward });
     const faseWasComplete = before.completedFases.includes(fase.id);
     let faseCompleted = false;
     let mentorUnlocked = null;
@@ -3716,7 +3878,7 @@ class SubmitProgram {
       p.stars[challenge.id] = Math.max(previousStars, stars);
       p.xp += reward.xp;
       p.coins += reward.coins;
-      p.energy = gainEnergy(p.energy, now, 1);
+      if (difficulty.energy.refundOnWin) p.energy = gainEnergy(p.energy, now, difficulty.energy.refundOnWin);
       p.streak = registerActivity(p.streak, dayKey(now));
       p.stats.runs += 1;
       if (!faseWasComplete && this.rules.isFaseCompleted(p, fase.id)) {
@@ -3770,7 +3932,7 @@ class SubmitProgram {
   }
 }
 
-return { CompleteLesson, StartChallenge, SubmitProgram };
+return { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram };
 })();
 // ── src/application/ProgressStore.js
 __m["src/application/ProgressStore.js"] = (() => {
@@ -3936,7 +4098,7 @@ const { RuleRunner } = __m["src/domain/runners/RuleRunner.js"];
 const { SequenceRunner } = __m["src/domain/runners/SequenceRunner.js"];
 const { createSensorRegistry } = __m["src/domain/sensors.js"];
 const { PurchasePalette, RefillEnergy, SelectPalette } = __m["src/application/economy.js"];
-const { CompleteLesson, StartChallenge, SubmitProgram } = __m["src/application/learning.js"];
+const { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } = __m["src/application/learning.js"];
 const { ProgressStore } = __m["src/application/ProgressStore.js"];
 const { ResetProgress, SelectMentor, UpdateSettings } = __m["src/application/profile.js"];
 const { MapOverviewQuery, PlayerSummaryQuery } = __m["src/application/queries.js"];
@@ -3945,7 +4107,7 @@ const { MapOverviewQuery, PlayerSummaryQuery } = __m["src/application/queries.js
  * infrastructure ports ({ repository, clock, bus }). No DOM in here.
  */
 function createGame({ content, repository, clock, bus }) {
-  const { fases, mentors, achievements, palettes, economy } = content;
+  const { fases, mentors, achievements, palettes, economy, difficulties } = content;
   const curriculum = new Curriculum(fases);
   const rules = new ProgressionRules(curriculum);
   const commands = createCommandRegistry();
@@ -3960,8 +4122,9 @@ function createGame({ content, repository, clock, bus }) {
     migrate: (saved, now) => migrateProgress(saved, now, defaults),
   });
 
+  const currentDifficulty = new CurrentDifficulty({ store, difficulties: difficulties.levels, defaultId: difficulties.defaultId });
   const submitProgram = new SubmitProgram({
-    store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount: mentors.length,
+    store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount: mentors.length, currentDifficulty,
   });
 
   return {
@@ -3971,7 +4134,8 @@ function createGame({ content, repository, clock, bus }) {
     evaluator,
     content,
     completeLesson: new CompleteLesson({ store, rules, bus }),
-    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram }),
+    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty }),
+    currentDifficulty,
     refillEnergy: new RefillEnergy({ store, clock, price: economy.energyRefillPrice, bus }),
     purchasePalette: new PurchasePalette({ store, palettes, bus }),
     selectPalette: new SelectPalette({ store }),
@@ -4041,6 +4205,59 @@ const ACHIEVEMENTS = [
 ];
 
 return { ACHIEVEMENTS };
+})();
+// ── src/content/difficulty.js
+__m["src/content/difficulty.js"] = (() => {
+/**
+ * Difficulty levels, chosen when the game starts (and changeable in Ajustes).
+ * Same maps and lessons in every level; what changes are the rules around them:
+ *   stars       — failures allowed for 3★ / 2★, and whether extra blocks cap at 2★
+ *   energy      — what costs energy, and whether a win gives 1 back
+ *   exactBlocks — the program may not be longer than the best solution
+ *   hintAfter   — failed runs needed before the hint opens
+ *   hintPulse   — failed runs before the hint button starts blinking
+ *   reward      — XP and coin multiplier
+ *   speed       — how slowly Bit replays the program (animation time × speed)
+ */
+const DIFFICULTIES = [
+  {
+    id: 'easy',
+    icon: 'star',
+    stars: { threeMaxFailures: 1, twoMaxFailures: 3, capExtraBlocks: false },
+    energy: { onFailure: false, onSetupError: false, refundOnWin: 1 },
+    exactBlocks: false,
+    hintAfter: 0,
+    hintPulse: 1,
+    reward: 1,
+    speed: 1.35,
+  },
+  {
+    id: 'medium',
+    icon: 'flag',
+    stars: { threeMaxFailures: 0, twoMaxFailures: 2, capExtraBlocks: true },
+    energy: { onFailure: true, onSetupError: false, refundOnWin: 1 },
+    exactBlocks: false,
+    hintAfter: 0,
+    hintPulse: 2,
+    reward: 1,
+    speed: 1,
+  },
+  {
+    id: 'hard',
+    icon: 'flame',
+    stars: { threeMaxFailures: 0, twoMaxFailures: 1, capExtraBlocks: true },
+    energy: { onFailure: true, onSetupError: true, refundOnWin: 0 },
+    exactBlocks: true,
+    hintAfter: 2,
+    hintPulse: 2,
+    reward: 1.5,
+    speed: 0.8,
+  },
+];
+
+const DEFAULT_DIFFICULTY = 'medium';
+
+return { DIFFICULTIES, DEFAULT_DIFFICULTY };
 })();
 // ── src/content/feedback.js
 __m["src/content/feedback.js"] = (() => {
@@ -4389,6 +4606,7 @@ const GUIDE = [
       ['energy', 'Recarrega sozinha', `+1 a cada ${ENERGY_REGEN_MS / 60000} minutos`],
       ['check', 'Vencer devolve', '+1 energia por desafio concluído'],
       ['coin', 'Recarga rápida', `${ECONOMY.energyRefillPrice} moedas enchem tudo`],
+      ['star', 'Nível Fácil', 'errar não gasta energia'],
     ],
   },
   {
@@ -4420,8 +4638,6 @@ const GUIDE = [
       ['key', 'Setas', 'mover o cursor'],
       ['key', 'A', 'confirmar (Z ou Enter)'],
       ['key', 'B', 'voltar ou apagar (X ou Esc)'],
-      ['key', 'Espaço', 'executar o programa'],
-      ['key', 'Shift', 'pedir dica'],
     ],
   },
 ];
@@ -4482,6 +4698,7 @@ return { MENTORS };
 // ── src/content/index.js
 __m["src/content/index.js"] = (() => {
 const { ACHIEVEMENTS } = __m["src/content/achievements.js"];
+const { DEFAULT_DIFFICULTY, DIFFICULTIES } = __m["src/content/difficulty.js"];
 const { ENCOURAGEMENTS, FAILURES, PRAISE } = __m["src/content/feedback.js"];
 const { FASES } = __m["src/content/fases/index.js"];
 const { GUIDE } = __m["src/content/guide.js"];
@@ -4495,6 +4712,7 @@ const CONTENT = Object.freeze({
   palettes: PALETTES,
   economy: ECONOMY,
   guide: GUIDE,
+  difficulties: { levels: DIFFICULTIES, defaultId: DEFAULT_DIFFICULTY },
   hero: { id: 'hero', name: 'Mary' },
   feedback: { failures: FAILURES, encouragements: ENCOURAGEMENTS, praise: PRAISE },
 });
@@ -4700,6 +4918,7 @@ const EN = {
         ['Refills by itself', `+1 every ${ENERGY_REGEN_MS / 60000} minutes`],
         ['Winning gives back', '+1 energy per challenge won'],
         ['Quick refill', `${ECONOMY.energyRefillPrice} coins fill it all up`],
+        ['Easy level', 'mistakes cost no energy'],
       ],
     },
     rewards: {
@@ -4728,8 +4947,6 @@ const EN = {
         ['Arrows', 'move the cursor'],
         ['A', 'confirm (Z or Enter)'],
         ['B', 'go back or erase (X or Esc)'],
-        ['Space', 'run the program'],
-        ['Shift', 'get a hint'],
       ],
     },
   },
@@ -4956,6 +5173,7 @@ const ES = {
         ['Se recarga sola', `+1 cada ${ENERGY_REGEN_MS / 60000} minutos`],
         ['Ganar te devuelve', '+1 de energía por desafío completado'],
         ['Recarga rápida', `${ECONOMY.energyRefillPrice} monedas la llenan toda`],
+        ['Nivel Fácil', 'equivocarte no gasta energía'],
       ],
     },
     rewards: {
@@ -4984,8 +5202,6 @@ const ES = {
         ['Flechas', 'mover el cursor'],
         ['A', 'confirmar (Z o Enter)'],
         ['B', 'volver o borrar (X o Esc)'],
-        ['Espacio', 'ejecutar el programa'],
-        ['Shift', 'pedir pista'],
       ],
     },
   },
@@ -5173,6 +5389,8 @@ class ChiptuneAudio {
   play(id) {
     const sound = this.sfx[id];
     if (!sound || !this.sfxEnabled || !this.ready) return;
+    // Phones suspend audio when the screen locks or the tab hides; wake it up again.
+    if (this.ctx.state !== 'running') this.ctx.resume?.();
     let t = this.ctx.currentTime + 0.005;
     for (const [note, duration] of sound.notes) {
       this.tone({ freq: noteToFreq(note), start: t, duration, wave: sound.wave, gain: sound.gain, slideTo: sound.slideTo });
@@ -5271,8 +5489,9 @@ const SFX = {
   move: { wave: 'square', gain: 0.07, notes: [['E5', 0.025]] },
   place: { wave: 'square', gain: 0.12, notes: [['E5', 0.04], ['A5', 0.06]] },
   remove: { wave: 'square', gain: 0.1, notes: [['A4', 0.04], ['E4', 0.06]] },
-  step: { wave: 'triangle', gain: 0.22, notes: [['C3', 0.05]] },
-  turn: { wave: 'triangle', gain: 0.18, notes: [['G3', 0.04]] },
+  // Steps and turns must be audible on phone/laptop speakers: no deep bass, ~0.07 s.
+  step: { wave: 'square', gain: 0.09, notes: [['E5', 0.035], ['A4', 0.04]] },
+  turn: { wave: 'square', gain: 0.08, notes: [['C5', 0.03], ['G5', 0.04]] },
   jump: { wave: 'square', gain: 0.12, notes: [[260, 0.16]], slideTo: 900 },
   bump: { wave: 'square', gain: 0.16, notes: [[140, 0.16]], slideTo: 60 },
   wrong: { wave: 'square', gain: 0.13, notes: [['E4', 0.11], ['C4', 0.2]] },
@@ -5292,6 +5511,16 @@ const SFX = {
 };
 
 const SONGS = {
+  // Short "you did it!" for every solved challenge (the full victory song is for a whole fase).
+  win: {
+    bpm: 200,
+    loop: false,
+    gain: 0.1,
+    voices: [
+      { wave: 'square', notes: [['G5', 0.5], ['C6', 0.5], ['E6', 0.5], ['G6', 1.5]] },
+      { wave: 'triangle', gain: 2.2, notes: [['C4', 1], ['G3', 1], ['C4', 1]] },
+    ],
+  },
   victory: {
     bpm: 168,
     loop: false,
@@ -5954,6 +6183,26 @@ const EN = {
   'dir.E': 'right',
   'dir.S': 'down',
   'dir.W': 'left',
+  'difficulty.title': 'Choose your difficulty',
+  'difficulty.subtitle': 'You can change it anytime in Settings.',
+  'difficulty.easy': 'Easy',
+  'difficulty.medium': 'Medium',
+  'difficulty.hard': 'Hard',
+  'difficulty.easy.1': 'Mistakes cost no energy',
+  'difficulty.easy.2': '3 stars even with 1 mistake',
+  'difficulty.easy.3': 'Bit moves more slowly',
+  'difficulty.medium.1': 'Each mistake costs 1 energy',
+  'difficulty.medium.2': 'Winning gives 1 energy back',
+  'difficulty.medium.3': 'Hints always available',
+  'difficulty.hard.1': 'Use the fewest blocks possible',
+  'difficulty.hard.2': 'Hint only after 2 tries',
+  'difficulty.hard.3': '+50% XP and coins',
+  'difficulty.current': 'Difficulty: {name}',
+  'settings.difficulty': 'Difficulty',
+  'settings.change': 'Change',
+  'challenge.hintLocked': 'Hint locked',
+  'challenge.hintLockedText.one': 'Try {n} more time to unlock the hint.',
+  'challenge.hintLockedText.other': 'Try {n} more times to unlock the hint.',
 };
 
 return { EN };
@@ -6185,6 +6434,26 @@ const ES = {
   'dir.E': 'a la derecha',
   'dir.S': 'hacia abajo',
   'dir.W': 'a la izquierda',
+  'difficulty.title': 'Elige la dificultad',
+  'difficulty.subtitle': 'Puedes cambiarla cuando quieras en Ajustes.',
+  'difficulty.easy': 'Fácil',
+  'difficulty.medium': 'Medio',
+  'difficulty.hard': 'Difícil',
+  'difficulty.easy.1': 'Equivocarte no gasta energía',
+  'difficulty.easy.2': '3 estrellas aunque falles 1 vez',
+  'difficulty.easy.3': 'Bit se mueve más despacio',
+  'difficulty.medium.1': 'Cada error gasta 1 de energía',
+  'difficulty.medium.2': 'Ganar te devuelve 1 de energía',
+  'difficulty.medium.3': 'Pistas siempre disponibles',
+  'difficulty.hard.1': 'Usa la menor cantidad de bloques',
+  'difficulty.hard.2': 'Pista solo después de 2 intentos',
+  'difficulty.hard.3': '+50% de XP y monedas',
+  'difficulty.current': 'Dificultad: {name}',
+  'settings.difficulty': 'Dificultad',
+  'settings.change': 'Cambiar',
+  'challenge.hintLocked': 'Pista bloqueada',
+  'challenge.hintLockedText.one': 'Intenta {n} vez más para desbloquear la pista.',
+  'challenge.hintLockedText.other': 'Intenta {n} veces más para desbloquear la pista.',
 };
 
 return { ES };
@@ -6416,6 +6685,26 @@ const PT = {
   'dir.E': 'para a direita',
   'dir.S': 'para baixo',
   'dir.W': 'para a esquerda',
+  'difficulty.title': 'Escolha a dificuldade',
+  'difficulty.subtitle': 'Você pode trocar quando quiser em Ajustes.',
+  'difficulty.easy': 'Fácil',
+  'difficulty.medium': 'Médio',
+  'difficulty.hard': 'Difícil',
+  'difficulty.easy.1': 'Errar não gasta energia',
+  'difficulty.easy.2': '3 estrelas mesmo com 1 erro',
+  'difficulty.easy.3': 'O Bit anda mais devagar',
+  'difficulty.medium.1': 'Cada erro gasta 1 energia',
+  'difficulty.medium.2': 'Vencer devolve 1 energia',
+  'difficulty.medium.3': 'Dicas sempre liberadas',
+  'difficulty.hard.1': 'Use o menor número de blocos',
+  'difficulty.hard.2': 'Dica só depois de 2 tentativas',
+  'difficulty.hard.3': '+50% de XP e moedas',
+  'difficulty.current': 'Dificuldade: {name}',
+  'settings.difficulty': 'Dificuldade',
+  'settings.change': 'Trocar',
+  'challenge.hintLocked': 'Dica bloqueada',
+  'challenge.hintLockedText.one': 'Tente mais {n} vez para liberar a dica.',
+  'challenge.hintLockedText.other': 'Tente mais {n} vezes para liberar a dica.',
 };
 
 return { PT };
@@ -6787,7 +7076,8 @@ class BootScreen extends Screen {
     this.root.classList.add('is-booting');
     const fast = reducedMotion();
     this.later(() => this.ctx.sfx('boot'), fast ? 0 : 1100);
-    const next = this.ctx.game.store.get().settings.guideSeen ? 'home' : 'guide';
+    const { settings } = this.ctx.game.store.get();
+    const next = !settings.difficulty ? 'difficulty' : settings.guideSeen ? 'home' : 'guide';
     this.later(() => this.ctx.nav.go(next), fast ? 400 : 2100);
   }
 
@@ -7192,6 +7482,9 @@ class SequenceEditor {
       items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
     this.list.replaceChildren(...items);
+    // The list scrolls inside its own area: keep the cursor (where the next block goes) in view.
+    const cursor = this.list.querySelector('.cursor');
+    if (cursor) this.list.scrollTop = Math.max(0, cursor.offsetTop - this.list.clientHeight + cursor.offsetHeight + 8);
   }
 
   renderBlock(node) {
@@ -7800,7 +8093,9 @@ const MOTION_SOUND = { walk: 'step', turn: 'turn', jump: 'jump', bump: 'bump' };
  * trace (`steps`) produced by the domain runners.
  */
 class WorldView {
-  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title') }) {
+  /** `speed` stretches every animation (difficulty: easy is slower, hard faster). */
+  constructor({ theme, sfx, scenery = 'meadow', label = t('map.title'), speed = 1 }) {
+    this.speed = speed;
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
@@ -7817,6 +8112,10 @@ class WorldView {
     }, 420);
     this.resizeObserver = new ResizeObserver(() => this.fit());
     this.resizeObserver.observe(this.el);
+  }
+
+  ms(motion) {
+    return STEP_MS[motion] * this.speed;
   }
 
   setWorld(rows) {
@@ -7868,10 +8167,10 @@ class WorldView {
     this.sfx(MOTION_SOUND[step.motion]);
     const robot = this.robot;
     if (step.motion === 'turn') {
-      await tween(STEP_MS.turn / 2, () => {});
+      await tween(this.ms('turn') / 2, () => {});
       robot.dir = step.to.dir;
       this.draw();
-      await tween(STEP_MS.turn / 2, () => {});
+      await tween(this.ms('turn') / 2, () => {});
       return;
     }
     if (step.motion === 'bump') return this.bump(step);
@@ -7879,7 +8178,7 @@ class WorldView {
     const { x: fx, y: fy } = step.from;
     const { x: tx, y: ty } = step.to;
     const jumping = step.motion === 'jump';
-    await tween(STEP_MS[step.motion], (t) => {
+    await tween(this.ms(step.motion), (t) => {
       robot.x = fx + (tx - fx) * t;
       robot.y = fy + (ty - fy) * t;
       robot.hop = jumping ? Math.sin(Math.PI * t) * 12 : 0;
@@ -7897,7 +8196,7 @@ class WorldView {
     const dy = Math.sign(step.target.y - step.from.y);
     this.marker = step.target;
     if (!reducedMotion()) this.el.classList.add('is-shaking');
-    await tween(STEP_MS.bump, (t) => {
+    await tween(this.ms('bump'), (t) => {
       const push = Math.sin(Math.PI * t) * 5;
       robot.nudge = { x: dx * push, y: dy * push };
       this.draw();
@@ -8045,7 +8344,7 @@ const { energyMeter } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { WorldView } = __m["src/presentation/components/WorldView.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
-const { t } = __m["src/presentation/i18n/index.js"];
+const { t, tn } = __m["src/presentation/i18n/index.js"];
 const { h, pick, sleep } = __m["src/presentation/ui/dom.js"];
 /**
  * SPEC-002/003/004 screen states: editing → running → (success | failure) → editing.
@@ -8076,8 +8375,16 @@ class ChallengeScreen extends Screen {
 
     this.editor = createEditor(challenge, { sfx });
     this.editor.onChange = () => this.onProgramChange();
-    this.view = new WorldView({ theme, sfx, scenery: fase.scenery, label: t('challenge.mapAria', { goal: challenge.goal }) });
-    this.track(() => this.view.destroy());
+    // Every map is on screen at once (side by side when there are two), so kids see the same rules win both.
+    const multiMap = challenge.maps.length > 1;
+    this.views = challenge.maps.map((_, i) => new WorldView({
+      theme,
+      sfx,
+      scenery: fase.scenery,
+      speed: this.session.difficulty.speed,
+      label: multiMap ? `${t('challenge.mapTab', { n: i + 1 })}. ${challenge.goal}` : t('challenge.mapAria', { goal: challenge.goal }),
+    }));
+    this.track(() => this.views.forEach((view) => view.destroy()));
 
     this.energySlot = h('div', { class: 'challenge__energy' });
     this.hintBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'));
@@ -8088,10 +8395,10 @@ class ChallengeScreen extends Screen {
       this.editor.paletteEl,
       h('div', { class: 'challenge__actions' }, this.clearBtn, this.runBtn),
       this.feedbackLayer);
-    this.tabs = challenge.maps.length > 1
-      ? h('div', { class: 'maptabs', role: 'tablist', 'aria-label': t('challenge.maps') }, challenge.maps.map((_, i) =>
-        h('button', { class: 'maptab', type: 'button', role: 'tab', 'aria-selected': String(i === 0), onClick: () => this.showMap(i) }, t('challenge.mapTab', { n: i + 1 }))))
-      : null;
+    const stage = multiMap
+      ? h('div', { class: 'challenge__maps', role: 'group', 'aria-label': t('challenge.maps') }, this.views.map((view, i) =>
+        h('figure', { class: 'challenge__map' }, view.el, h('figcaption', {}, t('challenge.mapTab', { n: i + 1 })))))
+      : this.views[0].el;
 
     this.root.append(
       h('header', { class: 'topbar' },
@@ -8100,11 +8407,11 @@ class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
-      h('div', { class: 'challenge__stage' }, this.tabs, this.view.el),
+      h('div', { class: 'challenge__stage' }, stage),
       this.editor.programEl,
       this.controls,
     );
-    this.view.setWorld(challenge.maps[0]);
+    this.views.forEach((view, i) => view.setWorld(challenge.maps[i]));
     this.renderEnergy();
     this.onProgramChange();
     this.editor.paletteEl.querySelector('button:not([disabled])')?.setAttribute('data-autofocus', '');
@@ -8113,16 +8420,6 @@ class ChallengeScreen extends Screen {
   renderEnergy() {
     const { energy } = this.ctx.game.playerSummary.execute();
     this.energySlot.replaceChildren(energyMeter(energy, { onClick: () => this.showEnergy() }));
-  }
-
-  /** Map tab chosen by the player; ignored mid-run so the replay stays on the right map. */
-  showMap(index) {
-    if (this.state !== 'running') this.displayMap(index);
-  }
-
-  displayMap(index) {
-    this.tabs?.querySelectorAll('.maptab').forEach((tab, i) => tab.setAttribute('aria-selected', String(i === index)));
-    this.view.setWorld(this.challenge.maps[index]);
   }
 
   onProgramChange() {
@@ -8146,7 +8443,8 @@ class ChallengeScreen extends Screen {
     if (!evaluation.success && evaluation.failure.stepIndex < 0) {
       this.ctx.sfx('wrong');
       this.editor.markError(evaluation.failure.nodeId);
-      return this.showFailure(evaluation, false);
+      if (outcome.energyLost) this.renderEnergy();
+      return this.showFailure(evaluation, outcome);
     }
 
     this.state = 'running';
@@ -8154,19 +8452,17 @@ class ChallengeScreen extends Screen {
     this.runBtn.disabled = true;
     this.root.classList.add('is-running');
 
+    this.views.forEach((view) => view.reset());
     for (const run of evaluation.runs) {
-      if (this.challenge.maps.length > 1) {
-        this.displayMap(run.mapIndex);
-        await sleep(350);
-      } else {
-        this.view.reset();
-      }
-      const finished = await this.view.play(run, { onStep: (step) => this.editor.highlight(step) });
+      const view = this.views[run.mapIndex];
+      this.views.forEach((v) => v.el.classList.toggle('is-playing', v === view && this.views.length > 1));
+      const finished = await view.play(run, { onStep: (step) => this.editor.highlight(step) });
       if (!finished) return;
       if (!run.success) break;
       if (run.mapIndex < evaluation.runs.length - 1) await sleep(450);
     }
 
+    this.views.forEach((v) => v.el.classList.remove('is-playing'));
     this.root.classList.remove('is-running');
     this.runBtn.disabled = false;
     this.editor.setLocked(false);
@@ -8176,7 +8472,7 @@ class ChallengeScreen extends Screen {
     this.ctx.sfx('wrong');
     this.editor.markError(evaluation.failure.nodeId);
     this.renderEnergy();
-    this.showFailure(evaluation, outcome.energyLost);
+    this.showFailure(evaluation, outcome);
   }
 
   succeed(outcome) {
@@ -8186,24 +8482,25 @@ class ChallengeScreen extends Screen {
     this.later(() => this.ctx.nav.go('result', { challengeId: this.challenge.id, outcome }), 1100);
   }
 
-  showFailure(evaluation, energyLost) {
+  /** `executed`: Bit ran and failed (needs "try again"); `energyLost` depends on the difficulty. */
+  showFailure(evaluation, { executed, energyLost }) {
     const { failure } = evaluation;
     const { failures, encouragements } = this.ctx.game.content.feedback;
     const copy = failures[failure.code] ?? { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
     const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
-    this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= 2);
+    this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= this.session.difficulty.hintPulse && !this.session.hintsLockedFor);
 
     const card = h('div', { class: 'feedback panel', role: 'alert' },
-      h('div', { class: 'feedback__head' }, icon(energyLost ? 'bug' : 'hint', 'feedback__icon'), h('strong', {}, copy.title)),
+      h('div', { class: 'feedback__head' }, icon(executed ? 'bug' : 'hint', 'feedback__icon'), h('strong', {}, copy.title)),
       h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
-      energyLost ? h('p', { class: 'feedback__note' }, icon('energy'), ` ${t('challenge.energyLost')} ${pick(encouragements)}`) : null,
+      executed ? h('p', { class: 'feedback__note' }, energyLost ? [icon('energy'), ` ${t('challenge.energyLost')} `] : null, pick(encouragements)) : null,
       h('div', { class: 'feedback__actions' },
         h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
-        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, energyLost ? t('challenge.retry') : t('challenge.ok'))));
+        h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, executed ? t('challenge.retry') : t('challenge.ok'))));
     this.feedbackLayer.replaceChildren(card);
     this.controls.classList.add('has-feedback');
-    if (energyLost) this.state = 'failed';
+    if (executed) this.state = 'failed';
     requestAnimationFrame(() => card.querySelector('.pbtn--primary')?.focus({ preventScroll: true }));
   }
 
@@ -8212,11 +8509,16 @@ class ChallengeScreen extends Screen {
     this.state = 'editing';
     this.feedbackLayer.replaceChildren();
     this.controls.classList.remove('has-feedback');
-    this.view.reset();
+    this.views.forEach((view) => view.reset());
   }
 
   async showHint() {
     if (this.state === 'running') return;
+    const lockedFor = this.session.hintsLockedFor;
+    if (lockedFor) {
+      this.ctx.sfx('wrong');
+      return this.ctx.toast.show({ title: t('challenge.hintLocked'), text: tn('challenge.hintLockedText', lockedFor), iconName: 'lock' });
+    }
     this.ctx.sfx('lesson');
     await this.ask({
       title: t('challenge.hintTitle'),
@@ -8255,6 +8557,68 @@ class ChallengeScreen extends Screen {
 }
 
 return { ChallengeScreen };
+})();
+// ── src/presentation/screens/DifficultyScreen.js
+__m["src/presentation/screens/DifficultyScreen.js"] = (() => {
+const { Screen } = __m["src/presentation/Screen.js"];
+const { t } = __m["src/presentation/i18n/index.js"];
+const { icon } = __m["src/presentation/pixel/icons.js"];
+const { h } = __m["src/presentation/ui/dom.js"];
+/**
+ * Asked once when the game starts (and reachable from Ajustes): easy, medium
+ * or hard. Each card lists what actually changes in that level.
+ */
+class DifficultyScreen extends Screen {
+  get legend() {
+    return this.fromSettings ? [['A', t('legend.choose')], ['B', t('legend.back')]] : [['A', t('legend.choose')]];
+  }
+
+  get fromSettings() {
+    return this.params?.from === 'settings';
+  }
+
+  render() {
+    const { game } = this.ctx;
+    const current = game.store.get().settings.difficulty ?? game.content.difficulties.defaultId;
+    this.root.append(
+      h('header', { class: 'difficulty__head' },
+        this.fromSettings ? h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('common.back'), onClick: () => this.onBack() }, icon('back')) : null,
+        h('div', {}, h('h1', { class: 'difficulty__title' }, t('difficulty.title')), h('p', { class: 'difficulty__subtitle' }, t('difficulty.subtitle')))),
+      h('div', { class: 'difficulty__list', role: 'radiogroup', 'aria-label': t('difficulty.title') },
+        game.content.difficulties.levels.map((level) => this.card(level, level.id === current))),
+    );
+  }
+
+  card(level, selected) {
+    const name = t(`difficulty.${level.id}`);
+    return h('button', {
+      class: `difficulty-card panel ${selected ? 'is-current' : ''}`,
+      type: 'button',
+      role: 'radio',
+      'aria-checked': String(selected),
+      'data-autofocus': selected ? '' : null,
+      onClick: () => this.choose(level.id),
+    },
+    h('span', { class: 'difficulty-card__icon' }, icon(level.icon)),
+    h('span', { class: 'difficulty-card__body' },
+      h('strong', {}, name),
+      h('ul', {}, [1, 2, 3].map((n) => h('li', {}, t(`difficulty.${level.id}.${n}`))))));
+  }
+
+  choose(id) {
+    const { game, nav, toast } = this.ctx;
+    game.updateSettings.execute({ difficulty: id });
+    toast.show({ title: t('difficulty.current', { name: t(`difficulty.${id}`) }), iconName: 'check' });
+    if (this.fromSettings) return nav.go('settings');
+    nav.go(game.store.get().settings.guideSeen ? 'home' : 'guide');
+  }
+
+  onBack() {
+    if (this.fromSettings) this.ctx.nav.go('settings');
+  }
+}
+
+return { DifficultyScreen };
 })();
 // ── src/presentation/screens/GuideScreen.js
 __m["src/presentation/screens/GuideScreen.js"] = (() => {
@@ -8417,7 +8781,9 @@ class HomeScreen extends Screen {
           this.colorsButton(s))),
       h('p', { class: 'home__progress' },
         h('span', {}, icon('flag'), ` ${t('home.challenges', { done: s.completedChallenges, total: s.totalChallenges })}`),
-        h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`)),
+        h('span', {}, icon('star'), ` ${s.stars}/${s.maxStars}`),
+        h('button', { class: 'home__level', type: 'button', onClick: () => this.ctx.nav.go('difficulty', { from: 'settings' }) },
+          icon(game.currentDifficulty.execute().icon), ` ${t(`difficulty.${game.currentDifficulty.execute().id}`)}`)),
     );
 
     this.later(() => speech.say(this.greeting(s)), 250);
@@ -8959,7 +9325,7 @@ class ResultScreen extends Screen {
           h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, outcome.mentorUnlocked ? t('result.meetMentor') : t('result.continue')))),
     );
 
-    if (outcome.faseCompleted) this.ctx.bus.emit('song', 'victory');
+    this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
     this.animate();
   }
 
@@ -9068,6 +9434,9 @@ class SettingsScreen extends Screen {
         h('div', { class: 'topbar__stats' }, statChip('coin', s.coins, t('common.coins')))),
       h('div', { class: 'settings' },
         h('section', {}, h('h2', {}, t('settings.language')), languagePicker(this.ctx)),
+        h('section', {}, h('h2', {}, t('settings.difficulty')),
+          h('button', { class: 'toggle', type: 'button', onClick: () => this.ctx.nav.go('difficulty', { from: 'settings' }) },
+            icon(game.currentDifficulty.execute().icon), h('span', {}, t(`difficulty.${game.currentDifficulty.execute().id}`)), h('b', { class: 'toggle__state' }, t('settings.change')))),
         h('section', { class: 'settings__colors' },
           h('h2', {}, t('settings.colors')),
           h('p', { class: 'settings__note' }, icon('music'), ` ${t('settings.colorsNote')}`),
@@ -9192,6 +9561,7 @@ const { FocusNavigator } = __m["src/presentation/input/FocusNavigator.js"];
 const { InputController } = __m["src/presentation/input/InputController.js"];
 const { BootScreen } = __m["src/presentation/screens/BootScreen.js"];
 const { ChallengeScreen } = __m["src/presentation/screens/ChallengeScreen.js"];
+const { DifficultyScreen } = __m["src/presentation/screens/DifficultyScreen.js"];
 const { GuideScreen } = __m["src/presentation/screens/GuideScreen.js"];
 const { HomeScreen } = __m["src/presentation/screens/HomeScreen.js"];
 const { LessonScreen } = __m["src/presentation/screens/LessonScreen.js"];
@@ -9234,6 +9604,7 @@ const app = new App({
     boot: BootScreen,
     home: HomeScreen,
     guide: GuideScreen,
+    difficulty: DifficultyScreen,
     map: MapScreen,
     lesson: LessonScreen,
     challenge: ChallengeScreen,

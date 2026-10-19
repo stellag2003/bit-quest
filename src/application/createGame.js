@@ -7,7 +7,7 @@ import { RuleRunner } from '../domain/runners/RuleRunner.js';
 import { SequenceRunner } from '../domain/runners/SequenceRunner.js';
 import { createSensorRegistry } from '../domain/sensors.js';
 import { PurchasePalette, RefillEnergy, SelectPalette } from './economy.js';
-import { CompleteLesson, StartChallenge, SubmitProgram } from './learning.js';
+import { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } from './learning.js';
 import { ProgressStore } from './ProgressStore.js';
 import { ResetProgress, SelectMentor, UpdateSettings } from './profile.js';
 import { MapOverviewQuery, PlayerSummaryQuery } from './queries.js';
@@ -17,7 +17,7 @@ import { MapOverviewQuery, PlayerSummaryQuery } from './queries.js';
  * infrastructure ports ({ repository, clock, bus }). No DOM in here.
  */
 export function createGame({ content, repository, clock, bus }) {
-  const { fases, mentors, achievements, palettes, economy } = content;
+  const { fases, mentors, achievements, palettes, economy, difficulties } = content;
   const curriculum = new Curriculum(fases);
   const rules = new ProgressionRules(curriculum);
   const commands = createCommandRegistry();
@@ -32,8 +32,9 @@ export function createGame({ content, repository, clock, bus }) {
     migrate: (saved, now) => migrateProgress(saved, now, defaults),
   });
 
+  const currentDifficulty = new CurrentDifficulty({ store, difficulties: difficulties.levels, defaultId: difficulties.defaultId });
   const submitProgram = new SubmitProgram({
-    store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount: mentors.length,
+    store, curriculum, rules, evaluator, clock, bus, achievements, mentorCount: mentors.length, currentDifficulty,
   });
 
   return {
@@ -43,7 +44,8 @@ export function createGame({ content, repository, clock, bus }) {
     evaluator,
     content,
     completeLesson: new CompleteLesson({ store, rules, bus }),
-    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram }),
+    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty }),
+    currentDifficulty,
     refillEnergy: new RefillEnergy({ store, clock, price: economy.energyRefillPrice, bus }),
     purchasePalette: new PurchasePalette({ store, palettes, bus }),
     selectPalette: new SelectPalette({ store }),

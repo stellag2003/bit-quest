@@ -192,6 +192,7 @@ export const ES = {
         ['Se recarga sola', `+1 cada ${ENERGY_REGEN_MS / 60000} minutos`],
         ['Ganar te devuelve', '+1 de energía por desafío completado'],
         ['Recarga rápida', `${ECONOMY.energyRefillPrice} monedas la llenan toda`],
+        ['Nivel Fácil', 'equivocarte no gasta energía'],
       ],
     },
     rewards: {
@@ -220,8 +221,6 @@ export const ES = {
         ['Flechas', 'mover el cursor'],
         ['A', 'confirmar (Z o Enter)'],
         ['B', 'volver o borrar (X o Esc)'],
-        ['Espacio', 'ejecutar el programa'],
-        ['Shift', 'pedir pista'],
       ],
     },
   },
