@@ -12,13 +12,13 @@ export const fase5 = {
   reward: { mentorId: 'liane' },
   concept: {
     title: 'Função',
-    summary: 'Uma função é um bloco novo que você cria juntando outros blocos. Depois é só usar esse bloco quantas vezes quiser.',
+    summary: 'Uma função é um bloco que você cria com outros blocos e usa quantas vezes quiser.',
     example: [fn([cmd('walk'), cmd('jump')]), call(), call()],
   },
   lesson: [
-    { text: 'Às vezes o mesmo pedaço de programa aparece várias vezes. Dá para escrever ele uma vez só!' },
+    { text: 'Quando um pedaço se repete, dá para escrever ele uma vez só!' },
     {
-      text: 'Coloque os passos dentro da ★ Função. Cada bloco ★ que você usar faz tudo o que está lá dentro.',
+      text: 'Monte a ★ Função com os passos. Cada bloco ★ faz tudo o que está nela.',
       demo: {
         kind: 'sequence',
         map: ['#.G#', '#..#', '>..#'],

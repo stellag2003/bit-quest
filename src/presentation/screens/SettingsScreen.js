@@ -10,8 +10,6 @@ const controls = () => [
   [t('controls.dpad'), t('controls.dpadDo')],
   ['A / Z / Enter', t('controls.aDo')],
   ['B / X / Esc', t('controls.bDo')],
-  [t('controls.space'), t('controls.spaceDo')],
-  ['Shift', t('controls.shiftDo')],
 ];
 
 export class SettingsScreen extends Screen {

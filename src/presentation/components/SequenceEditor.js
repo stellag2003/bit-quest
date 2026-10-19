@@ -38,7 +38,7 @@ export class SequenceEditor {
       dataset: { command: id },
       onClick: () => this.add(id),
     }, commandChip(id)));
-    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length } }, this.paletteButtons);
+    this.paletteEl = h('div', { class: `palette palette--grid ${challenge.palette.length >= 5 ? 'palette--dense' : ''}`, role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length > 5 ? Math.ceil(challenge.palette.length / 2) : challenge.palette.length } }, this.paletteButtons);
     this.render();
   }
 

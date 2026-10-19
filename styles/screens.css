@@ -1719,9 +1719,6 @@
   font-weight: 700;
 }
 
-.chip--call .chip__icon {
-  color: var(--c0);
-}
 
 .strip__fn {
   background: var(--c0);
@@ -1924,4 +1921,140 @@
 
 .home__certificate {
   min-height: 38px;
+}
+
+/* ───────────── Responsiveness fixes (layout audit) ───────────── */
+.guide__foot > .pbtn { flex: 1; min-width: 0; }
+
+.tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tab { min-width: 0; padding: 4px; font-size: 0.82em; white-space: nowrap; }
+@container lcd (max-width: 380px) {
+  .tab .ico { display: none; }
+}
+
+.home__badge { top: 3px; right: 3px; min-width: 20px; height: 20px; }
+.home__colors { padding-right: 26px; }
+
+.certificate__name label { min-width: 0; }
+.certificate__input { width: 100%; min-width: 0; }
+.certificate__name > .pbtn { flex: none; }
+
+/* Five or more commands: smaller labels so words like "Function" fit */
+.palette--dense .chip__label { font-size: 0.78em; }
+.palette--dense .chip { padding-inline: 1px; }
+
+/* Program header never wraps word by word: items stay whole and the row can break between them */
+.program__head { flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+.program__head > * { white-space: nowrap; }
+.program__bug { font-size: 0.85em; }
+
+@container lcd (max-width: 380px) {
+  .home__top { gap: 3px; }
+  .home__top .iconbtn { width: 40px; height: 40px; margin: 1px; }
+  .home__chips { gap: 5px; }
+  .home__chips .stat { gap: 1px; }
+  .rule-default { font-size: 0.9em; }
+}
+
+/* Rule cards: the two slots share the row and their text may wrap, so long sensor names fit */
+.rule { flex-wrap: nowrap; }
+.rule > .slot { flex: 1 1 0; min-width: 0; }
+.slot .chip__label { white-space: normal; overflow-wrap: normal; text-align: left; line-height: 1.1; }
+
+@container lcd (max-width: 340px) {
+  .slot .chip__icon { display: none; }
+  .rule { gap: 3px; padding-inline: 3px; }
+  /* Very narrow screens: five commands become two rows */
+  .palette--dense { --cols: 3 !important; }
+  .home__chips .stat--streak { display: none; }
+}
+
+/* Safety net for any screen: if it ever grows past the LCD it scrolls instead of hiding buttons */
+.scr { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+
+.unlock__actions { flex-wrap: wrap; }
+.unlock__actions > .pbtn { flex: 1 1 auto; }
+
+.palette__items .chip__label { white-space: normal; overflow-wrap: normal; }
+@container lcd (max-width: 340px) {
+  .palette--rules .chip__label { font-size: 0.78em; }
+  .palette--rules .chip { padding-inline: 1px; }
+}
+
+@container lcd (max-width: 340px) {
+  .palette--grid .chip__label { font-size: 0.78em; }
+  .palette--grid .chip { padding-inline: 1px; }
+}
+
+/* ───────────── Phone held sideways: the challenge's right column must fit ───────────── */
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); column-gap: 10px; }
+  .scr--challenge > .program { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .scr--challenge > .program > .program__list,
+  .scr--challenge > .program > .rules { flex: 1 1 0; min-height: 40px; max-height: none; }
+  .scr--challenge .program__head { font-size: 0.75em; }
+  .scr--challenge .palette--grid .chip__label,
+  .scr--challenge .palette__items .chip__label { font-size: 0.72em; }
+  .scr--challenge .palette--grid .chip,
+  .scr--challenge .palette__items .chip { min-height: 42px; padding: 2px 1px; gap: 1px; }
+  .scr--challenge .palette--rules { gap: 4px; }
+  .scr--challenge .palette__items { gap: 3px; }
+  .scr--challenge .challenge__actions { gap: 6px; }
+  .scr--challenge .pbtn--run { min-width: 0; padding-inline: 0.4em; white-space: nowrap; }
+  .scr--challenge .slot { min-height: 32px; }
+}
+
+/* "Texto maior": command labels shrink a bit so a row of 4–5 commands still fits */
+body.is-large-text .palette--grid .chip__label,
+body.is-large-text .palette__items .chip__label { font-size: 0.74em; }
+body.is-large-text .palette--dense .chip__label { font-size: 0.66em; }
+
+/* ───────────── No overlapping blocks, on any screen ───────────── */
+/* Fixed parts (headers, speech, goal, footers) keep their size; only the content areas shrink and scroll. */
+.scr > * { flex-shrink: 0; }
+.scr > .lesson__stage,
+.scr > .guide__page,
+.scr > .library__body,
+.scr > .map,
+.scr > .settings,
+.scr > .difficulty__list,
+.scr > .challenge__stage,
+.scr > .program { flex-shrink: 1; }
+
+/* Lesson content centres only while it fits; otherwise it starts at the top and scrolls */
+.lesson__stage { justify-content: safe center; overflow-y: auto; }
+.lesson__concept { margin-block: 3px; }
+
+/* Rule slots: smaller text, no icon when space is tight */
+.slot .chip__label { font-size: 0.85em; }
+body.is-large-text .slot .chip__icon { display: none; }
+body.is-large-text .slot .chip__label { font-size: 0.72em; }
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge .palette--dense { --cols: 3 !important; }
+  .scr--challenge .slot .chip__icon { display: none; }
+  .scr--challenge .slot .chip__label { font-size: 0.72em; }
+  .scr--home .home__row > .pbtn { font-size: 0.85em; gap: 0.3em; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  /* Feedback buttons may wrap their text instead of pushing into the map column */
+  .scr--challenge .feedback__actions { min-width: 0; }
+  .scr--challenge .feedback__actions .pbtn { min-width: 0; white-space: normal; font-size: 0.85em; line-height: 1.1; }
+  /* A sideways phone has ~330 px of height: the challenge keeps "larger text" a notch smaller */
+  body.is-large-text .scr--challenge { font-size: 16px; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  body.is-large-text .scr--challenge .palette--grid .chip__label,
+  body.is-large-text .scr--challenge .palette__items .chip__label,
+  body.is-large-text .scr--challenge .slot .chip__label { font-size: 0.66em; }
+  body.is-large-text .scr--challenge .palette__items .chip,
+  body.is-large-text .scr--challenge .palette--grid .chip { padding-inline: 0; }
+  body.is-large-text .scr--home .home__row > .pbtn { font-size: 0.72em; padding-inline: 0.3em; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  body.is-large-text .scr--challenge .rule .kw { font-size: 0.7em; }
+  body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }

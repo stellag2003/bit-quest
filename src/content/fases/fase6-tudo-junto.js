@@ -10,16 +10,16 @@ export const fase6 = {
   reward: { mentorId: 'jobs' },
   concept: {
     title: 'Pensamento computacional',
-    summary: 'Programadores misturam tudo o que aprenderam: sequência, decisões, repetição e funções. Escolha a melhor ferramenta para cada caminho.',
+    summary: 'Misture tudo o que aprendeu: sequência, decisão, repetição e funções.',
     example: [repeat(2, [call(), cmd('turnRight')])],
   },
   lesson: [
-    { text: 'Você já sabe sequências, decisões, repetição e funções. Agora é hora de juntar tudo!' },
+    { text: 'Agora é hora de juntar tudo o que você aprendeu!' },
     {
-      text: 'Antes de montar, olhe o mapa inteiro: o que se repete? Onde o Bit precisa decidir?',
+      text: 'Olhe o mapa inteiro: o que se repete? Onde o Bit precisa decidir?',
       strip: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight')])],
     },
-    { text: 'Não existe só um jeito certo. Mas o melhor programa é curto e fácil de entender.' },
+    { text: 'Há vários jeitos certos. O melhor programa é curto e fácil de ler.' },
   ],
   challenges: [
     {

@@ -97,11 +97,11 @@ export const EN = {
       title: 'Debugging',
       concept: {
         title: 'Debugging',
-        summary: 'Debugging means finding and fixing a mistake in a program. Run it, see where Bit stopped and change only what is wrong.',
+        summary: 'Debugging is finding and fixing the mistake: run, see where Bit stopped, change just that.',
       },
       lesson: [
         'Not every program works the first time. A mistake in a program is called a bug.',
-        'This program has a bug: one step too many. Run it, see where Bit bumps and find the guilty block.',
+        'This program has one step too many. Run it and find the guilty block.',
         'Fix only what is wrong: remove a block, change a number or swap a rule.',
       ],
       challenges: {
@@ -126,11 +126,11 @@ export const EN = {
       title: 'Functions',
       concept: {
         title: 'Function',
-        summary: 'A function is a new block you make by putting other blocks together. Then you can use that block as many times as you want.',
+        summary: 'A function is a block you build from other blocks and use as often as you like.',
       },
       lesson: [
-        'Sometimes the same piece of a program shows up many times. You can write it just once!',
-        'Put the steps inside the ★ Function. Every ★ block you use does everything inside it.',
+        'When a piece repeats, you can write it just once!',
+        'Build the ★ Function with the steps. Each ★ block does everything inside it.',
         'First build the function up top. Then use the ★ block in your program.',
       ],
       challenges: {
@@ -155,12 +155,12 @@ export const EN = {
       title: 'All together',
       concept: {
         title: 'Computational thinking',
-        summary: 'Programmers mix everything they have learned: sequences, decisions, repetition and functions. Choose the best tool for each path.',
+        summary: 'Mix everything you learned: sequences, decisions, repetition and functions.',
       },
       lesson: [
-        'You already know sequences, decisions, repetition and functions. Now it\'s time to put it all together!',
-        'Before building, look at the whole map: what repeats? Where does Bit need to decide?',
-        'There isn\'t just one right way. But the best program is short and easy to understand.',
+        'Now it\'s time to put together everything you learned!',
+        'Look at the whole map: what repeats? Where must Bit decide?',
+        'There are many right ways. The best program is short and easy to read.',
       ],
       challenges: {
         'f6-c1': {
@@ -254,7 +254,7 @@ export const EN = {
   guide: {
     welcome: {
       title: 'Welcome to Bit Quest!',
-      text: 'This is Mary, and you play as her! Together you\'ll teach Bit the robot to reach the flag by building programs with command blocks.',
+      text: 'You play as Mary! Together, teach Bit the robot to reach the flag.',
       items: [
         ['Goal', 'take Bit to the flag'],
         ['6 stages', 'from Sequences to All together'],
@@ -262,7 +262,7 @@ export const EN = {
     },
     sequence: {
       title: 'Stage 1 · Sequences',
-      text: 'Tap the commands to build the path, step by step. Bit does everything in the order you build it.',
+      text: 'Tap the commands to build the path. Bit does everything in order.',
       items: [
         ['Walk', 'one square forward'],
         ['Turn left', 'spins to the left'],
@@ -289,7 +289,7 @@ export const EN = {
     },
     debug: {
       title: 'Stage 4 · Debugging',
-      text: 'Here the challenge starts with a program that has a bug. Run it, find out where Bit goes wrong and fix it.',
+      text: 'Here the program already has a bug. Run it, see where Bit goes wrong and fix it.',
       items: [
         ['Find the bug', 'run it and see where Bit stops'],
         ['Remove a block', 'tap the wrong block'],
@@ -298,7 +298,7 @@ export const EN = {
     },
     functions: {
       title: 'Stage 5 · Functions',
-      text: 'Build the ★ Function once and use the ★ block as many times as you want. In stage 6 you put it all together!',
+      text: 'Build the ★ Function once and use the ★ block as many times as you want.',
       items: [
         ['★ Function', 'put up to 4 blocks in it'],
         ['★ block', 'does everything in the function'],

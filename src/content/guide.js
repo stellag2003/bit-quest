@@ -11,7 +11,7 @@ export const GUIDE = [
   {
     id: 'welcome',
     title: 'Bem-vindo ao Bit Quest!',
-    text: 'Esta é a Mary, e você joga com ela! Juntas, vocês vão ensinar o robô Bit a chegar até a bandeira montando programas com blocos de comando.',
+    text: 'Você joga com a Mary! Juntas, ensinem o robô Bit a chegar à bandeira.',
     robot: true,
     items: [
       ['flag', 'Objetivo', 'levar o Bit até a bandeira'],
@@ -21,7 +21,7 @@ export const GUIDE = [
   {
     id: 'sequence',
     title: 'Fase 1 · Sequências',
-    text: 'Toque nos comandos para montar o caminho, passo a passo. O Bit faz tudo na ordem que você montar.',
+    text: 'Toque nos comandos para montar o caminho. O Bit faz tudo na ordem.',
     items: [
       ['walk', 'Andar', 'um quadradinho para a frente'],
       ['turnLeft', 'Virar esq.', 'gira para a esquerda'],
@@ -51,7 +51,7 @@ export const GUIDE = [
   {
     id: 'debug',
     title: 'Fase 4 · Depuração',
-    text: 'Aqui o desafio já começa com um programa que tem um bug. Rode, descubra onde o Bit erra e conserte.',
+    text: 'Aqui o programa já vem com um bug. Rode, veja onde o Bit erra e conserte.',
     items: [
       ['bug', 'Ache o bug', 'rode e veja onde o Bit para'],
       ['trash', 'Tire um bloco', 'toque no bloco errado'],
@@ -61,7 +61,7 @@ export const GUIDE = [
   {
     id: 'functions',
     title: 'Fase 5 · Funções',
-    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser. Na fase 6 você junta tudo!',
+    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser.',
     items: [
       ['star', '★ Função', 'junte até 4 blocos nela'],
       ['play', 'Bloco ★', 'faz tudo o que está na função'],

@@ -2942,9 +2942,6 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
   font-weight: 700;
 }
 
-.chip--call .chip__icon {
-  color: var(--c0);
-}
 
 .strip__fn {
   background: var(--c0);
@@ -3147,6 +3144,142 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
 
 .home__certificate {
   min-height: 38px;
+}
+
+/* ───────────── Responsiveness fixes (layout audit) ───────────── */
+.guide__foot > .pbtn { flex: 1; min-width: 0; }
+
+.tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tab { min-width: 0; padding: 4px; font-size: 0.82em; white-space: nowrap; }
+@container lcd (max-width: 380px) {
+  .tab .ico { display: none; }
+}
+
+.home__badge { top: 3px; right: 3px; min-width: 20px; height: 20px; }
+.home__colors { padding-right: 26px; }
+
+.certificate__name label { min-width: 0; }
+.certificate__input { width: 100%; min-width: 0; }
+.certificate__name > .pbtn { flex: none; }
+
+/* Five or more commands: smaller labels so words like "Function" fit */
+.palette--dense .chip__label { font-size: 0.78em; }
+.palette--dense .chip { padding-inline: 1px; }
+
+/* Program header never wraps word by word: items stay whole and the row can break between them */
+.program__head { flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+.program__head > * { white-space: nowrap; }
+.program__bug { font-size: 0.85em; }
+
+@container lcd (max-width: 380px) {
+  .home__top { gap: 3px; }
+  .home__top .iconbtn { width: 40px; height: 40px; margin: 1px; }
+  .home__chips { gap: 5px; }
+  .home__chips .stat { gap: 1px; }
+  .rule-default { font-size: 0.9em; }
+}
+
+/* Rule cards: the two slots share the row and their text may wrap, so long sensor names fit */
+.rule { flex-wrap: nowrap; }
+.rule > .slot { flex: 1 1 0; min-width: 0; }
+.slot .chip__label { white-space: normal; overflow-wrap: normal; text-align: left; line-height: 1.1; }
+
+@container lcd (max-width: 340px) {
+  .slot .chip__icon { display: none; }
+  .rule { gap: 3px; padding-inline: 3px; }
+  /* Very narrow screens: five commands become two rows */
+  .palette--dense { --cols: 3 !important; }
+  .home__chips .stat--streak { display: none; }
+}
+
+/* Safety net for any screen: if it ever grows past the LCD it scrolls instead of hiding buttons */
+.scr { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+
+.unlock__actions { flex-wrap: wrap; }
+.unlock__actions > .pbtn { flex: 1 1 auto; }
+
+.palette__items .chip__label { white-space: normal; overflow-wrap: normal; }
+@container lcd (max-width: 340px) {
+  .palette--rules .chip__label { font-size: 0.78em; }
+  .palette--rules .chip { padding-inline: 1px; }
+}
+
+@container lcd (max-width: 340px) {
+  .palette--grid .chip__label { font-size: 0.78em; }
+  .palette--grid .chip { padding-inline: 1px; }
+}
+
+/* ───────────── Phone held sideways: the challenge's right column must fit ───────────── */
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); column-gap: 10px; }
+  .scr--challenge > .program { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .scr--challenge > .program > .program__list,
+  .scr--challenge > .program > .rules { flex: 1 1 0; min-height: 40px; max-height: none; }
+  .scr--challenge .program__head { font-size: 0.75em; }
+  .scr--challenge .palette--grid .chip__label,
+  .scr--challenge .palette__items .chip__label { font-size: 0.72em; }
+  .scr--challenge .palette--grid .chip,
+  .scr--challenge .palette__items .chip { min-height: 42px; padding: 2px 1px; gap: 1px; }
+  .scr--challenge .palette--rules { gap: 4px; }
+  .scr--challenge .palette__items { gap: 3px; }
+  .scr--challenge .challenge__actions { gap: 6px; }
+  .scr--challenge .pbtn--run { min-width: 0; padding-inline: 0.4em; white-space: nowrap; }
+  .scr--challenge .slot { min-height: 32px; }
+}
+
+/* "Texto maior": command labels shrink a bit so a row of 4–5 commands still fits */
+body.is-large-text .palette--grid .chip__label,
+body.is-large-text .palette__items .chip__label { font-size: 0.74em; }
+body.is-large-text .palette--dense .chip__label { font-size: 0.66em; }
+
+/* ───────────── No overlapping blocks, on any screen ───────────── */
+/* Fixed parts (headers, speech, goal, footers) keep their size; only the content areas shrink and scroll. */
+.scr > * { flex-shrink: 0; }
+.scr > .lesson__stage,
+.scr > .guide__page,
+.scr > .library__body,
+.scr > .map,
+.scr > .settings,
+.scr > .difficulty__list,
+.scr > .challenge__stage,
+.scr > .program { flex-shrink: 1; }
+
+/* Lesson content centres only while it fits; otherwise it starts at the top and scrolls */
+.lesson__stage { justify-content: safe center; overflow-y: auto; }
+.lesson__concept { margin-block: 3px; }
+
+/* Rule slots: smaller text, no icon when space is tight */
+.slot .chip__label { font-size: 0.85em; }
+body.is-large-text .slot .chip__icon { display: none; }
+body.is-large-text .slot .chip__label { font-size: 0.72em; }
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge .palette--dense { --cols: 3 !important; }
+  .scr--challenge .slot .chip__icon { display: none; }
+  .scr--challenge .slot .chip__label { font-size: 0.72em; }
+  .scr--home .home__row > .pbtn { font-size: 0.85em; gap: 0.3em; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  /* Feedback buttons may wrap their text instead of pushing into the map column */
+  .scr--challenge .feedback__actions { min-width: 0; }
+  .scr--challenge .feedback__actions .pbtn { min-width: 0; white-space: normal; font-size: 0.85em; line-height: 1.1; }
+  /* A sideways phone has ~330 px of height: the challenge keeps "larger text" a notch smaller */
+  body.is-large-text .scr--challenge { font-size: 16px; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  body.is-large-text .scr--challenge .palette--grid .chip__label,
+  body.is-large-text .scr--challenge .palette__items .chip__label,
+  body.is-large-text .scr--challenge .slot .chip__label { font-size: 0.66em; }
+  body.is-large-text .scr--challenge .palette__items .chip,
+  body.is-large-text .scr--challenge .palette--grid .chip { padding-inline: 0; }
+  body.is-large-text .scr--home .home__row > .pbtn { font-size: 0.72em; padding-inline: 0.3em; }
+}
+
+@container lcd (min-aspect-ratio: 21 / 20) {
+  body.is-large-text .scr--challenge .rule .kw { font-size: 0.7em; }
+  body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }
 
 </style>
@@ -4844,13 +4977,13 @@ const fase4 = {
   reward: { mentorId: 'sonja' },
   concept: {
     title: 'Depuração (debug)',
-    summary: 'Depurar é achar e consertar o erro de um programa. Rode, veja onde o Bit parou e mude só o que está errado.',
+    summary: 'Depurar é achar e consertar o erro: rode, veja onde o Bit parou e mude só isso.',
     example: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
   },
   lesson: [
     { text: 'Nem todo programa funciona de primeira. Um erro no programa se chama bug.' },
     {
-      text: 'Este programa tem um bug: um passo a mais. Rode, veja onde o Bit bate e encontre o bloco culpado.',
+      text: 'Este programa tem um passo a mais. Rode e ache o bloco culpado.',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
     },
     { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra.' },
@@ -4915,13 +5048,13 @@ const fase5 = {
   reward: { mentorId: 'liane' },
   concept: {
     title: 'Função',
-    summary: 'Uma função é um bloco novo que você cria juntando outros blocos. Depois é só usar esse bloco quantas vezes quiser.',
+    summary: 'Uma função é um bloco que você cria com outros blocos e usa quantas vezes quiser.',
     example: [fn([cmd('walk'), cmd('jump')]), call(), call()],
   },
   lesson: [
-    { text: 'Às vezes o mesmo pedaço de programa aparece várias vezes. Dá para escrever ele uma vez só!' },
+    { text: 'Quando um pedaço se repete, dá para escrever ele uma vez só!' },
     {
-      text: 'Coloque os passos dentro da ★ Função. Cada bloco ★ que você usar faz tudo o que está lá dentro.',
+      text: 'Monte a ★ Função com os passos. Cada bloco ★ faz tudo o que está nela.',
       demo: {
         kind: 'sequence',
         map: ['#.G#', '#..#', '>..#'],
@@ -4988,16 +5121,16 @@ const fase6 = {
   reward: { mentorId: 'jobs' },
   concept: {
     title: 'Pensamento computacional',
-    summary: 'Programadores misturam tudo o que aprenderam: sequência, decisões, repetição e funções. Escolha a melhor ferramenta para cada caminho.',
+    summary: 'Misture tudo o que aprendeu: sequência, decisão, repetição e funções.',
     example: [repeat(2, [call(), cmd('turnRight')])],
   },
   lesson: [
-    { text: 'Você já sabe sequências, decisões, repetição e funções. Agora é hora de juntar tudo!' },
+    { text: 'Agora é hora de juntar tudo o que você aprendeu!' },
     {
-      text: 'Antes de montar, olhe o mapa inteiro: o que se repete? Onde o Bit precisa decidir?',
+      text: 'Olhe o mapa inteiro: o que se repete? Onde o Bit precisa decidir?',
       strip: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight')])],
     },
-    { text: 'Não existe só um jeito certo. Mas o melhor programa é curto e fácil de entender.' },
+    { text: 'Há vários jeitos certos. O melhor programa é curto e fácil de ler.' },
   ],
   challenges: [
     {
@@ -5087,7 +5220,7 @@ const GUIDE = [
   {
     id: 'welcome',
     title: 'Bem-vindo ao Bit Quest!',
-    text: 'Esta é a Mary, e você joga com ela! Juntas, vocês vão ensinar o robô Bit a chegar até a bandeira montando programas com blocos de comando.',
+    text: 'Você joga com a Mary! Juntas, ensinem o robô Bit a chegar à bandeira.',
     robot: true,
     items: [
       ['flag', 'Objetivo', 'levar o Bit até a bandeira'],
@@ -5097,7 +5230,7 @@ const GUIDE = [
   {
     id: 'sequence',
     title: 'Fase 1 · Sequências',
-    text: 'Toque nos comandos para montar o caminho, passo a passo. O Bit faz tudo na ordem que você montar.',
+    text: 'Toque nos comandos para montar o caminho. O Bit faz tudo na ordem.',
     items: [
       ['walk', 'Andar', 'um quadradinho para a frente'],
       ['turnLeft', 'Virar esq.', 'gira para a esquerda'],
@@ -5127,7 +5260,7 @@ const GUIDE = [
   {
     id: 'debug',
     title: 'Fase 4 · Depuração',
-    text: 'Aqui o desafio já começa com um programa que tem um bug. Rode, descubra onde o Bit erra e conserte.',
+    text: 'Aqui o programa já vem com um bug. Rode, veja onde o Bit erra e conserte.',
     items: [
       ['bug', 'Ache o bug', 'rode e veja onde o Bit para'],
       ['trash', 'Tire um bloco', 'toque no bloco errado'],
@@ -5137,7 +5270,7 @@ const GUIDE = [
   {
     id: 'functions',
     title: 'Fase 5 · Funções',
-    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser. Na fase 6 você junta tudo!',
+    text: 'Monte a ★ Função uma vez e use o bloco ★ quantas vezes quiser.',
     items: [
       ['star', '★ Função', 'junte até 4 blocos nela'],
       ['play', 'Bloco ★', 'faz tudo o que está na função'],
@@ -5406,11 +5539,11 @@ const EN = {
       title: 'Debugging',
       concept: {
         title: 'Debugging',
-        summary: 'Debugging means finding and fixing a mistake in a program. Run it, see where Bit stopped and change only what is wrong.',
+        summary: 'Debugging is finding and fixing the mistake: run, see where Bit stopped, change just that.',
       },
       lesson: [
         'Not every program works the first time. A mistake in a program is called a bug.',
-        'This program has a bug: one step too many. Run it, see where Bit bumps and find the guilty block.',
+        'This program has one step too many. Run it and find the guilty block.',
         'Fix only what is wrong: remove a block, change a number or swap a rule.',
       ],
       challenges: {
@@ -5435,11 +5568,11 @@ const EN = {
       title: 'Functions',
       concept: {
         title: 'Function',
-        summary: 'A function is a new block you make by putting other blocks together. Then you can use that block as many times as you want.',
+        summary: 'A function is a block you build from other blocks and use as often as you like.',
       },
       lesson: [
-        'Sometimes the same piece of a program shows up many times. You can write it just once!',
-        'Put the steps inside the ★ Function. Every ★ block you use does everything inside it.',
+        'When a piece repeats, you can write it just once!',
+        'Build the ★ Function with the steps. Each ★ block does everything inside it.',
         'First build the function up top. Then use the ★ block in your program.',
       ],
       challenges: {
@@ -5464,12 +5597,12 @@ const EN = {
       title: 'All together',
       concept: {
         title: 'Computational thinking',
-        summary: 'Programmers mix everything they have learned: sequences, decisions, repetition and functions. Choose the best tool for each path.',
+        summary: 'Mix everything you learned: sequences, decisions, repetition and functions.',
       },
       lesson: [
-        'You already know sequences, decisions, repetition and functions. Now it\'s time to put it all together!',
-        'Before building, look at the whole map: what repeats? Where does Bit need to decide?',
-        'There isn\'t just one right way. But the best program is short and easy to understand.',
+        'Now it\'s time to put together everything you learned!',
+        'Look at the whole map: what repeats? Where must Bit decide?',
+        'There are many right ways. The best program is short and easy to read.',
       ],
       challenges: {
         'f6-c1': {
@@ -5563,7 +5696,7 @@ const EN = {
   guide: {
     welcome: {
       title: 'Welcome to Bit Quest!',
-      text: 'This is Mary, and you play as her! Together you\'ll teach Bit the robot to reach the flag by building programs with command blocks.',
+      text: 'You play as Mary! Together, teach Bit the robot to reach the flag.',
       items: [
         ['Goal', 'take Bit to the flag'],
         ['6 stages', 'from Sequences to All together'],
@@ -5571,7 +5704,7 @@ const EN = {
     },
     sequence: {
       title: 'Stage 1 · Sequences',
-      text: 'Tap the commands to build the path, step by step. Bit does everything in the order you build it.',
+      text: 'Tap the commands to build the path. Bit does everything in order.',
       items: [
         ['Walk', 'one square forward'],
         ['Turn left', 'spins to the left'],
@@ -5598,7 +5731,7 @@ const EN = {
     },
     debug: {
       title: 'Stage 4 · Debugging',
-      text: 'Here the challenge starts with a program that has a bug. Run it, find out where Bit goes wrong and fix it.',
+      text: 'Here the program already has a bug. Run it, see where Bit goes wrong and fix it.',
       items: [
         ['Find the bug', 'run it and see where Bit stops'],
         ['Remove a block', 'tap the wrong block'],
@@ -5607,7 +5740,7 @@ const EN = {
     },
     functions: {
       title: 'Stage 5 · Functions',
-      text: 'Build the ★ Function once and use the ★ block as many times as you want. In stage 6 you put it all together!',
+      text: 'Build the ★ Function once and use the ★ block as many times as you want.',
       items: [
         ['★ Function', 'put up to 4 blocks in it'],
         ['★ block', 'does everything in the function'],
@@ -5792,11 +5925,11 @@ const ES = {
       title: 'Depuración',
       concept: {
         title: 'Depuración (debug)',
-        summary: 'Depurar es encontrar y arreglar el error de un programa. Ejecútalo, mira dónde se detuvo Bit y cambia solo lo que está mal.',
+        summary: 'Depurar es encontrar y arreglar el error: ejecuta, mira dónde paró Bit y cambia solo eso.',
       },
       lesson: [
         'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
-        'Este programa tiene un bug: un paso de más. Ejecútalo, mira dónde choca Bit y encuentra el bloque culpable.',
+        'Este programa tiene un paso de más. Ejecútalo y encuentra el bloque culpable.',
         'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
       ],
       challenges: {
@@ -5821,11 +5954,11 @@ const ES = {
       title: 'Funciones',
       concept: {
         title: 'Función',
-        summary: 'Una función es un bloque nuevo que creas juntando otros bloques. Después solo tienes que usar ese bloque todas las veces que quieras.',
+        summary: 'Una función es un bloque que creas con otros bloques y usas las veces que quieras.',
       },
       lesson: [
-        'A veces el mismo pedazo de programa aparece muchas veces. ¡Puedes escribirlo una sola vez!',
-        'Pon los pasos dentro de la ★ Función. Cada bloque ★ que uses hace todo lo que está adentro.',
+        '¡Cuando un pedazo se repite, puedes escribirlo una sola vez!',
+        'Arma la ★ Función con los pasos. Cada bloque ★ hace todo lo que tiene adentro.',
         'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
       ],
       challenges: {
@@ -5850,12 +5983,12 @@ const ES = {
       title: 'Todo junto',
       concept: {
         title: 'Pensamiento computacional',
-        summary: 'Los programadores mezclan todo lo que aprendieron: secuencias, decisiones, repetición y funciones. Elige la mejor herramienta para cada camino.',
+        summary: 'Mezcla todo lo que aprendiste: secuencias, decisiones, repetición y funciones.',
       },
       lesson: [
-        'Ya sabes secuencias, decisiones, repetición y funciones. ¡Ahora es hora de juntarlo todo!',
-        'Antes de armar, mira el mapa entero: ¿qué se repite? ¿Dónde tiene que decidir Bit?',
-        'No hay una sola forma correcta. Pero el mejor programa es corto y fácil de entender.',
+        '¡Ahora es hora de juntar todo lo que aprendiste!',
+        'Mira todo el mapa: ¿qué se repite? ¿Dónde debe decidir Bit?',
+        'Hay muchas formas correctas. El mejor programa es corto y fácil de leer.',
       ],
       challenges: {
         'f6-c1': {
@@ -5945,7 +6078,7 @@ const ES = {
   guide: {
     welcome: {
       title: '¡Bienvenido a Bit Quest!',
-      text: '¡Ella es Mary y juegas con ella! Juntas van a enseñarle al robot Bit a llegar hasta la bandera armando programas con bloques de comando.',
+      text: '¡Juegas con Mary! Juntas, enséñenle al robot Bit a llegar a la bandera.',
       items: [
         ['Objetivo', 'llevar a Bit hasta la bandera'],
         ['6 fases', 'de Secuencias hasta Todo junto'],
@@ -5953,7 +6086,7 @@ const ES = {
     },
     sequence: {
       title: 'Fase 1 · Secuencias',
-      text: 'Toca los comandos para armar el camino, paso a paso. Bit hace todo en el orden en que lo armes.',
+      text: 'Toca los comandos para armar el camino. Bit hace todo en orden.',
       items: [
         ['Caminar', 'un cuadrito hacia adelante'],
         ['Girar izq.', 'gira a la izquierda'],
@@ -5980,7 +6113,7 @@ const ES = {
     },
     debug: {
       title: 'Fase 4 · Depuración',
-      text: 'Aquí el desafío ya empieza con un programa que tiene un bug. Ejecútalo, descubre dónde se equivoca Bit y arréglalo.',
+      text: 'Aquí el programa ya trae un bug. Ejecútalo, mira dónde se equivoca Bit y arréglalo.',
       items: [
         ['Encuentra el bug', 'ejecuta y mira dónde se detiene Bit'],
         ['Quita un bloque', 'toca el bloque equivocado'],
@@ -5989,7 +6122,7 @@ const ES = {
     },
     functions: {
       title: 'Fase 5 · Funciones',
-      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras. ¡En la fase 6 juntas todo!',
+      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras.',
       items: [
         ['★ Función', 'junta hasta 4 bloques en ella'],
         ['Bloque ★', 'hace todo lo que está en la función'],
@@ -6960,9 +7093,6 @@ const EN = {
   'controls.dpadDo': 'move the cursor',
   'controls.aDo': 'confirm',
   'controls.bDo': 'go back or erase a block',
-  'controls.space': 'Space',
-  'controls.spaceDo': 'run the program',
-  'controls.shiftDo': 'get a hint',
   'kw.if': 'IF',
   'kw.then': 'THEN',
   'rules.default': 'Otherwise, Bit walks: ',
@@ -7240,9 +7370,6 @@ const ES = {
   'controls.dpadDo': 'mover el cursor',
   'controls.aDo': 'confirmar',
   'controls.bDo': 'volver o borrar bloque',
-  'controls.space': 'Espacio',
-  'controls.spaceDo': 'ejecutar programa',
-  'controls.shiftDo': 'pedir pista',
   'kw.if': 'SI',
   'kw.then': 'ENTONCES',
   'rules.default': 'Si no, Bit camina: ',
@@ -7520,9 +7647,6 @@ const PT = {
   'controls.dpadDo': 'mover o cursor',
   'controls.aDo': 'confirmar',
   'controls.bDo': 'voltar ou apagar bloco',
-  'controls.space': 'Espaço',
-  'controls.spaceDo': 'executar programa',
-  'controls.shiftDo': 'pedir dica',
   'kw.if': 'SE',
   'kw.then': 'ENTÃO',
   'rules.default': 'Senão, o Bit anda: ',
@@ -8308,7 +8432,7 @@ class SequenceEditor {
       dataset: { command: id },
       onClick: () => this.add(id),
     }, commandChip(id)));
-    this.paletteEl = h('div', { class: 'palette palette--grid', role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length } }, this.paletteButtons);
+    this.paletteEl = h('div', { class: `palette palette--grid ${challenge.palette.length >= 5 ? 'palette--dense' : ''}`, role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length > 5 ? Math.ceil(challenge.palette.length / 2) : challenge.palette.length } }, this.paletteButtons);
     this.render();
   }
 
@@ -9776,7 +9900,6 @@ class GuideScreen extends Screen {
     this.slides = this.ctx.game.content.guide;
     this.index = 0;
     this.page = h('div', { class: 'guide__page', 'aria-live': 'polite' });
-    this.dots = h('div', { class: 'lesson__dots', 'aria-hidden': 'true' });
     this.prevBtn = h('button', { class: 'pbtn', type: 'button', onClick: () => this.prev() }, icon('back'), t('guide.prev'));
     this.nextBtn = h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.next() });
 
@@ -9786,7 +9909,7 @@ class GuideScreen extends Screen {
         h('h1', { class: 'topbar__title' }, t('guide.title')),
         h('button', { class: 'pbtn guide__skip', type: 'button', onClick: () => this.finish() }, t('guide.skip'))),
       this.page,
-      h('footer', { class: 'lesson__foot' }, this.prevBtn, this.dots, this.nextBtn),
+      h('footer', { class: 'lesson__foot guide__foot' }, this.prevBtn, this.nextBtn),
     );
     this.show();
   }
@@ -9796,7 +9919,6 @@ class GuideScreen extends Screen {
     const last = this.index === this.slides.length - 1;
     this.prevBtn.disabled = this.index === 0;
     this.nextBtn.replaceChildren(...(last ? [icon('play'), t('guide.start')] : [t('guide.next')]));
-    this.dots.replaceChildren(...this.slides.map((_, i) => h('span', { class: i === this.index ? 'is-on' : '' })));
     this.page.replaceChildren(
       h('p', { class: 'guide__count' }, t('guide.count', { n: this.index + 1, total: this.slides.length })),
       ...(slide.robot ? [this.robot()] : []),
@@ -10545,8 +10667,6 @@ const controls = () => [
   [t('controls.dpad'), t('controls.dpadDo')],
   ['A / Z / Enter', t('controls.aDo')],
   ['B / X / Esc', t('controls.bDo')],
-  [t('controls.space'), t('controls.spaceDo')],
-  ['Shift', t('controls.shiftDo')],
 ];
 
 class SettingsScreen extends Screen {

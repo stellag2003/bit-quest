@@ -14,13 +14,13 @@ export const fase4 = {
   reward: { mentorId: 'sonja' },
   concept: {
     title: 'Depuração (debug)',
-    summary: 'Depurar é achar e consertar o erro de um programa. Rode, veja onde o Bit parou e mude só o que está errado.',
+    summary: 'Depurar é achar e consertar o erro: rode, veja onde o Bit parou e mude só isso.',
     example: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
   },
   lesson: [
     { text: 'Nem todo programa funciona de primeira. Um erro no programa se chama bug.' },
     {
-      text: 'Este programa tem um bug: um passo a mais. Rode, veja onde o Bit bate e encontre o bloco culpado.',
+      text: 'Este programa tem um passo a mais. Rode e ache o bloco culpado.',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
     },
     { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra.' },

@@ -16,7 +16,6 @@ export class GuideScreen extends Screen {
     this.slides = this.ctx.game.content.guide;
     this.index = 0;
     this.page = h('div', { class: 'guide__page', 'aria-live': 'polite' });
-    this.dots = h('div', { class: 'lesson__dots', 'aria-hidden': 'true' });
     this.prevBtn = h('button', { class: 'pbtn', type: 'button', onClick: () => this.prev() }, icon('back'), t('guide.prev'));
     this.nextBtn = h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.next() });
 
@@ -26,7 +25,7 @@ export class GuideScreen extends Screen {
         h('h1', { class: 'topbar__title' }, t('guide.title')),
         h('button', { class: 'pbtn guide__skip', type: 'button', onClick: () => this.finish() }, t('guide.skip'))),
       this.page,
-      h('footer', { class: 'lesson__foot' }, this.prevBtn, this.dots, this.nextBtn),
+      h('footer', { class: 'lesson__foot guide__foot' }, this.prevBtn, this.nextBtn),
     );
     this.show();
   }
@@ -36,7 +35,6 @@ export class GuideScreen extends Screen {
     const last = this.index === this.slides.length - 1;
     this.prevBtn.disabled = this.index === 0;
     this.nextBtn.replaceChildren(...(last ? [icon('play'), t('guide.start')] : [t('guide.next')]));
-    this.dots.replaceChildren(...this.slides.map((_, i) => h('span', { class: i === this.index ? 'is-on' : '' })));
     this.page.replaceChildren(
       h('p', { class: 'guide__count' }, t('guide.count', { n: this.index + 1, total: this.slides.length })),
       ...(slide.robot ? [this.robot()] : []),

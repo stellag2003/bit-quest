@@ -97,11 +97,11 @@ export const ES = {
       title: 'Depuración',
       concept: {
         title: 'Depuración (debug)',
-        summary: 'Depurar es encontrar y arreglar el error de un programa. Ejecútalo, mira dónde se detuvo Bit y cambia solo lo que está mal.',
+        summary: 'Depurar es encontrar y arreglar el error: ejecuta, mira dónde paró Bit y cambia solo eso.',
       },
       lesson: [
         'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
-        'Este programa tiene un bug: un paso de más. Ejecútalo, mira dónde choca Bit y encuentra el bloque culpable.',
+        'Este programa tiene un paso de más. Ejecútalo y encuentra el bloque culpable.',
         'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
       ],
       challenges: {
@@ -126,11 +126,11 @@ export const ES = {
       title: 'Funciones',
       concept: {
         title: 'Función',
-        summary: 'Una función es un bloque nuevo que creas juntando otros bloques. Después solo tienes que usar ese bloque todas las veces que quieras.',
+        summary: 'Una función es un bloque que creas con otros bloques y usas las veces que quieras.',
       },
       lesson: [
-        'A veces el mismo pedazo de programa aparece muchas veces. ¡Puedes escribirlo una sola vez!',
-        'Pon los pasos dentro de la ★ Función. Cada bloque ★ que uses hace todo lo que está adentro.',
+        '¡Cuando un pedazo se repite, puedes escribirlo una sola vez!',
+        'Arma la ★ Función con los pasos. Cada bloque ★ hace todo lo que tiene adentro.',
         'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
       ],
       challenges: {
@@ -155,12 +155,12 @@ export const ES = {
       title: 'Todo junto',
       concept: {
         title: 'Pensamiento computacional',
-        summary: 'Los programadores mezclan todo lo que aprendieron: secuencias, decisiones, repetición y funciones. Elige la mejor herramienta para cada camino.',
+        summary: 'Mezcla todo lo que aprendiste: secuencias, decisiones, repetición y funciones.',
       },
       lesson: [
-        'Ya sabes secuencias, decisiones, repetición y funciones. ¡Ahora es hora de juntarlo todo!',
-        'Antes de armar, mira el mapa entero: ¿qué se repite? ¿Dónde tiene que decidir Bit?',
-        'No hay una sola forma correcta. Pero el mejor programa es corto y fácil de entender.',
+        '¡Ahora es hora de juntar todo lo que aprendiste!',
+        'Mira todo el mapa: ¿qué se repite? ¿Dónde debe decidir Bit?',
+        'Hay muchas formas correctas. El mejor programa es corto y fácil de leer.',
       ],
       challenges: {
         'f6-c1': {
@@ -250,7 +250,7 @@ export const ES = {
   guide: {
     welcome: {
       title: '¡Bienvenido a Bit Quest!',
-      text: '¡Ella es Mary y juegas con ella! Juntas van a enseñarle al robot Bit a llegar hasta la bandera armando programas con bloques de comando.',
+      text: '¡Juegas con Mary! Juntas, enséñenle al robot Bit a llegar a la bandera.',
       items: [
         ['Objetivo', 'llevar a Bit hasta la bandera'],
         ['6 fases', 'de Secuencias hasta Todo junto'],
@@ -258,7 +258,7 @@ export const ES = {
     },
     sequence: {
       title: 'Fase 1 · Secuencias',
-      text: 'Toca los comandos para armar el camino, paso a paso. Bit hace todo en el orden en que lo armes.',
+      text: 'Toca los comandos para armar el camino. Bit hace todo en orden.',
       items: [
         ['Caminar', 'un cuadrito hacia adelante'],
         ['Girar izq.', 'gira a la izquierda'],
@@ -285,7 +285,7 @@ export const ES = {
     },
     debug: {
       title: 'Fase 4 · Depuración',
-      text: 'Aquí el desafío ya empieza con un programa que tiene un bug. Ejecútalo, descubre dónde se equivoca Bit y arréglalo.',
+      text: 'Aquí el programa ya trae un bug. Ejecútalo, mira dónde se equivoca Bit y arréglalo.',
       items: [
         ['Encuentra el bug', 'ejecuta y mira dónde se detiene Bit'],
         ['Quita un bloque', 'toca el bloque equivocado'],
@@ -294,7 +294,7 @@ export const ES = {
     },
     functions: {
       title: 'Fase 5 · Funciones',
-      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras. ¡En la fase 6 juntas todo!',
+      text: 'Arma la ★ Función una vez y usa el bloque ★ todas las veces que quieras.',
       items: [
         ['★ Función', 'junta hasta 4 bloques en ella'],
         ['Bloque ★', 'hace todo lo que está en la función'],
