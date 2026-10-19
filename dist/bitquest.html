@@ -502,7 +502,7 @@ body:not(.is-powered) .lcd::before {
   .speaker i { height: 18px; }
 }
 
-@media (max-height: 680px) {
+@media (max-height: 760px) {
   .console__ridge,
   .brand,
   .bezel__top { display: none; }
@@ -510,6 +510,13 @@ body:not(.is-powered) .lcd::before {
   .console__controls { height: 112px; padding-top: 8px; }
   .dpad { width: 98px; height: 98px; }
   .round-btn { width: 46px; height: 46px; }
+}
+
+@media (max-height: 600px) {
+  .console__controls { height: 100px; padding-top: 4px; }
+  .dpad { width: 88px; height: 88px; }
+  .round-btn { width: 42px; height: 42px; }
+  .legend { min-height: 20px; padding-top: 3px; }
 }
 
 /* Phone held sideways: GBA-style layout */
@@ -2778,10 +2785,12 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
 
 /* ───────────── Challenge layout: the run button never leaves the screen ───────────── */
 /* The map takes the free space; the program shrinks first and scrolls inside itself. */
-.scr--challenge > .challenge__stage { flex: 1 1 0; min-height: 132px; }
+.scr--challenge > .challenge__stage { flex: 1 1 0; min-height: 112px; }
+/* Last resort on very short screens: the whole challenge scrolls, so Executar is always reachable. */
+.scr--challenge { overflow-y: auto; touch-action: pan-y; scrollbar-width: thin; }
 .scr--challenge > .program { flex: 0 1 auto; min-height: 84px; }
 .scr--challenge > .program > .program__list,
-.scr--challenge > .program > .rules { position: relative; flex: 0 1 auto; min-height: 46px; overscroll-behavior: contain; touch-action: pan-y; }
+.scr--challenge > .program > .rules { position: relative; flex: 0 1 auto; min-height: 46px; touch-action: pan-y; }
 .scr--challenge > .challenge__controls { flex: none; }
 
 /* Two maps side by side */

@@ -349,7 +349,7 @@ body:not(.is-powered) .lcd::before {
   .speaker i { height: 18px; }
 }
 
-@media (max-height: 680px) {
+@media (max-height: 760px) {
   .console__ridge,
   .brand,
   .bezel__top { display: none; }
@@ -357,6 +357,13 @@ body:not(.is-powered) .lcd::before {
   .console__controls { height: 112px; padding-top: 8px; }
   .dpad { width: 98px; height: 98px; }
   .round-btn { width: 46px; height: 46px; }
+}
+
+@media (max-height: 600px) {
+  .console__controls { height: 100px; padding-top: 4px; }
+  .dpad { width: 88px; height: 88px; }
+  .round-btn { width: 42px; height: 42px; }
+  .legend { min-height: 20px; padding-top: 3px; }
 }
 
 /* Phone held sideways: GBA-style layout */
