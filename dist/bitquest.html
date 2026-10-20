@@ -3771,8 +3771,9 @@ class ProgressionRules {
 
   /**
    * The step right after `challengeId` in map order, if it is open: the next
-   * challenge of the fase, or the next fase (its lesson the first time, its
-   * first challenge when the lesson is already done). Null when nothing is open.
+   * challenge of the fase, or — when the fase is over — the next fase's lesson.
+   * A new fase always starts with its lesson (even on a replay), so the child
+   * gets the context before the challenges. Null when nothing is open.
    */
   stepAfter(progress, challengeId) {
     const { fase, index } = this.curriculum.findChallenge(challengeId);
@@ -3782,10 +3783,8 @@ class ProgressionRules {
     }
     const nextFase = this.curriculum.fases[this.curriculum.faseIndex(fase.id) + 1];
     if (!nextFase) return null;
-    const lesson = this.lessonStatus(progress, nextFase.id);
-    if (lesson === NodeStatus.LOCKED) return null;
-    if (lesson === NodeStatus.AVAILABLE) return { type: 'lesson', faseId: nextFase.id };
-    return { type: 'challenge', faseId: nextFase.id, challengeId: nextFase.challenges[0].id };
+    if (this.lessonStatus(progress, nextFase.id) === NodeStatus.LOCKED) return null;
+    return { type: 'lesson', faseId: nextFase.id };
   }
 
   totalStars(progress) {

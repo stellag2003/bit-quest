@@ -154,14 +154,14 @@ describe('End of the game', () => {
 });
 
 describe('Continue after a challenge', () => {
-  it('goes to the next challenge, then to the next fase (lesson first, its first challenge on a replay)', () => {
+  it('goes to the next challenge, and a new fase always starts with its lesson (also on a replay)', () => {
     const { game } = makeGame();
     const [f1, f2] = CONTENT.fases;
     solveFase(game, f1);
     assert.deepEqual(game.stepAfter.execute(f1.challenges[0].id), { type: 'challenge', faseId: f1.id, challengeId: f1.challenges[1].id });
     assert.deepEqual(game.stepAfter.execute(f1.challenges[2].id), { type: 'lesson', faseId: f2.id });
     game.completeLesson.execute(f2.id);
-    assert.deepEqual(game.stepAfter.execute(f1.challenges[2].id), { type: 'challenge', faseId: f2.id, challengeId: f2.challenges[0].id });
+    assert.deepEqual(game.stepAfter.execute(f1.challenges[2].id), { type: 'lesson', faseId: f2.id });
   });
 
   it('has nothing to offer when the next step is still locked or the game is over', () => {
