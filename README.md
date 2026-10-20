@@ -23,6 +23,12 @@ LocalStorage para salvar o progresso. Sem backend e sem dependências.
 **Controles:** toque na tela (principal) · D-pad/setas movem o cursor · **A**/Z/Enter confirma ·
 **B**/X/Esc volta ou apaga o último bloco · no teclado, Espaço executa e Shift pede dica.
 
+## Publicar
+
+- **GitHub Pages:** publica a raiz do repositório (versão em módulos).
+- **Vercel:** o `vercel.json` já configura tudo: roda `npm run build` e publica a pasta `dist/`,
+  onde `index.html` é o jogo inteiro em um arquivo só. Não precisa mudar nada nas configurações do projeto.
+
 ## Comandos
 
 ```bash

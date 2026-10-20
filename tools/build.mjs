@@ -56,6 +56,8 @@ html = html.replace(/<script type="module" src="src\/main\.js"><\/script>/,
 
 mkdirSync(join(ROOT, 'dist'), { recursive: true });
 writeFileSync(join(ROOT, 'dist/bitquest.html'), html);
+// Same file as the site's entry page, so hosts that publish `dist/` (Vercel) serve the game at `/`.
+writeFileSync(join(ROOT, 'dist/index.html'), html);
 console.log(`dist/bitquest.html gerado (${order.length} módulos, ${(html.length / 1024).toFixed(0)} KB)`);
 
 // Claude Artifact variant: the host supplies <html>/<head>/<body> and pads :root
