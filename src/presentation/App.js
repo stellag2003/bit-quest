@@ -18,6 +18,9 @@ export class App {
     this.current?.unmount();
 
     const root = h('div', { class: `scr scr--${name}` });
+    // Screens append optional parts as `cond ? node : null`; skip the empty ones (like h() does)
+    // instead of letting the DOM print them as the text "null".
+    root.append = (...nodes) => Element.prototype.append.apply(root, nodes.flat(Infinity).filter((n) => n != null && n !== false));
     this.screenLayer.replaceChildren(root);
     const screen = new ScreenClass(this.ctx);
     this.current = screen;

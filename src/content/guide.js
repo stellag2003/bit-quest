@@ -112,6 +112,19 @@ export const GUIDE = [
     ],
   },
   {
+    id: 'settings',
+    title: 'Ajustes e personalização',
+    text: 'Deixe o jogo do seu jeito. Tudo fica na tela inicial ou em Ajustes (a engrenagem).',
+    items: [
+      ['gear', 'Ajustes', 'engrenagem no canto da tela inicial'],
+      ['book', 'Idioma', 'PT, EN ou ES: ao ligar e em Ajustes'],
+      ['flag', 'Dificuldade', 'em Ajustes ou no nível da tela inicial'],
+      ['palette', 'Cores', 'botão Cores: cada cor tem uma música'],
+      ['soundOn', 'Som', 'botão no canto da tela inicial'],
+      ['hint', 'Acessibilidade', 'texto maior, letra fácil e menos animação'],
+    ],
+  },
+  {
     id: 'controls',
     title: 'Controles',
     text: 'Toque na tela para jogar. Também dá para usar o direcional, os botões A e B ou o teclado.',

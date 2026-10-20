@@ -8,6 +8,9 @@
  *   hintPulse   — failed runs before the hint button starts blinking
  *   reward      — XP and coin multiplier
  *   speed       — how slowly Bit replays the program (animation time × speed)
+ *   preview     — the map shows Bit's path while the program is being built
+ *   hintOnScreen — the first hint is shown under the goal from the start
+ *   answerAfter — failed runs after which "Mostrar resposta" fills in the solution (null = never)
  */
 export const DIFFICULTIES = [
   {
@@ -20,6 +23,9 @@ export const DIFFICULTIES = [
     hintPulse: 1,
     reward: 1,
     speed: 1.35,
+    preview: true,
+    hintOnScreen: true,
+    answerAfter: 2,
   },
   {
     id: 'medium',
@@ -31,6 +37,9 @@ export const DIFFICULTIES = [
     hintPulse: 2,
     reward: 1,
     speed: 1,
+    preview: false,
+    hintOnScreen: false,
+    answerAfter: null,
   },
   {
     id: 'hard',
@@ -42,6 +51,9 @@ export const DIFFICULTIES = [
     hintPulse: 2,
     reward: 1.5,
     speed: 0.8,
+    preview: false,
+    hintOnScreen: false,
+    answerAfter: null,
   },
 ];
 

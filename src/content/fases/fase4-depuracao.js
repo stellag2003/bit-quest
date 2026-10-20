@@ -55,6 +55,7 @@ export const fase4 = {
       id: 'f4-c3',
       title: 'Regra trocada',
       kind: 'rules',
+      scenery: 'canyon', // brick walls, to match the "Parede à frente" rule
       goal: 'Uma das regras está errada. Descubra qual e conserte.',
       sensors: ['rockAhead', 'wallAhead'],
       actions: ['jump', 'turnLeft', 'turnRight'],

@@ -89,3 +89,11 @@ describe('Difficulty levels', () => {
     assert.equal(session.hintsLockedFor, 0);
   });
 });
+
+describe('Easy mode helps', () => {
+  it('only easy shows the path preview, the hint on screen and the answer button', () => {
+    const levels = Object.fromEntries(CONTENT.difficulties.levels.map((d) => [d.id, d]));
+    assert.deepEqual([levels.easy.preview, levels.easy.hintOnScreen, levels.easy.answerAfter], [true, true, 2]);
+    for (const id of ['medium', 'hard']) assert.deepEqual([levels[id].preview, levels[id].hintOnScreen, levels[id].answerAfter], [false, false, null], id);
+  });
+});

@@ -152,3 +152,24 @@ describe('End of the game', () => {
     assert.equal(game.playerSummary.execute().finale.name, 'x'.repeat(24));
   });
 });
+
+describe('Continue after a challenge', () => {
+  it('goes to the next challenge, then to the next fase (lesson first, its first challenge on a replay)', () => {
+    const { game } = makeGame();
+    const [f1, f2] = CONTENT.fases;
+    solveFase(game, f1);
+    assert.deepEqual(game.stepAfter.execute(f1.challenges[0].id), { type: 'challenge', faseId: f1.id, challengeId: f1.challenges[1].id });
+    assert.deepEqual(game.stepAfter.execute(f1.challenges[2].id), { type: 'lesson', faseId: f2.id });
+    game.completeLesson.execute(f2.id);
+    assert.deepEqual(game.stepAfter.execute(f1.challenges[2].id), { type: 'challenge', faseId: f2.id, challengeId: f2.challenges[0].id });
+  });
+
+  it('has nothing to offer when the next step is still locked or the game is over', () => {
+    const { game } = makeGame();
+    game.completeLesson.execute('f1');
+    game.startChallenge.execute('f1-c1').submit(CONTENT.fases[0].challenges[0].solution);
+    assert.equal(game.stepAfter.execute('f1-c3'), null); // f2 still locked
+    CONTENT.fases.forEach((f) => solveFase(game, f));
+    assert.equal(game.stepAfter.execute(CONTENT.fases.at(-1).challenges.at(-1).id), null);
+  });
+});

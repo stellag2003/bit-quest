@@ -7,8 +7,11 @@ export const FAILURES = {
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
   hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
+  // In fases drawn with trees (the meadow), the blocking tiles are trees: same failure, tree words.
+  hit_wall_tree: { title: 'Bonk! O Bit bateu na árvore.', hint: 'Antes da árvore, experimente Virar.' },
   hit_rock: { title: 'O Bit tropeçou na pedra!', hint: 'Pedras são baixinhas: use Pular.' },
   jump_wall: { title: 'Essa parede é alta demais!', hint: 'Só dá para pular pedras. Para paredes, vire.' },
+  jump_wall_tree: { title: 'Essa árvore é alta demais!', hint: 'Só dá para pular pedras. Para árvores, vire.' },
   bad_landing: { title: 'Não dá para pousar ali.', hint: 'O Bit pula 2 casas. Veja onde ele vai cair.' },
   not_reached: { title: 'Os comandos acabaram antes da bandeira.', hint: 'Falta pouco! Adicione mais comandos.' },
   stuck_loop: { title: 'O Bit está andando em círculos!', hint: 'Será que a curva é para o outro lado?' },

@@ -21,6 +21,7 @@ export class WorldView {
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
+    this.obstacle = this.scenery.obstacle;
     this.label = label;
     this.canvas = h('canvas', { class: 'world__canvas', role: 'img', 'aria-label': label });
     this.el = h('div', { class: 'world' }, this.canvas);
@@ -40,11 +41,30 @@ export class WorldView {
     return STEP_MS[motion] * this.speed;
   }
 
+  /**
+   * Easy mode: dots on every square the program will visit and a pale Bit where
+   * it ends (an × where it would bump). `run` is a domain trace; null clears it.
+   */
+  showPreview(run) {
+    if (!run || !run.steps.length) {
+      this.preview = null;
+    } else {
+      const last = run.steps.at(-1);
+      this.preview = {
+        cells: run.steps.filter((s) => s.motion === 'walk' || s.motion === 'jump').map((s) => s.to),
+        end: last.ok ? last.to : last.from,
+        hit: last.ok ? null : last.target,
+        success: run.success,
+      };
+    }
+    this.draw();
+  }
+
   setWorld(rows) {
     this.world = new World(rows);
     this.canvas.width = this.world.width * T;
     this.canvas.height = this.world.height * T;
-    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world)}`);
+    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world, this.obstacle)}`);
     this.reset();
     this.fit();
   }
@@ -180,11 +200,29 @@ export class WorldView {
       }
     }
     this.drawMarker(c);
+    if (!this.playToken) this.drawPreview(c);
     this.drawRobot(c);
     this.particles.forEach((p) => {
       ctx.fillStyle = c[p.life % 8 < 4 ? 0 : 1];
       ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
     });
+  }
+
+  drawPreview(c) {
+    const p = this.preview;
+    if (!p) return;
+    const { ctx } = this;
+    ctx.fillStyle = c[0];
+    for (const { x, y } of p.cells) ctx.fillRect(x * T + 6, y * T + 6, 4, 4);
+    if (p.hit && this.world.inside(p.hit.x, p.hit.y)) {
+      for (let i = 2; i < 14; i += 1) {
+        ctx.fillRect(p.hit.x * T + i, p.hit.y * T + i, 2, 2);
+        ctx.fillRect(p.hit.x * T + 14 - i, p.hit.y * T + i, 2, 2);
+      }
+    }
+    const { x, y, dir } = p.end;
+    if (x === this.robot.x && y === this.robot.y) return;
+    drawSprite(ctx, ROBOT[dir][0], x * T, y * T, c, { tone: c[1], flip: dir === 'W' });
   }
 
   /** Dots on cell corners help kids count squares. */
@@ -234,7 +272,7 @@ export class WorldView {
 }
 
 /** Spoken summary of a map for screen readers: size, where Bit and the flag are, obstacles. */
-export function describeWorld(world) {
+export function describeWorld(world, obstacle = 'wall') {
   let rocks = 0;
   let walls = 0;
   world.tiles.forEach((tile) => {
@@ -252,5 +290,6 @@ export function describeWorld(world) {
     gy: goal.y + 1,
     rocks,
     walls,
+    wallName: t(obstacle === 'tree' ? 'world.trees' : 'world.walls'),
   });
 }

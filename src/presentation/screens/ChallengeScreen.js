@@ -5,6 +5,7 @@ import { energyMeter } from '../components/hud.js';
 import { mentorPortrait } from '../components/mentorViews.js';
 import { WorldView } from '../components/WorldView.js';
 import { icon } from '../pixel/icons.js';
+import { SCENERIES } from '../pixel/sceneries.js';
 import { t, tn } from '../i18n/index.js';
 import { h, pick, sleep } from '../ui/dom.js';
 
@@ -37,12 +38,14 @@ export class ChallengeScreen extends Screen {
 
     this.editor = createEditor(challenge, { sfx });
     this.editor.onChange = () => this.onProgramChange();
+    this.scenery = challenge.scenery ?? fase.scenery;
+    this.obstacle = SCENERIES[this.scenery]?.obstacle ?? 'wall';
     // Every map is on screen at once (side by side when there are two), so kids see the same rules win both.
     const multiMap = challenge.maps.length > 1;
     this.views = challenge.maps.map((_, i) => new WorldView({
       theme,
       sfx,
-      scenery: fase.scenery,
+      scenery: this.scenery,
       speed: this.session.difficulty.speed,
       label: multiMap ? `${t('challenge.mapTab', { n: i + 1 })}. ${challenge.goal}` : t('challenge.mapAria', { goal: challenge.goal }),
     }));
@@ -69,6 +72,7 @@ export class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), challenge.hints[0]) : null,
       h('div', { class: 'challenge__stage' }, stage),
       this.editor.programEl,
       this.controls,
@@ -88,6 +92,24 @@ export class ChallengeScreen extends Screen {
     if (this.state === 'failed') this.retry();
     this.editor.clearMarks();
     this.runBtn.classList.toggle('is-ready', !this.editor.isEmpty());
+    this.updatePreview();
+  }
+
+  /** Easy mode: try the program in the background (no energy, no stars) and draw where Bit would go. */
+  updatePreview() {
+    if (!this.session.difficulty.preview) return;
+    const program = this.editor.getProgram();
+    const evaluation = this.editor.isEmpty() ? null : this.ctx.game.evaluator.evaluate(this.challenge, program);
+    const valid = evaluation && !(evaluation.failure && evaluation.failure.stepIndex < 0);
+    this.views.forEach((view, i) => view.showPreview(valid ? evaluation.runs.find((r) => r.mapIndex === i) ?? null : null));
+  }
+
+  /** Easy mode, after a few tries: fill in the solution so the child can watch it work. */
+  showAnswer() {
+    this.retry();
+    this.editor.setProgram(this.challenge.solution);
+    this.ctx.toast.show({ title: t('challenge.answerShown'), iconName: 'play' });
+    this.runBtn.focus({ preventScroll: true });
   }
 
   clearAll() {
@@ -148,7 +170,8 @@ export class ChallengeScreen extends Screen {
   showFailure(evaluation, { executed, energyLost }) {
     const { failure } = evaluation;
     const { failures, encouragements } = this.ctx.game.content.feedback;
-    const copy = failures[failure.code] ?? { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
+    // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
+    const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
     const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
     this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= this.session.difficulty.hintPulse && !this.session.hintsLockedFor);
@@ -158,12 +181,18 @@ export class ChallengeScreen extends Screen {
       h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
       executed ? h('p', { class: 'feedback__note' }, energyLost ? [icon('energy'), ` ${t('challenge.energyLost')} `] : null, pick(encouragements)) : null,
       h('div', { class: 'feedback__actions' },
-        h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
+        this.answerAvailable ? h('button', { class: 'pbtn', type: 'button', onClick: () => this.showAnswer() }, icon('check'), t('challenge.answer'))
+          : h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
         h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, executed ? t('challenge.retry') : t('challenge.ok'))));
     this.feedbackLayer.replaceChildren(card);
     this.controls.classList.add('has-feedback');
     if (executed) this.state = 'failed';
     requestAnimationFrame(() => card.querySelector('.pbtn--primary')?.focus({ preventScroll: true }));
+  }
+
+  get answerAvailable() {
+    const after = this.session.difficulty.answerAfter;
+    return after != null && this.session.failures >= after;
   }
 
   /** Back to editing with the same program: fix, don't restart. */
@@ -172,6 +201,7 @@ export class ChallengeScreen extends Screen {
     this.feedbackLayer.replaceChildren();
     this.controls.classList.remove('has-feedback');
     this.views.forEach((view) => view.reset());
+    this.updatePreview();
   }
 
   async showHint() {

@@ -95,6 +95,16 @@ export class RuleEditor {
     return true;
   }
 
+  /** Replaces every rule with `program` (used by "Mostrar resposta" on easy). */
+  setProgram(program) {
+    if (this.locked) return;
+    const copy = structuredClone(program);
+    this.rules = this.rules.map((r, i) => copy[i] ?? Object.assign(r, { condition: null, action: null }));
+    this.selected = { ruleId: this.rules.at(-1).id, slot: 'action' };
+    this.sfx('place');
+    this.changed();
+  }
+
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.rules.forEach((r) => Object.assign(r, { condition: null, action: null }));

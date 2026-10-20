@@ -340,6 +340,18 @@ export const ES = {
         ['Colores de pantalla', 'cada color nuevo trae una música nueva'],
       ],
     },
+    settings: {
+      title: 'Ajustes y personalización',
+      text: 'Deja el juego a tu manera. Todo está en la pantalla de inicio o en Ajustes (el engranaje).',
+      items: [
+        ['Ajustes', 'engranaje en la esquina del inicio'],
+        ['Idioma', 'PT, EN o ES: al encender y en Ajustes'],
+        ['Dificultad', 'en Ajustes o en el nivel del inicio'],
+        ['Colores', 'botón Colores: cada color tiene su música'],
+        ['Sonido', 'botón en la esquina del inicio'],
+        ['Accesibilidad', 'texto más grande, letra fácil y menos animación'],
+      ],
+    },
     controls: {
       title: 'Controles',
       text: 'Toca la pantalla para jugar. También puedes usar la cruceta, los botones A y B o el teclado.',
@@ -361,6 +373,8 @@ export const ES = {
       hit_wall: { title: '¡Bonk! Bit chocó con la pared.', hint: 'Antes de la pared, prueba Girar.' },
       hit_rock: { title: '¡Bit tropezó con la piedra!', hint: 'Las piedras son bajitas: usa Saltar.' },
       jump_wall: { title: '¡Esa pared es demasiado alta!', hint: 'Solo se pueden saltar piedras. Ante una pared, gira.' },
+      hit_wall_tree: { title: '¡Bonk! Bit chocó con el árbol.', hint: 'Antes del árbol, prueba Girar.' },
+      jump_wall_tree: { title: '¡Ese árbol es demasiado alto!', hint: 'Solo se pueden saltar piedras. Ante un árbol, gira.' },
       bad_landing: { title: 'No se puede aterrizar ahí.', hint: 'Bit salta 2 casillas. Mira dónde va a caer.' },
       not_reached: { title: 'Los comandos se acabaron antes de la bandera.', hint: '¡Falta poco! Agrega más comandos.' },
       stuck_loop: { title: '¡Bit está dando vueltas en círculos!', hint: '¿Será que la curva es para el otro lado?' },

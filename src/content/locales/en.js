@@ -344,6 +344,18 @@ export const EN = {
         ['Screen colors', 'every new color brings a new song'],
       ],
     },
+    settings: {
+      title: 'Settings and customizing',
+      text: 'Make the game your own. Everything is on the home screen or in Settings (the gear).',
+      items: [
+        ['Settings', 'gear in the corner of the home screen'],
+        ['Language', 'PT, EN or ES: on power-on and in Settings'],
+        ['Difficulty', 'in Settings or the level on the home screen'],
+        ['Colors', 'Colors button: each color has its own song'],
+        ['Sound', 'button in the corner of the home screen'],
+        ['Accessibility', 'larger text, easy font and less animation'],
+      ],
+    },
     controls: {
       title: 'Controls',
       text: 'Tap the screen to play. You can also use the D-pad, the A and B buttons, or the keyboard.',
@@ -366,6 +378,8 @@ export const EN = {
       hit_wall: { title: 'Bonk! Bit bumped into the wall.', hint: 'Before the wall, try Turn.' },
       hit_rock: { title: 'Bit tripped on the rock!', hint: 'Rocks are short: use Jump.' },
       jump_wall: { title: 'That wall is too tall!', hint: 'You can only jump rocks. For walls, turn.' },
+      hit_wall_tree: { title: 'Bonk! Bit bumped into the tree.', hint: 'Before the tree, try Turn.' },
+      jump_wall_tree: { title: 'That tree is too tall!', hint: 'You can only jump rocks. For trees, turn.' },
       bad_landing: { title: 'Bit can\'t land there.', hint: 'Bit jumps 2 squares. Check where he will land.' },
       not_reached: { title: 'The commands ran out before the flag.', hint: 'Almost there! Add more commands.' },
       stuck_loop: { title: 'Bit is walking in circles!', hint: 'Maybe the turn goes the other way?' },

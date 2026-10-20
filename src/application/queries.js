@@ -34,6 +34,17 @@ export class PlayerSummaryQuery {
   }
 }
 
+/** Where "continue" goes after a challenge (see ProgressionRules.stepAfter). */
+export class StepAfterQuery {
+  constructor({ store, rules }) {
+    Object.assign(this, { store, rules });
+  }
+
+  execute(challengeId) {
+    return this.rules.stepAfter(this.store.get(), challengeId);
+  }
+}
+
 export class MapOverviewQuery {
   constructor({ store, rules, curriculum }) {
     Object.assign(this, { store, rules, curriculum });

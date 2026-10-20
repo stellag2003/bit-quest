@@ -10,7 +10,7 @@ import { PurchasePalette, RefillEnergy, SelectPalette } from './economy.js';
 import { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } from './learning.js';
 import { ProgressStore } from './ProgressStore.js';
 import { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } from './profile.js';
-import { MapOverviewQuery, PlayerSummaryQuery } from './queries.js';
+import { MapOverviewQuery, PlayerSummaryQuery, StepAfterQuery } from './queries.js';
 
 /**
  * Application composition: builds the rules and use cases from content and
@@ -57,5 +57,6 @@ export function createGame({ content, repository, clock, bus, store: existingSto
     setCertificateName: new SetCertificateName({ store }),
     playerSummary: new PlayerSummaryQuery({ store, rules, curriculum, clock, mentors }),
     mapOverview: new MapOverviewQuery({ store, rules, curriculum }),
+    stepAfter: new StepAfterQuery({ store, rules }),
   };
 }

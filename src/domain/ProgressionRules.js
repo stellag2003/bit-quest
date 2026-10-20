@@ -39,6 +39,25 @@ export class ProgressionRules {
     return null;
   }
 
+  /**
+   * The step right after `challengeId` in map order, if it is open: the next
+   * challenge of the fase, or the next fase (its lesson the first time, its
+   * first challenge when the lesson is already done). Null when nothing is open.
+   */
+  stepAfter(progress, challengeId) {
+    const { fase, index } = this.curriculum.findChallenge(challengeId);
+    const sibling = fase.challenges[index + 1];
+    if (sibling) {
+      return this.challengeStatus(progress, sibling.id) === NodeStatus.LOCKED ? null : { type: 'challenge', faseId: fase.id, challengeId: sibling.id };
+    }
+    const nextFase = this.curriculum.fases[this.curriculum.faseIndex(fase.id) + 1];
+    if (!nextFase) return null;
+    const lesson = this.lessonStatus(progress, nextFase.id);
+    if (lesson === NodeStatus.LOCKED) return null;
+    if (lesson === NodeStatus.AVAILABLE) return { type: 'lesson', faseId: nextFase.id };
+    return { type: 'challenge', faseId: nextFase.id, challengeId: nextFase.challenges[0].id };
+  }
+
   totalStars(progress) {
     return Object.values(progress.stars).reduce((sum, s) => sum + s, 0);
   }

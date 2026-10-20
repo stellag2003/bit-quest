@@ -3275,6 +3275,35 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }
 
+.result__auto {
+  margin: 0;
+  min-height: 1.3em;
+  font-size: 0.85em;
+  text-align: center;
+  color: var(--c1);
+}
+
+/* Easy mode: the first hint is always on screen, under the goal */
+.goal--hint {
+  padding: 3px 6px;
+  background: var(--c2);
+  font-size: 0.8em;
+}
+
+/* Sideways phone: the easy-mode hint gets its own row under the goal */
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge {
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'top top'
+      'goal program'
+      'hint program'
+      'stage program'
+      'stage controls';
+  }
+  .scr--challenge > .goal--hint { grid-area: hint; }
+}
+
 </style>
 
 <style>
@@ -3745,6 +3774,25 @@ class ProgressionRules {
       if (challenge) return { type: 'challenge', faseId: fase.id, challengeId: challenge.id };
     }
     return null;
+  }
+
+  /**
+   * The step right after `challengeId` in map order, if it is open: the next
+   * challenge of the fase, or the next fase (its lesson the first time, its
+   * first challenge when the lesson is already done). Null when nothing is open.
+   */
+  stepAfter(progress, challengeId) {
+    const { fase, index } = this.curriculum.findChallenge(challengeId);
+    const sibling = fase.challenges[index + 1];
+    if (sibling) {
+      return this.challengeStatus(progress, sibling.id) === NodeStatus.LOCKED ? null : { type: 'challenge', faseId: fase.id, challengeId: sibling.id };
+    }
+    const nextFase = this.curriculum.fases[this.curriculum.faseIndex(fase.id) + 1];
+    if (!nextFase) return null;
+    const lesson = this.lessonStatus(progress, nextFase.id);
+    if (lesson === NodeStatus.LOCKED) return null;
+    if (lesson === NodeStatus.AVAILABLE) return { type: 'lesson', faseId: nextFase.id };
+    return { type: 'challenge', faseId: nextFase.id, challengeId: nextFase.challenges[0].id };
   }
 
   totalStars(progress) {
@@ -4499,6 +4547,17 @@ class PlayerSummaryQuery {
   }
 }
 
+/** Where "continue" goes after a challenge (see ProgressionRules.stepAfter). */
+class StepAfterQuery {
+  constructor({ store, rules }) {
+    Object.assign(this, { store, rules });
+  }
+
+  execute(challengeId) {
+    return this.rules.stepAfter(this.store.get(), challengeId);
+  }
+}
+
 class MapOverviewQuery {
   constructor({ store, rules, curriculum }) {
     Object.assign(this, { store, rules, curriculum });
@@ -4531,7 +4590,7 @@ class MapOverviewQuery {
   }
 }
 
-return { PlayerSummaryQuery, MapOverviewQuery };
+return { PlayerSummaryQuery, StepAfterQuery, MapOverviewQuery };
 })();
 // ── src/application/createGame.js
 __m["src/application/createGame.js"] = (() => {
@@ -4547,7 +4606,7 @@ const { PurchasePalette, RefillEnergy, SelectPalette } = __m["src/application/ec
 const { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } = __m["src/application/learning.js"];
 const { ProgressStore } = __m["src/application/ProgressStore.js"];
 const { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } = __m["src/application/profile.js"];
-const { MapOverviewQuery, PlayerSummaryQuery } = __m["src/application/queries.js"];
+const { MapOverviewQuery, PlayerSummaryQuery, StepAfterQuery } = __m["src/application/queries.js"];
 /**
  * Application composition: builds the rules and use cases from content and
  * infrastructure ports ({ repository, clock, bus }). No DOM in here.
@@ -4593,6 +4652,7 @@ function createGame({ content, repository, clock, bus, store: existingStore = nu
     setCertificateName: new SetCertificateName({ store }),
     playerSummary: new PlayerSummaryQuery({ store, rules, curriculum, clock, mentors }),
     mapOverview: new MapOverviewQuery({ store, rules, curriculum }),
+    stepAfter: new StepAfterQuery({ store, rules }),
   };
 }
 
@@ -4667,6 +4727,9 @@ __m["src/content/difficulty.js"] = (() => {
  *   hintPulse   — failed runs before the hint button starts blinking
  *   reward      — XP and coin multiplier
  *   speed       — how slowly Bit replays the program (animation time × speed)
+ *   preview     — the map shows Bit's path while the program is being built
+ *   hintOnScreen — the first hint is shown under the goal from the start
+ *   answerAfter — failed runs after which "Mostrar resposta" fills in the solution (null = never)
  */
 const DIFFICULTIES = [
   {
@@ -4679,6 +4742,9 @@ const DIFFICULTIES = [
     hintPulse: 1,
     reward: 1,
     speed: 1.35,
+    preview: true,
+    hintOnScreen: true,
+    answerAfter: 2,
   },
   {
     id: 'medium',
@@ -4690,6 +4756,9 @@ const DIFFICULTIES = [
     hintPulse: 2,
     reward: 1,
     speed: 1,
+    preview: false,
+    hintOnScreen: false,
+    answerAfter: null,
   },
   {
     id: 'hard',
@@ -4701,6 +4770,9 @@ const DIFFICULTIES = [
     hintPulse: 2,
     reward: 1.5,
     speed: 0.8,
+    preview: false,
+    hintOnScreen: false,
+    answerAfter: null,
   },
 ];
 
@@ -4719,8 +4791,11 @@ const FAILURES = {
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
   hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
+  // In fases drawn with trees (the meadow), the blocking tiles are trees: same failure, tree words.
+  hit_wall_tree: { title: 'Bonk! O Bit bateu na árvore.', hint: 'Antes da árvore, experimente Virar.' },
   hit_rock: { title: 'O Bit tropeçou na pedra!', hint: 'Pedras são baixinhas: use Pular.' },
   jump_wall: { title: 'Essa parede é alta demais!', hint: 'Só dá para pular pedras. Para paredes, vire.' },
+  jump_wall_tree: { title: 'Essa árvore é alta demais!', hint: 'Só dá para pular pedras. Para árvores, vire.' },
   bad_landing: { title: 'Não dá para pousar ali.', hint: 'O Bit pula 2 casas. Veja onde ele vai cair.' },
   not_reached: { title: 'Os comandos acabaram antes da bandeira.', hint: 'Falta pouco! Adicione mais comandos.' },
   stuck_loop: { title: 'O Bit está andando em círculos!', hint: 'Será que a curva é para o outro lado?' },
@@ -5017,6 +5092,7 @@ const fase4 = {
       id: 'f4-c3',
       title: 'Regra trocada',
       kind: 'rules',
+      scenery: 'canyon', // brick walls, to match the "Parede à frente" rule
       goal: 'Uma das regras está errada. Descubra qual e conserte.',
       sensors: ['rockAhead', 'wallAhead'],
       actions: ['jump', 'turnLeft', 'turnRight'],
@@ -5317,6 +5393,19 @@ const GUIDE = [
       ['person', 'Mentores', 'Ada, Grace, Alan, Katherine, Sonja, Liane e Steve'],
       ['book', 'Aprender', 'mentores, conceitos e medalhas'],
       ['palette', 'Cores da tela', 'cada cor nova traz uma música nova'],
+    ],
+  },
+  {
+    id: 'settings',
+    title: 'Ajustes e personalização',
+    text: 'Deixe o jogo do seu jeito. Tudo fica na tela inicial ou em Ajustes (a engrenagem).',
+    items: [
+      ['gear', 'Ajustes', 'engrenagem no canto da tela inicial'],
+      ['book', 'Idioma', 'PT, EN ou ES: ao ligar e em Ajustes'],
+      ['flag', 'Dificuldade', 'em Ajustes ou no nível da tela inicial'],
+      ['palette', 'Cores', 'botão Cores: cada cor tem uma música'],
+      ['soundOn', 'Som', 'botão no canto da tela inicial'],
+      ['hint', 'Acessibilidade', 'texto maior, letra fácil e menos animação'],
     ],
   },
   {
@@ -5785,6 +5874,18 @@ const EN = {
         ['Screen colors', 'every new color brings a new song'],
       ],
     },
+    settings: {
+      title: 'Settings and customizing',
+      text: 'Make the game your own. Everything is on the home screen or in Settings (the gear).',
+      items: [
+        ['Settings', 'gear in the corner of the home screen'],
+        ['Language', 'PT, EN or ES: on power-on and in Settings'],
+        ['Difficulty', 'in Settings or the level on the home screen'],
+        ['Colors', 'Colors button: each color has its own song'],
+        ['Sound', 'button in the corner of the home screen'],
+        ['Accessibility', 'larger text, easy font and less animation'],
+      ],
+    },
     controls: {
       title: 'Controls',
       text: 'Tap the screen to play. You can also use the D-pad, the A and B buttons, or the keyboard.',
@@ -5807,6 +5908,8 @@ const EN = {
       hit_wall: { title: 'Bonk! Bit bumped into the wall.', hint: 'Before the wall, try Turn.' },
       hit_rock: { title: 'Bit tripped on the rock!', hint: 'Rocks are short: use Jump.' },
       jump_wall: { title: 'That wall is too tall!', hint: 'You can only jump rocks. For walls, turn.' },
+      hit_wall_tree: { title: 'Bonk! Bit bumped into the tree.', hint: 'Before the tree, try Turn.' },
+      jump_wall_tree: { title: 'That tree is too tall!', hint: 'You can only jump rocks. For trees, turn.' },
       bad_landing: { title: 'Bit can\'t land there.', hint: 'Bit jumps 2 squares. Check where he will land.' },
       not_reached: { title: 'The commands ran out before the flag.', hint: 'Almost there! Add more commands.' },
       stuck_loop: { title: 'Bit is walking in circles!', hint: 'Maybe the turn goes the other way?' },
@@ -6167,6 +6270,18 @@ const ES = {
         ['Colores de pantalla', 'cada color nuevo trae una música nueva'],
       ],
     },
+    settings: {
+      title: 'Ajustes y personalización',
+      text: 'Deja el juego a tu manera. Todo está en la pantalla de inicio o en Ajustes (el engranaje).',
+      items: [
+        ['Ajustes', 'engranaje en la esquina del inicio'],
+        ['Idioma', 'PT, EN o ES: al encender y en Ajustes'],
+        ['Dificultad', 'en Ajustes o en el nivel del inicio'],
+        ['Colores', 'botón Colores: cada color tiene su música'],
+        ['Sonido', 'botón en la esquina del inicio'],
+        ['Accesibilidad', 'texto más grande, letra fácil y menos animación'],
+      ],
+    },
     controls: {
       title: 'Controles',
       text: 'Toca la pantalla para jugar. También puedes usar la cruceta, los botones A y B o el teclado.',
@@ -6188,6 +6303,8 @@ const ES = {
       hit_wall: { title: '¡Bonk! Bit chocó con la pared.', hint: 'Antes de la pared, prueba Girar.' },
       hit_rock: { title: '¡Bit tropezó con la piedra!', hint: 'Las piedras son bajitas: usa Saltar.' },
       jump_wall: { title: '¡Esa pared es demasiado alta!', hint: 'Solo se pueden saltar piedras. Ante una pared, gira.' },
+      hit_wall_tree: { title: '¡Bonk! Bit chocó con el árbol.', hint: 'Antes del árbol, prueba Girar.' },
+      jump_wall_tree: { title: '¡Ese árbol es demasiado alto!', hint: 'Solo se pueden saltar piedras. Ante un árbol, gira.' },
       bad_landing: { title: 'No se puede aterrizar ahí.', hint: 'Bit salta 2 casillas. Mira dónde va a caer.' },
       not_reached: { title: 'Los comandos se acabaron antes de la bandera.', hint: '¡Falta poco! Agrega más comandos.' },
       stuck_loop: { title: '¡Bit está dando vueltas en círculos!', hint: '¿Será que la curva es para el otro lado?' },
@@ -6768,6 +6885,9 @@ class App {
     this.current?.unmount();
 
     const root = h('div', { class: `scr scr--${name}` });
+    // Screens append optional parts as `cond ? node : null`; skip the empty ones (like h() does)
+    // instead of letting the DOM print them as the text "null".
+    root.append = (...nodes) => Element.prototype.append.apply(root, nodes.flat(Infinity).filter((n) => n != null && n !== false));
     this.screenLayer.replaceChildren(root);
     const screen = new ScreenClass(this.ctx);
     this.current = screen;
@@ -7152,7 +7272,7 @@ const EN = {
   'settings.largeText': 'Larger text',
   'settings.plainFont': 'Easy-to-read font',
   'settings.calmMotion': 'Less animation',
-  'world.describe': 'Map of {w} by {h} squares. Bit is in column {x}, row {y}, facing {dir}. The flag is in column {gx}, row {gy}. There are {rocks} rocks and {walls} walls.',
+  'world.describe': 'Map of {w} by {h} squares. Bit is in column {x}, row {y}, facing {dir}. The flag is in column {gx}, row {gy}. There are {rocks} rocks and {walls} {wallName}.',
   'dir.N': 'up',
   'dir.E': 'right',
   'dir.S': 'down',
@@ -7162,9 +7282,9 @@ const EN = {
   'difficulty.easy': 'Easy',
   'difficulty.medium': 'Medium',
   'difficulty.hard': 'Hard',
-  'difficulty.easy.1': 'Mistakes cost no energy',
-  'difficulty.easy.2': '3 stars even with 1 mistake',
-  'difficulty.easy.3': 'Bit moves more slowly',
+  'difficulty.easy.1': 'Mistakes cost no energy and Bit moves slowly',
+  'difficulty.easy.2': 'See Bit\'s path while you build',
+  'difficulty.easy.3': 'Hint on screen, answer after 2 tries',
   'difficulty.medium.1': 'Each mistake costs 1 energy',
   'difficulty.medium.2': 'Winning gives 1 energy back',
   'difficulty.medium.3': 'Hints always available',
@@ -7206,6 +7326,13 @@ const EN = {
   'finale.goHome': 'Home',
   'finale.viewCertificate': 'See my certificate',
   'finale.allStars': 'You have every star! You are amazing!',
+  'result.nextChallenge': 'Next challenge',
+  'result.nextFase': 'Next stage',
+  'result.autoNext': 'Moving on in {n}…',
+  'challenge.answer': 'Show answer',
+  'challenge.answerShown': 'Done! Now tap Run.',
+  'world.trees': 'trees',
+  'world.walls': 'walls',
 };
 
 return { EN };
@@ -7429,7 +7556,7 @@ const ES = {
   'settings.largeText': 'Texto más grande',
   'settings.plainFont': 'Letra fácil de leer',
   'settings.calmMotion': 'Menos animación',
-  'world.describe': 'Mapa de {w} por {h} casillas. Bit está en la columna {x}, fila {y}, mirando {dir}. La bandera está en la columna {gx}, fila {gy}. Hay {rocks} piedras y {walls} paredes.',
+  'world.describe': 'Mapa de {w} por {h} casillas. Bit está en la columna {x}, fila {y}, mirando {dir}. La bandera está en la columna {gx}, fila {gy}. Hay {rocks} piedras y {walls} {wallName}.',
   'dir.N': 'hacia arriba',
   'dir.E': 'a la derecha',
   'dir.S': 'hacia abajo',
@@ -7439,9 +7566,9 @@ const ES = {
   'difficulty.easy': 'Fácil',
   'difficulty.medium': 'Medio',
   'difficulty.hard': 'Difícil',
-  'difficulty.easy.1': 'Equivocarte no gasta energía',
-  'difficulty.easy.2': '3 estrellas aunque falles 1 vez',
-  'difficulty.easy.3': 'Bit se mueve más despacio',
+  'difficulty.easy.1': 'Equivocarte no gasta energía y Bit va despacio',
+  'difficulty.easy.2': 'Mira el camino de Bit mientras armas',
+  'difficulty.easy.3': 'Pista en pantalla y respuesta tras 2 errores',
   'difficulty.medium.1': 'Cada error gasta 1 de energía',
   'difficulty.medium.2': 'Ganar te devuelve 1 de energía',
   'difficulty.medium.3': 'Pistas siempre disponibles',
@@ -7483,6 +7610,13 @@ const ES = {
   'finale.goHome': 'Inicio',
   'finale.viewCertificate': 'Ver mi certificado',
   'finale.allStars': '¡Tienes todas las estrellas! ¡Eres increíble!',
+  'result.nextChallenge': 'Siguiente desafío',
+  'result.nextFase': 'Siguiente fase',
+  'result.autoNext': 'Pasando al siguiente en {n}…',
+  'challenge.answer': 'Mostrar respuesta',
+  'challenge.answerShown': '¡Listo! Ahora toca Ejecutar.',
+  'world.trees': 'árboles',
+  'world.walls': 'paredes',
 };
 
 return { ES };
@@ -7706,7 +7840,7 @@ const PT = {
   'settings.largeText': 'Texto maior',
   'settings.plainFont': 'Letra fácil de ler',
   'settings.calmMotion': 'Menos animação',
-  'world.describe': 'Mapa de {w} por {h} casas. O Bit está na coluna {x}, linha {y}, virado {dir}. A bandeira está na coluna {gx}, linha {gy}. Há {rocks} pedras e {walls} paredes.',
+  'world.describe': 'Mapa de {w} por {h} casas. O Bit está na coluna {x}, linha {y}, virado {dir}. A bandeira está na coluna {gx}, linha {gy}. Há {rocks} pedras e {walls} {wallName}.',
   'dir.N': 'para cima',
   'dir.E': 'para a direita',
   'dir.S': 'para baixo',
@@ -7716,9 +7850,9 @@ const PT = {
   'difficulty.easy': 'Fácil',
   'difficulty.medium': 'Médio',
   'difficulty.hard': 'Difícil',
-  'difficulty.easy.1': 'Errar não gasta energia',
-  'difficulty.easy.2': '3 estrelas mesmo com 1 erro',
-  'difficulty.easy.3': 'O Bit anda mais devagar',
+  'difficulty.easy.1': 'Errar não gasta energia e o Bit anda devagar',
+  'difficulty.easy.2': 'Veja o caminho do Bit enquanto monta',
+  'difficulty.easy.3': 'Dica na tela e resposta após 2 erros',
   'difficulty.medium.1': 'Cada erro gasta 1 energia',
   'difficulty.medium.2': 'Vencer devolve 1 energia',
   'difficulty.medium.3': 'Dicas sempre liberadas',
@@ -7760,6 +7894,13 @@ const PT = {
   'finale.goHome': 'Início',
   'finale.viewCertificate': 'Ver meu certificado',
   'finale.allStars': 'Você tem todas as estrelas! Você é incrível!',
+  'result.nextChallenge': 'Próximo desafio',
+  'result.nextFase': 'Próxima fase',
+  'result.autoNext': 'Indo para o próximo em {n}…',
+  'challenge.answer': 'Mostrar resposta',
+  'challenge.answerShown': 'Pronto! Agora toque em Executar.',
+  'world.trees': 'árvores',
+  'world.walls': 'paredes',
 };
 
 return { PT };
@@ -8334,6 +8475,16 @@ class RuleEditor {
     return true;
   }
 
+  /** Replaces every rule with `program` (used by "Mostrar resposta" on easy). */
+  setProgram(program) {
+    if (this.locked) return;
+    const copy = structuredClone(program);
+    this.rules = this.rules.map((r, i) => copy[i] ?? Object.assign(r, { condition: null, action: null }));
+    this.selected = { ruleId: this.rules.at(-1).id, slot: 'action' };
+    this.sfx('place');
+    this.changed();
+  }
+
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.rules.forEach((r) => Object.assign(r, { condition: null, action: null }));
@@ -8508,6 +8659,18 @@ class SequenceEditor {
       return this.remove(last.body.at(-1).id);
     }
     return this.remove(last.id);
+  }
+
+  /** Replaces everything with `program` (used by "Mostrar resposta" on easy). */
+  setProgram(program) {
+    if (this.locked) return;
+    const copy = structuredClone(program);
+    const def = copy.find((n) => n.type === 'function');
+    if (this.def) this.def.body = def?.body ?? [];
+    this.nodes = copy.filter((n) => n.type !== 'function');
+    this.target = null;
+    this.sfx('place');
+    this.changed();
   }
 
   clear() {
@@ -9115,38 +9278,32 @@ return { mentorPortrait, MentorSpeech };
 __m["src/presentation/pixel/sceneries.js"] = (() => {
 const { drawSprite } = __m["src/presentation/pixel/draw.js"];
 const { TREE } = __m["src/presentation/pixel/sprites.js"];
-/** Each fase has its own scenery: how floor and walls are painted. 16px tiles. */
+/** Each fase has its own walls (trees, bricks, blocks) on the same square floor. 16px tiles. */
 const T = 16;
-const hash = (x, y) => (Math.imul(x + 11, 73856093) ^ Math.imul(y + 7, 19349663)) >>> 0;
 
 function px(ctx, color, x, y, w = 1, h = 1) {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
 }
 
+/** Every scenery shares the same floor: plain squares with a thin edge, easy to count. */
+function squareFloor(ctx, x, y, c) {
+  px(ctx, c[3], x * T, y * T, T, T);
+  px(ctx, c[2], x * T, y * T + T - 1, T, 1);
+  px(ctx, c[2], x * T + T - 1, y * T, 1, T);
+}
+
 const meadow = {
-  floor(ctx, x, y, c) {
-    px(ctx, c[3], x * T, y * T, T, T);
-    const h = hash(x, y);
-    if (h % 3 === 0) {
-      const ox = x * T + 3 + (h % 8);
-      const oy = y * T + 4 + ((h >> 4) % 8);
-      px(ctx, c[2], ox, oy);
-      px(ctx, c[2], ox + 2, oy);
-      px(ctx, c[2], ox + 1, oy + 1);
-    }
-  },
+  obstacle: 'tree',
+  floor: squareFloor,
   wall(ctx, x, y, c) {
     drawSprite(ctx, TREE, x * T, y * T, c);
   },
 };
 
 const canyon = {
-  floor(ctx, x, y, c) {
-    px(ctx, c[3], x * T, y * T, T, T);
-    const h = hash(x, y);
-    for (let i = 0; i < 3; i += 1) px(ctx, c[2], x * T + ((h >> (i * 3)) % 14) + 1, y * T + ((h >> (i * 4 + 2)) % 14) + 1);
-  },
+  obstacle: 'wall',
+  floor: squareFloor,
   wall(ctx, x, y, c) {
     const ox = x * T;
     const oy = y * T;
@@ -9162,11 +9319,8 @@ const canyon = {
 };
 
 const lab = {
-  floor(ctx, x, y, c) {
-    px(ctx, c[3], x * T, y * T, T, T);
-    px(ctx, c[2], x * T, y * T + T - 1, T, 1);
-    px(ctx, c[2], x * T + T - 1, y * T, 1, T);
-  },
+  obstacle: 'wall',
+  floor: squareFloor,
   wall(ctx, x, y, c) {
     const ox = x * T + 1;
     const oy = y * T + 1;
@@ -9206,6 +9360,7 @@ class WorldView {
     this.theme = theme;
     this.sfx = sfx;
     this.scenery = SCENERIES[scenery] ?? SCENERIES.meadow;
+    this.obstacle = this.scenery.obstacle;
     this.label = label;
     this.canvas = h('canvas', { class: 'world__canvas', role: 'img', 'aria-label': label });
     this.el = h('div', { class: 'world' }, this.canvas);
@@ -9225,11 +9380,30 @@ class WorldView {
     return STEP_MS[motion] * this.speed;
   }
 
+  /**
+   * Easy mode: dots on every square the program will visit and a pale Bit where
+   * it ends (an × where it would bump). `run` is a domain trace; null clears it.
+   */
+  showPreview(run) {
+    if (!run || !run.steps.length) {
+      this.preview = null;
+    } else {
+      const last = run.steps.at(-1);
+      this.preview = {
+        cells: run.steps.filter((s) => s.motion === 'walk' || s.motion === 'jump').map((s) => s.to),
+        end: last.ok ? last.to : last.from,
+        hit: last.ok ? null : last.target,
+        success: run.success,
+      };
+    }
+    this.draw();
+  }
+
   setWorld(rows) {
     this.world = new World(rows);
     this.canvas.width = this.world.width * T;
     this.canvas.height = this.world.height * T;
-    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world)}`);
+    this.canvas.setAttribute('aria-label', `${this.label.replace(/[.!?]\s*$/, '')}. ${describeWorld(this.world, this.obstacle)}`);
     this.reset();
     this.fit();
   }
@@ -9365,11 +9539,29 @@ class WorldView {
       }
     }
     this.drawMarker(c);
+    if (!this.playToken) this.drawPreview(c);
     this.drawRobot(c);
     this.particles.forEach((p) => {
       ctx.fillStyle = c[p.life % 8 < 4 ? 0 : 1];
       ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2);
     });
+  }
+
+  drawPreview(c) {
+    const p = this.preview;
+    if (!p) return;
+    const { ctx } = this;
+    ctx.fillStyle = c[0];
+    for (const { x, y } of p.cells) ctx.fillRect(x * T + 6, y * T + 6, 4, 4);
+    if (p.hit && this.world.inside(p.hit.x, p.hit.y)) {
+      for (let i = 2; i < 14; i += 1) {
+        ctx.fillRect(p.hit.x * T + i, p.hit.y * T + i, 2, 2);
+        ctx.fillRect(p.hit.x * T + 14 - i, p.hit.y * T + i, 2, 2);
+      }
+    }
+    const { x, y, dir } = p.end;
+    if (x === this.robot.x && y === this.robot.y) return;
+    drawSprite(ctx, ROBOT[dir][0], x * T, y * T, c, { tone: c[1], flip: dir === 'W' });
   }
 
   /** Dots on cell corners help kids count squares. */
@@ -9419,7 +9611,7 @@ class WorldView {
 }
 
 /** Spoken summary of a map for screen readers: size, where Bit and the flag are, obstacles. */
-function describeWorld(world) {
+function describeWorld(world, obstacle = 'wall') {
   let rocks = 0;
   let walls = 0;
   world.tiles.forEach((tile) => {
@@ -9437,6 +9629,7 @@ function describeWorld(world) {
     gy: goal.y + 1,
     rocks,
     walls,
+    wallName: t(obstacle === 'tree' ? 'world.trees' : 'world.walls'),
   });
 }
 
@@ -9451,6 +9644,7 @@ const { energyMeter } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { WorldView } = __m["src/presentation/components/WorldView.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
+const { SCENERIES } = __m["src/presentation/pixel/sceneries.js"];
 const { t, tn } = __m["src/presentation/i18n/index.js"];
 const { h, pick, sleep } = __m["src/presentation/ui/dom.js"];
 /**
@@ -9482,12 +9676,14 @@ class ChallengeScreen extends Screen {
 
     this.editor = createEditor(challenge, { sfx });
     this.editor.onChange = () => this.onProgramChange();
+    this.scenery = challenge.scenery ?? fase.scenery;
+    this.obstacle = SCENERIES[this.scenery]?.obstacle ?? 'wall';
     // Every map is on screen at once (side by side when there are two), so kids see the same rules win both.
     const multiMap = challenge.maps.length > 1;
     this.views = challenge.maps.map((_, i) => new WorldView({
       theme,
       sfx,
-      scenery: fase.scenery,
+      scenery: this.scenery,
       speed: this.session.difficulty.speed,
       label: multiMap ? `${t('challenge.mapTab', { n: i + 1 })}. ${challenge.goal}` : t('challenge.mapAria', { goal: challenge.goal }),
     }));
@@ -9514,6 +9710,7 @@ class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), challenge.hints[0]) : null,
       h('div', { class: 'challenge__stage' }, stage),
       this.editor.programEl,
       this.controls,
@@ -9533,6 +9730,24 @@ class ChallengeScreen extends Screen {
     if (this.state === 'failed') this.retry();
     this.editor.clearMarks();
     this.runBtn.classList.toggle('is-ready', !this.editor.isEmpty());
+    this.updatePreview();
+  }
+
+  /** Easy mode: try the program in the background (no energy, no stars) and draw where Bit would go. */
+  updatePreview() {
+    if (!this.session.difficulty.preview) return;
+    const program = this.editor.getProgram();
+    const evaluation = this.editor.isEmpty() ? null : this.ctx.game.evaluator.evaluate(this.challenge, program);
+    const valid = evaluation && !(evaluation.failure && evaluation.failure.stepIndex < 0);
+    this.views.forEach((view, i) => view.showPreview(valid ? evaluation.runs.find((r) => r.mapIndex === i) ?? null : null));
+  }
+
+  /** Easy mode, after a few tries: fill in the solution so the child can watch it work. */
+  showAnswer() {
+    this.retry();
+    this.editor.setProgram(this.challenge.solution);
+    this.ctx.toast.show({ title: t('challenge.answerShown'), iconName: 'play' });
+    this.runBtn.focus({ preventScroll: true });
   }
 
   clearAll() {
@@ -9593,7 +9808,8 @@ class ChallengeScreen extends Screen {
   showFailure(evaluation, { executed, energyLost }) {
     const { failure } = evaluation;
     const { failures, encouragements } = this.ctx.game.content.feedback;
-    const copy = failures[failure.code] ?? { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
+    // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
+    const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
     const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
     this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= this.session.difficulty.hintPulse && !this.session.hintsLockedFor);
@@ -9603,12 +9819,18 @@ class ChallengeScreen extends Screen {
       h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
       executed ? h('p', { class: 'feedback__note' }, energyLost ? [icon('energy'), ` ${t('challenge.energyLost')} `] : null, pick(encouragements)) : null,
       h('div', { class: 'feedback__actions' },
-        h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
+        this.answerAvailable ? h('button', { class: 'pbtn', type: 'button', onClick: () => this.showAnswer() }, icon('check'), t('challenge.answer'))
+          : h('button', { class: 'pbtn', type: 'button', onClick: () => this.showHint() }, icon('hint'), t('challenge.hintBtn')),
         h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.retry() }, executed ? t('challenge.retry') : t('challenge.ok'))));
     this.feedbackLayer.replaceChildren(card);
     this.controls.classList.add('has-feedback');
     if (executed) this.state = 'failed';
     requestAnimationFrame(() => card.querySelector('.pbtn--primary')?.focus({ preventScroll: true }));
+  }
+
+  get answerAvailable() {
+    const after = this.session.difficulty.answerAfter;
+    return after != null && this.session.failures >= after;
   }
 
   /** Back to editing with the same program: fix, don't restart. */
@@ -9617,6 +9839,7 @@ class ChallengeScreen extends Screen {
     this.feedbackLayer.replaceChildren();
     this.controls.classList.remove('has-feedback');
     this.views.forEach((view) => view.reset());
+    this.updatePreview();
   }
 
   async showHint() {
@@ -10434,10 +10657,22 @@ class MapScreen extends Screen {
 
 return { MapScreen };
 })();
+// ── src/presentation/screens/navigation.js
+__m["src/presentation/screens/navigation.js"] = (() => {
+/** Opens a progression step ({ type: 'lesson' | 'challenge', ... }); no step means the map. */
+function goToStep(nav, step) {
+  if (step?.type === 'lesson') return nav.go('lesson', { faseId: step.faseId });
+  if (step?.type === 'challenge') return nav.go('challenge', { challengeId: step.challengeId });
+  return nav.go('map');
+}
+
+return { goToStep };
+})();
 // ── src/presentation/screens/MentorUnlockScreen.js
 __m["src/presentation/screens/MentorUnlockScreen.js"] = (() => {
 const { Screen } = __m["src/presentation/Screen.js"];
 const { finaleDue } = __m["src/presentation/screens/FinaleScreen.js"];
+const { goToStep } = __m["src/presentation/screens/navigation.js"];
 const { spritePixels } = __m["src/presentation/pixel/draw.js"];
 const { PORTRAIT_SIZE } = __m["src/presentation/pixel/portraits.js"];
 const { hasPortrait, portraitPixels } = __m["src/presentation/pixel/portrait.js"];
@@ -10527,7 +10762,8 @@ class MentorUnlockScreen extends Screen {
   }
 
   onBack() {
-    this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
+    if (finaleDue(this.ctx.game)) return this.ctx.nav.go('finale');
+    goToStep(this.ctx.nav, this.params.next);
   }
 }
 
@@ -10538,6 +10774,7 @@ __m["src/presentation/screens/ResultScreen.js"] = (() => {
 const { REWARDS } = __m["src/domain/scoring.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
 const { finaleDue } = __m["src/presentation/screens/FinaleScreen.js"];
+const { goToStep } = __m["src/presentation/screens/navigation.js"];
 const { starRow } = __m["src/presentation/components/hud.js"];
 const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
@@ -10582,7 +10819,8 @@ class ResultScreen extends Screen {
         outcome.mentorUnlocked ? h('p', { class: 'result__note result__note--mentor' }, icon('person'), ` ${t('result.newMentor')}`) : null,
         h('div', { class: 'result__actions' },
           h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('challenge', { challengeId }) }, t('result.again')),
-          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, outcome.mentorUnlocked ? t('result.meetMentor') : t('result.continue')))),
+          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel())),
+        this.autoNote = h('p', { class: 'result__auto', 'aria-live': 'polite' })),
     );
 
     this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
@@ -10620,6 +10858,7 @@ class ResultScreen extends Screen {
     this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
+    if (this.root.isConnected) this.autoAdvance();
   }
 
   async countUp(el, value, sound, fast) {
@@ -10637,9 +10876,41 @@ class ResultScreen extends Screen {
     });
   }
 
+  get next() {
+    return this.ctx.game.stepAfter.execute(this.params.challengeId);
+  }
+
+  continueLabel() {
+    if (this.outcome.mentorUnlocked) return t('result.meetMentor');
+    const next = this.next;
+    if (!next || finaleDue(this.ctx.game)) return t('result.continue');
+    return next.faseId === this.ctx.game.curriculum.findChallenge(this.params.challengeId).fase.id ? t('result.nextChallenge') : t('result.nextFase');
+  }
+
+  /**
+   * Straight on to the next challenge (or the next fase) instead of the map.
+   * A new mentor is met first; the mentor screen then carries on to `next`.
+   */
   continue() {
-    if (this.outcome.mentorUnlocked) this.ctx.nav.go('mentor', { mentorId: this.outcome.mentorUnlocked });
-    else this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
+    const { nav, game } = this.ctx;
+    const next = this.next;
+    if (this.outcome.mentorUnlocked) return nav.go('mentor', { mentorId: this.outcome.mentorUnlocked, next });
+    if (finaleDue(game)) return nav.go('finale');
+    goToStep(nav, next);
+  }
+
+  /** Replaying a challenge already won: after the rewards, move on by itself. */
+  autoAdvance() {
+    const { outcome } = this;
+    if (outcome.previousStars === 0 || outcome.mentorUnlocked || !this.next || finaleDue(this.ctx.game)) return;
+    let seconds = 3;
+    const tick = () => {
+      if (seconds === 0) return this.continue();
+      this.autoNote.textContent = t('result.autoNext', { n: seconds });
+      seconds -= 1;
+      this.later(tick, 1000);
+    };
+    tick();
   }
 
   onStart() {

@@ -1,5 +1,6 @@
 import { Screen } from '../Screen.js';
 import { finaleDue } from './FinaleScreen.js';
+import { goToStep } from './navigation.js';
 import { spritePixels } from '../pixel/draw.js';
 import { PORTRAIT_SIZE } from '../pixel/portraits.js';
 import { hasPortrait, portraitPixels } from '../pixel/portrait.js';
@@ -90,6 +91,7 @@ export class MentorUnlockScreen extends Screen {
   }
 
   onBack() {
-    this.ctx.nav.go(finaleDue(this.ctx.game) ? 'finale' : 'map');
+    if (finaleDue(this.ctx.game)) return this.ctx.nav.go('finale');
+    goToStep(this.ctx.nav, this.params.next);
   }
 }

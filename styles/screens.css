@@ -2058,3 +2058,32 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   body.is-large-text .scr--challenge .rule .kw { font-size: 0.7em; }
   body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }
+
+.result__auto {
+  margin: 0;
+  min-height: 1.3em;
+  font-size: 0.85em;
+  text-align: center;
+  color: var(--c1);
+}
+
+/* Easy mode: the first hint is always on screen, under the goal */
+.goal--hint {
+  padding: 3px 6px;
+  background: var(--c2);
+  font-size: 0.8em;
+}
+
+/* Sideways phone: the easy-mode hint gets its own row under the goal */
+@container lcd (min-aspect-ratio: 21 / 20) {
+  .scr--challenge {
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'top top'
+      'goal program'
+      'hint program'
+      'stage program'
+      'stage controls';
+  }
+  .scr--challenge > .goal--hint { grid-area: hint; }
+}

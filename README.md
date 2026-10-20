@@ -26,7 +26,7 @@ LocalStorage para salvar o progresso. Sem backend e sem dependências.
 ## Comandos
 
 ```bash
-npm test        # 73 testes: motor, regras, progressão e prova de que todo desafio tem solução
+npm test        # 76 testes: motor, regras, progressão e prova de que todo desafio tem solução
 npm run build   # gera dist/bitquest.html (bundle de arquivo único, sem dependências)
 npm start       # servidor estático local
 npm run portraits # converte a arte de assets/personagens em src/presentation/pixel/portraits.js
@@ -36,10 +36,14 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 
 ## O que tem no jogo
 
-- Tela **Como jogar** com 9 páginas explicando todas as funcionalidades: abre sozinha na primeira vez
-  e depois pelo botão **?** da tela inicial ou em Ajustes.
+- Tela **Como jogar** com 12 páginas explicando todas as funcionalidades, incluindo uma página só sobre
+  **ajustes e personalização** (onde ficam idioma, dificuldade, cores, som e acessibilidade): abre sozinha
+  na primeira vez e depois pelo botão **?** da tela inicial ou em Ajustes.
+- Ao vencer um desafio, o botão leva **direto ao próximo desafio ou à próxima fase**; ao refazer um desafio
+  já vencido, o jogo avança sozinho depois de mostrar o resultado.
 - **3 níveis de dificuldade**, escolhidos ao ligar o jogo (e trocáveis em Ajustes):
-  **Fácil** (errar não gasta energia, 3★ mesmo com 1 erro, Bit mais devagar), **Médio** (regras originais)
+  **Fácil** (o mapa mostra o caminho do Bit enquanto a criança monta, a primeira dica fica na tela,
+  "Mostrar resposta" depois de 2 erros, errar não gasta energia, 3★ mesmo com 1 erro, Bit mais devagar), **Médio** (regras originais)
   e **Difícil** (limite de blocos = melhor solução, dica só após 2 tentativas, +50% de XP e moedas).
 - **18 desafios** em 6 fases, cada fase com uma lição curta e um exemplo.
 - **Fase 1:** montar a sequência de comandos (Andar, Virar, Pular).

@@ -117,6 +117,18 @@ export class SequenceEditor {
     return this.remove(last.id);
   }
 
+  /** Replaces everything with `program` (used by "Mostrar resposta" on easy). */
+  setProgram(program) {
+    if (this.locked) return;
+    const copy = structuredClone(program);
+    const def = copy.find((n) => n.type === 'function');
+    if (this.def) this.def.body = def?.body ?? [];
+    this.nodes = copy.filter((n) => n.type !== 'function');
+    this.target = null;
+    this.sfx('place');
+    this.changed();
+  }
+
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.nodes = [];
