@@ -11,7 +11,7 @@ export const GUIDE = [
   {
     id: 'welcome',
     title: 'Bem-vindo ao Bit Quest!',
-    text: 'Você joga com a Mary! Juntas, ensinem o robô Bit a chegar à bandeira.',
+    text: 'Você joga com a Mary! Juntos, ensinem o robô Bit a chegar à bandeira.',
     robot: true,
     items: [
       ['flag', 'Objetivo', 'levar o Bit até a bandeira'],

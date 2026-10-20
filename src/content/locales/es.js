@@ -250,7 +250,7 @@ export const ES = {
   guide: {
     welcome: {
       title: '¡Bienvenido a Bit Quest!',
-      text: '¡Juegas con Mary! Juntas, enséñenle al robot Bit a llegar a la bandera.',
+      text: '¡Juegas con Mary! Juntos, enséñenle al robot Bit a llegar a la bandera.',
       items: [
         ['Objetivo', 'llevar a Bit hasta la bandera'],
         ['6 fases', 'de Secuencias hasta Todo junto'],
