@@ -271,7 +271,6 @@ export const ES = {
   'finale.allStars': '¡Tienes todas las estrellas! ¡Eres increíble!',
   'result.nextChallenge': 'Siguiente desafío',
   'result.nextFase': 'Siguiente fase',
-  'result.autoNext': 'Pasando al siguiente en {n}…',
   'challenge.answer': 'Mostrar respuesta',
   'challenge.answerShown': '¡Listo! Ahora toca Ejecutar.',
   'world.trees': 'árboles',

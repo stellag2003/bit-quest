@@ -3282,14 +3282,6 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }
 
-.result__auto {
-  margin: 0;
-  min-height: 1.3em;
-  font-size: 0.85em;
-  text-align: center;
-  color: var(--c1);
-}
-
 /* Easy mode: the first hint is always on screen, under the goal */
 .goal--hint {
   padding: 3px 6px;
@@ -7329,7 +7321,6 @@ const EN = {
   'finale.allStars': 'You have every star! You are amazing!',
   'result.nextChallenge': 'Next challenge',
   'result.nextFase': 'Next stage',
-  'result.autoNext': 'Moving on in {n}…',
   'challenge.answer': 'Show answer',
   'challenge.answerShown': 'Done! Now tap Run.',
   'world.trees': 'trees',
@@ -7613,7 +7604,6 @@ const ES = {
   'finale.allStars': '¡Tienes todas las estrellas! ¡Eres increíble!',
   'result.nextChallenge': 'Siguiente desafío',
   'result.nextFase': 'Siguiente fase',
-  'result.autoNext': 'Pasando al siguiente en {n}…',
   'challenge.answer': 'Mostrar respuesta',
   'challenge.answerShown': '¡Listo! Ahora toca Ejecutar.',
   'world.trees': 'árboles',
@@ -7897,7 +7887,6 @@ const PT = {
   'finale.allStars': 'Você tem todas as estrelas! Você é incrível!',
   'result.nextChallenge': 'Próximo desafio',
   'result.nextFase': 'Próxima fase',
-  'result.autoNext': 'Indo para o próximo em {n}…',
   'challenge.answer': 'Mostrar resposta',
   'challenge.answerShown': 'Pronto! Agora toque em Executar.',
   'world.trees': 'árvores',
@@ -10820,8 +10809,7 @@ class ResultScreen extends Screen {
         outcome.mentorUnlocked ? h('p', { class: 'result__note result__note--mentor' }, icon('person'), ` ${t('result.newMentor')}`) : null,
         h('div', { class: 'result__actions' },
           h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('challenge', { challengeId }) }, t('result.again')),
-          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel())),
-        this.autoNote = h('p', { class: 'result__auto', 'aria-live': 'polite' })),
+          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel()))),
     );
 
     this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
@@ -10859,7 +10847,6 @@ class ResultScreen extends Screen {
     this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
-    if (this.root.isConnected) this.autoAdvance();
   }
 
   async countUp(el, value, sound, fast) {
@@ -10898,20 +10885,6 @@ class ResultScreen extends Screen {
     if (this.outcome.mentorUnlocked) return nav.go('mentor', { mentorId: this.outcome.mentorUnlocked, next });
     if (finaleDue(game)) return nav.go('finale');
     goToStep(nav, next);
-  }
-
-  /** Replaying a challenge already won: after the rewards, move on by itself. */
-  autoAdvance() {
-    const { outcome } = this;
-    if (outcome.previousStars === 0 || outcome.mentorUnlocked || !this.next || finaleDue(this.ctx.game)) return;
-    let seconds = 3;
-    const tick = () => {
-      if (seconds === 0) return this.continue();
-      this.autoNote.textContent = t('result.autoNext', { n: seconds });
-      seconds -= 1;
-      this.later(tick, 1000);
-    };
-    tick();
   }
 
   onStart() {

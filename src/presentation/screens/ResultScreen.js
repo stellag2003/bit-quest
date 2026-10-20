@@ -47,8 +47,7 @@ export class ResultScreen extends Screen {
         outcome.mentorUnlocked ? h('p', { class: 'result__note result__note--mentor' }, icon('person'), ` ${t('result.newMentor')}`) : null,
         h('div', { class: 'result__actions' },
           h('button', { class: 'pbtn', type: 'button', onClick: () => this.ctx.nav.go('challenge', { challengeId }) }, t('result.again')),
-          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel())),
-        this.autoNote = h('p', { class: 'result__auto', 'aria-live': 'polite' })),
+          h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel()))),
     );
 
     this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
@@ -86,7 +85,6 @@ export class ResultScreen extends Screen {
     this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
-    if (this.root.isConnected) this.autoAdvance();
   }
 
   async countUp(el, value, sound, fast) {
@@ -125,20 +123,6 @@ export class ResultScreen extends Screen {
     if (this.outcome.mentorUnlocked) return nav.go('mentor', { mentorId: this.outcome.mentorUnlocked, next });
     if (finaleDue(game)) return nav.go('finale');
     goToStep(nav, next);
-  }
-
-  /** Replaying a challenge already won: after the rewards, move on by itself. */
-  autoAdvance() {
-    const { outcome } = this;
-    if (outcome.previousStars === 0 || outcome.mentorUnlocked || !this.next || finaleDue(this.ctx.game)) return;
-    let seconds = 3;
-    const tick = () => {
-      if (seconds === 0) return this.continue();
-      this.autoNote.textContent = t('result.autoNext', { n: seconds });
-      seconds -= 1;
-      this.later(tick, 1000);
-    };
-    tick();
   }
 
   onStart() {

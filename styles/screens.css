@@ -2059,14 +2059,6 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   body.is-large-text .scr--challenge .rule { gap: 2px; padding-inline: 2px; }
 }
 
-.result__auto {
-  margin: 0;
-  min-height: 1.3em;
-  font-size: 0.85em;
-  text-align: center;
-  color: var(--c1);
-}
-
 /* Easy mode: the first hint is always on screen, under the goal */
 .goal--hint {
   padding: 3px 6px;

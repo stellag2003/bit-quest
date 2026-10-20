@@ -39,8 +39,7 @@ Requer Node 20+ apenas para testes, build e servidor; o jogo em si roda em qualq
 - Tela **Como jogar** com 12 páginas explicando todas as funcionalidades, incluindo uma página só sobre
   **ajustes e personalização** (onde ficam idioma, dificuldade, cores, som e acessibilidade): abre sozinha
   na primeira vez e depois pelo botão **?** da tela inicial ou em Ajustes.
-- Ao vencer um desafio, o botão leva **direto ao próximo desafio ou à próxima fase**; ao refazer um desafio
-  já vencido, o jogo avança sozinho depois de mostrar o resultado.
+- Ao vencer um desafio, o botão leva **direto ao próximo desafio ou à próxima fase**.
 - **3 níveis de dificuldade**, escolhidos ao ligar o jogo (e trocáveis em Ajustes):
   **Fácil** (o mapa mostra o caminho do Bit enquanto a criança monta, a primeira dica fica na tela,
   "Mostrar resposta" depois de 2 erros, errar não gasta energia, 3★ mesmo com 1 erro, Bit mais devagar), **Médio** (regras originais)
