@@ -1523,6 +1523,11 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
 }
 
 .fase__reward {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1530,6 +1535,11 @@ body.is-plain-font .scr { letter-spacing: 0.01em; }
   padding: 6px;
   font-size: 0.8em;
   color: var(--c1);
+}
+
+.fase__reward:focus-visible {
+  outline: 2px solid var(--c0);
+  outline-offset: -2px;
 }
 
 .fase__reward.is-open {
@@ -10460,6 +10470,9 @@ class LibraryScreen extends Screen {
       this.body,
     );
     this.select(this.tab);
+    // Opened from the map's mentor portrait: straight to that mentor's page.
+    const mentor = this.ctx.game.content.mentors.find((m) => m.id === this.params.mentorId);
+    if (mentor && this.ctx.game.playerSummary.execute().unlockedMentors.includes(mentor.id)) this.openMentor(mentor);
   }
 
   select(tabId) {
@@ -10502,7 +10515,8 @@ class LibraryScreen extends Screen {
         onClick: () => {
           game.selectMentor.execute(mentor.id);
           this.ctx.toast.show({ title: t('mentor.nowGuide', { name: mentor.name }), iconName: 'person' });
-          this.select('mentors');
+          if (this.params.from === 'map') this.ctx.nav.go('map');
+          else this.select('mentors');
         },
       }, isCurrent ? t('mentor.alreadyGuide') : t('mentor.choose'))));
     this.body.scrollTop = 0;
@@ -10535,6 +10549,7 @@ class LibraryScreen extends Screen {
   }
 
   onBack() {
+    if (this.params.from === 'map') return this.ctx.nav.go('map');
     if (this.detail) return this.select('mentors');
     this.ctx.nav.go('home');
   }
@@ -10586,7 +10601,14 @@ class MapScreen extends Screen {
             h('h2', { class: 'fase__title' }, fase.title),
             !fase.unlocked && fase.previousTitle ? h('p', { class: 'fase__hint' }, t('map.lockedHint', { title: fase.previousTitle })) : null)),
         h('ol', { class: 'trail' }, nodes),
-        h('div', { class: `fase__reward ${rewardUnlocked ? 'is-open' : ''}` },
+        // Tapping the mentor opens their page in "Aprender" (back returns here).
+        h('button', {
+          class: `fase__reward ${rewardUnlocked ? 'is-open' : ''}`,
+          type: 'button',
+          onClick: () => (rewardUnlocked
+            ? this.ctx.nav.go('library', { tab: 'mentors', mentorId: reward.id, from: 'map' })
+            : this.ctx.toast.show({ title: t('mentor.locked'), text: reward.unlockText, iconName: 'lock' })),
+        },
           mentorPortrait(reward.id, theme.colors, { scale: 2, locked: !rewardUnlocked }),
           h('span', {}, rewardUnlocked ? t('map.rewardOpen', { name: reward.name }) : t('map.rewardLocked'))));
     });

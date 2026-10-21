@@ -28,6 +28,9 @@ export class LibraryScreen extends Screen {
       this.body,
     );
     this.select(this.tab);
+    // Opened from the map's mentor portrait: straight to that mentor's page.
+    const mentor = this.ctx.game.content.mentors.find((m) => m.id === this.params.mentorId);
+    if (mentor && this.ctx.game.playerSummary.execute().unlockedMentors.includes(mentor.id)) this.openMentor(mentor);
   }
 
   select(tabId) {
@@ -70,7 +73,8 @@ export class LibraryScreen extends Screen {
         onClick: () => {
           game.selectMentor.execute(mentor.id);
           this.ctx.toast.show({ title: t('mentor.nowGuide', { name: mentor.name }), iconName: 'person' });
-          this.select('mentors');
+          if (this.params.from === 'map') this.ctx.nav.go('map');
+          else this.select('mentors');
         },
       }, isCurrent ? t('mentor.alreadyGuide') : t('mentor.choose'))));
     this.body.scrollTop = 0;
@@ -103,6 +107,7 @@ export class LibraryScreen extends Screen {
   }
 
   onBack() {
+    if (this.params.from === 'map') return this.ctx.nav.go('map');
     if (this.detail) return this.select('mentors');
     this.ctx.nav.go('home');
   }

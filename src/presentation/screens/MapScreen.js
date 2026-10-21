@@ -41,7 +41,14 @@ export class MapScreen extends Screen {
             h('h2', { class: 'fase__title' }, fase.title),
             !fase.unlocked && fase.previousTitle ? h('p', { class: 'fase__hint' }, t('map.lockedHint', { title: fase.previousTitle })) : null)),
         h('ol', { class: 'trail' }, nodes),
-        h('div', { class: `fase__reward ${rewardUnlocked ? 'is-open' : ''}` },
+        // Tapping the mentor opens their page in "Aprender" (back returns here).
+        h('button', {
+          class: `fase__reward ${rewardUnlocked ? 'is-open' : ''}`,
+          type: 'button',
+          onClick: () => (rewardUnlocked
+            ? this.ctx.nav.go('library', { tab: 'mentors', mentorId: reward.id, from: 'map' })
+            : this.ctx.toast.show({ title: t('mentor.locked'), text: reward.unlockText, iconName: 'lock' })),
+        },
           mentorPortrait(reward.id, theme.colors, { scale: 2, locked: !rewardUnlocked }),
           h('span', {}, rewardUnlocked ? t('map.rewardOpen', { name: reward.name }) : t('map.rewardLocked'))));
     });
