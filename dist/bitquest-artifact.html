@@ -6708,6 +6708,7 @@ class ChiptuneAudio {
     this.stopJingles();
     this.stale = false;
     this.rebuild = false;
+    this.lastPlayed = {};
     this.ctx = new this.AudioContextImpl();
     this.master = this.ctx.createGain();
     this.master.gain.value = 0.9;
@@ -6767,10 +6768,12 @@ class ChiptuneAudio {
       return;
     }
     // The same effect fired again within a few ms only stacks volume: play it once.
-    const now = this.ctx.currentTime;
-    if (now - (this.lastPlayed[id] ?? -1) < 0.06) return;
-    this.lastPlayed[id] = now;
-    let t = now + 0.005;
+    // Wall-clock time, not ctx.currentTime: a rebuilt context restarts its clock at 0,
+    // which made every effect played before look like it was "in the future" and stay muted.
+    const wall = performance.now();
+    if (Math.abs(wall - (this.lastPlayed[id] ?? -Infinity)) < 60) return;
+    this.lastPlayed[id] = wall;
+    let t = this.ctx.currentTime + 0.005;
     for (const [note, duration] of sound.notes) {
       this.tone({ freq: noteToFreq(note), start: t, duration, wave: sound.wave, gain: sound.gain, slideTo: sound.slideTo });
       t += duration;
