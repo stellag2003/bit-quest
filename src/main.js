@@ -57,9 +57,12 @@ input.attach();
 for (const type of ['pointerup', 'touchend', 'click', 'keydown']) {
   window.addEventListener(type, () => audio.unlock(), { capture: true, passive: true });
 }
+// Leaving for another app: silence now, and the first touch back rebuilds the audio
+// (phones often return a context that claims to play but stays mute).
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && audio.ctx) audio.ctx.resume?.().catch(() => {});
+  if (document.visibilityState === 'hidden') audio.sleep();
 });
+window.addEventListener('pagehide', () => audio.sleep());
 
 const app = new App({
   screenLayer: $('#screen'),

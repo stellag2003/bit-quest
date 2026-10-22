@@ -10,6 +10,12 @@ import { noteToFreq } from './notes.js';
  * touch. So every touch calls unlock(): it wakes the context, or builds a new
  * one when the old one refuses to come back. The background loop only runs
  * while the context is running and restarts fresh when it wakes up.
+ *
+ * After the player leaves for another app (WhatsApp…) and comes back, phones
+ * often hand back a "zombie" context: it says it is running but makes no sound.
+ * So leaving the page marks the context for rebuilding, and the first touch
+ * back builds a brand-new one. Every touch also checks that the audio clock
+ * is really moving; a frozen clock gets the same treatment.
  */
 export class ChiptuneAudio {
   constructor({ sfx, songs, AudioContextImpl = globalThis.AudioContext || globalThis.webkitAudioContext }) {
@@ -17,7 +23,9 @@ export class ChiptuneAudio {
     this.songs = songs;
     this.AudioContextImpl = AudioContextImpl;
     this.ctx = null;
-    this.stale = false;
+    this.stale = false; // refused to resume: replace on the next touch
+    this.rebuild = false; // came back from the background or frozen clock: replace on the next touch
+    this.probing = false;
     this.sfxEnabled = true;
     this.musicEnabled = true;
     this.music = { id: null, voices: [], timer: null };
@@ -29,7 +37,7 @@ export class ChiptuneAudio {
   /** Call from inside every user gesture: creates, wakes or rebuilds the context. */
   unlock() {
     if (!this.AudioContextImpl) return;
-    if (!this.ctx || this.stale || this.ctx.state === 'closed') this.createContext();
+    if (!this.ctx || this.stale || this.rebuild || this.ctx.state === 'closed') this.createContext();
     const ctx = this.ctx;
     if (ctx.state !== 'running') {
       ctx.resume?.().catch(() => {});
@@ -41,6 +49,27 @@ export class ChiptuneAudio {
     }
     this.primeSpeaker();
     if (ctx.state === 'running') this.ensureMusic();
+    this.probeClock(ctx);
+  }
+
+  /** A context that claims to run but whose clock stands still is dead: rebuild it on the next touch. */
+  probeClock(ctx) {
+    if (this.probing || ctx.state !== 'running') return;
+    this.probing = true;
+    const start = ctx.currentTime;
+    setTimeout(() => {
+      this.probing = false;
+      if (this.ctx === ctx && ctx.state === 'running' && ctx.currentTime - start < 0.05) this.rebuild = true;
+    }, 300);
+  }
+
+  /** The page went to the background (another app, locked screen): go quiet and rebuild on return. */
+  sleep() {
+    if (!this.ctx) return;
+    this.rebuild = true;
+    this.stopLoop();
+    this.stopJingles();
+    this.ctx.suspend?.().catch(() => {});
   }
 
   createContext() {
@@ -48,6 +77,7 @@ export class ChiptuneAudio {
     this.stopLoop();
     this.stopJingles();
     this.stale = false;
+    this.rebuild = false;
     this.ctx = new this.AudioContextImpl();
     this.master = this.ctx.createGain();
     this.master.gain.value = 0.9;
