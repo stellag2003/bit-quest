@@ -46,7 +46,9 @@ export const fase2 = {
       title: 'Desvie das paredes',
       kind: 'rules',
       goal: 'Ensine o Bit a fazer as curvas sozinho.',
+      // Only walls on this map: no "Pedra à frente" to choose, so it cannot confuse.
       ...RULE_PALETTE,
+      sensors: ['wallAhead'],
       ruleSlots: 1,
       maps: [['#######', '#>...##', '####.##', '####.##', '#G...##', '#######']],
       optimalBlocks: 1,

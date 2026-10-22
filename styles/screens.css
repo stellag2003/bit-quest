@@ -2089,3 +2089,13 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   }
   .scr--challenge > .goal--hint { grid-area: hint; }
 }
+
+/* Tall maps (6+ rows, like the final challenge): on portrait screens the map gets priority
+   over the program list, which scrolls inside its own box anyway. */
+@container lcd (max-aspect-ratio: 21 / 20) {
+  .scr--challenge > .challenge__stage.is-tall { min-height: 150px; }
+}
+
+/* Six commands in one row (final challenge): smaller labels so "Caminar"/"Function" fit. */
+.palette--six .chip__label { font-size: 0.68em; letter-spacing: -0.02em; }
+body.is-large-text .palette--six .chip__label { font-size: 0.6em; }

@@ -3353,6 +3353,16 @@ body.is-large-text .slot .chip__label { font-size: 0.72em; }
   .scr--challenge > .goal--hint { grid-area: hint; }
 }
 
+/* Tall maps (6+ rows, like the final challenge): on portrait screens the map gets priority
+   over the program list, which scrolls inside its own box anyway. */
+@container lcd (max-aspect-ratio: 21 / 20) {
+  .scr--challenge > .challenge__stage.is-tall { min-height: 150px; }
+}
+
+/* Six commands in one row (final challenge): smaller labels so "Caminar"/"Function" fit. */
+.palette--six .chip__label { font-size: 0.68em; letter-spacing: -0.02em; }
+body.is-large-text .palette--six .chip__label { font-size: 0.6em; }
+
 </style>
 </head>
 <body>
@@ -5045,7 +5055,9 @@ const fase2 = {
       title: 'Desvie das paredes',
       kind: 'rules',
       goal: 'Ensine o Bit a fazer as curvas sozinho.',
+      // Only walls on this map: no "Pedra à frente" to choose, so it cannot confuse.
       ...RULE_PALETTE,
+      sensors: ['wallAhead'],
       ruleSlots: 1,
       maps: [['#######', '#>...##', '####.##', '####.##', '#G...##', '#######']],
       optimalBlocks: 1,
@@ -5367,15 +5379,16 @@ const fase6 = {
       id: 'f6-c3',
       title: 'Desafio final',
       kind: 'sequence',
-      goal: 'Use uma função dentro do Repetir. No máximo 8 blocos!',
+      goal: 'Use uma função dentro do Repetir. No máximo 7 blocos!',
       palette: ['walk', 'turnLeft', 'turnRight', 'jump', 'repeat', 'call'],
       functionMax: 4,
-      maxBlocks: 8,
-      maps: [['>.R..####', '####.####', '####R####', '####.####', '####..R..', '########.', '########R', '########.', '########G']],
-      optimalBlocks: 8,
-      hints: ['O pedaço Andar, Pular, Andar aparece 4 vezes, com curvas entre eles.', 'Função: Andar, Pular, Andar. Programa: Repetir 2× [★, Virar dir., ★, Virar esq.].'],
+      maxBlocks: 7,
+      // 7×7 (was 9×9): fewer squares, so each one is drawn bigger on small screens.
+      maps: [['>.R.###', '###.###', '###R###', '###..R.', '######.', '######R', '######G']],
+      optimalBlocks: 7,
+      hints: ['O pedaço Andar, Pular aparece 4 vezes, com curvas entre eles.', 'Função: Andar, Pular. Programa: Repetir 2× [★, Virar dir., ★, Virar esq.].'],
       nudges: ['Aqui existem duas repetições: um pedaço pequeno e um padrão maior.', 'O pedaço pequeno vai na ★ Função. O padrão maior, com as curvas, vai no Repetir.'],
-      solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight'), call(), cmd('turnLeft')])],
+      solution: [fn([cmd('walk'), cmd('jump')]), repeat(2, [call(), cmd('turnRight'), call(), cmd('turnLeft')])],
     },
   ],
 };
@@ -5869,8 +5882,8 @@ const EN = {
         },
         'f6-c3': {
           title: 'Final challenge',
-          goal: 'Use a function inside the Repeat. 8 blocks at most!',
-          hints: ['The piece Walk, Jump, Walk shows up 4 times, with turns between them.', 'Function: Walk, Jump, Walk. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
+          goal: 'Use a function inside the Repeat. 7 blocks at most!',
+          hints: ['The piece Walk, Jump shows up 4 times, with turns between them.', 'Function: Walk, Jump. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
           nudges: ['There are two repetitions here: a small piece and a bigger pattern.', 'The small piece goes in the ★ Function. The bigger pattern, with the turns, goes in the Repeat.'],
         },
       },
@@ -6299,8 +6312,8 @@ const ES = {
         },
         'f6-c3': {
           title: 'Desafío final',
-          goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
-          hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
+          goal: 'Usa una función dentro del Repetir. ¡7 bloques como máximo!',
+          hints: ['El pedazo Caminar, Saltar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
           nudges: ['Aquí hay dos repeticiones: un pedazo pequeño y un patrón más grande.', 'El pedazo pequeño va en la ★ Función. El patrón grande, con las curvas, va en el Repetir.'],
         },
       },
@@ -7653,7 +7666,7 @@ const EN = {
   'world.walls': 'walls',
   'challenge.debugTip': 'The bug is near the block with !. Remove what\'s extra, swap what\'s wrong or change a number.',
   'challenge.debugRulesTip': 'The bug is in one of the rules. Look at what Bit did at the marked step and change what\'s wrong.',
-  'challenge.fnCalled': 'The ★ blocks are already in the program: they call the function. Without a ★, the function never runs! Build the ★ Function up top.',
+  'challenge.fnCalled': 'The ★ blocks are already in the program: without them, the function never runs. Build the ★ Function up top; the path shows what one ★ does.',
   'hint.freeLeft.one': '{n} free hint left in this challenge.',
   'hint.freeLeft.other': '{n} free hints left in this challenge.',
   'hint.paidNote': 'You spent {price} coins on this hint.',
@@ -7665,6 +7678,7 @@ const EN = {
   'hint.badgeAria': '{n} free hints',
   'common.notNow': 'Not now',
   'hint.lastFree': 'That was the last free hint. The next ones cost {price} coins.',
+  'challenge.fnCalledShort': 'The ★ already call the function. Build the ★ Function!',
 };
 
 return { EN };
@@ -7950,7 +7964,7 @@ const ES = {
   'world.walls': 'paredes',
   'challenge.debugTip': 'El bug está cerca del bloque con !. Quita lo que sobra, cambia lo que está mal o cambia un número.',
   'challenge.debugRulesTip': 'El bug está en una de las reglas. Mira lo que hizo Bit en el paso marcado y cambia lo que esté mal.',
-  'challenge.fnCalled': 'Los bloques ★ ya están en el programa: ellos llaman a la función. ¡Sin un ★, la función nunca se ejecuta! Arma la ★ Función arriba.',
+  'challenge.fnCalled': 'Los ★ ya están en el programa: sin ellos, la función nunca se ejecuta. Arma la ★ Función arriba; el camino muestra lo que hace un ★.',
   'hint.freeLeft.one': 'Te queda {n} pista gratis en este desafío.',
   'hint.freeLeft.other': 'Te quedan {n} pistas gratis en este desafío.',
   'hint.paidNote': 'Usaste {price} monedas en esta pista.',
@@ -7962,6 +7976,7 @@ const ES = {
   'hint.badgeAria': '{n} pistas gratis',
   'common.notNow': 'Ahora no',
   'hint.lastFree': 'Esa fue la última pista gratis. Las siguientes cuestan {price} monedas.',
+  'challenge.fnCalledShort': 'Los ★ ya llaman a la función. ¡Arma la ★ Función!',
 };
 
 return { ES };
@@ -8247,7 +8262,7 @@ const PT = {
   'world.walls': 'paredes',
   'challenge.debugTip': 'O bug está perto do bloco com !. Tire o que sobra, troque o que está errado ou mude um número.',
   'challenge.debugRulesTip': 'O bug está em uma das regras. Veja o que o Bit fez no passo marcado e troque o que estiver errado.',
-  'challenge.fnCalled': 'Os blocos ★ já estão no programa: são eles que chamam a função. Sem um ★, a função nunca roda! Monte a ★ Função lá em cima.',
+  'challenge.fnCalled': 'Os ★ já estão no programa: sem eles, a função nunca roda. Monte a ★ Função lá em cima; o caminho mostra o que um ★ faz.',
   'hint.freeLeft.one': 'Resta {n} dica grátis neste desafio.',
   'hint.freeLeft.other': 'Restam {n} dicas grátis neste desafio.',
   'hint.paidNote': 'Você usou {price} moedas nesta dica.',
@@ -8259,6 +8274,7 @@ const PT = {
   'hint.badgeAria': '{n} dicas grátis',
   'common.notNow': 'Agora não',
   'hint.lastFree': 'Essa foi a última dica grátis. As próximas custam {price} moedas.',
+  'challenge.fnCalledShort': 'Os ★ já chamam a função. Monte a ★ Função!',
 };
 
 return { PT };
@@ -8943,7 +8959,7 @@ class SequenceEditor {
       dataset: { command: id },
       onClick: () => this.add(id),
     }, commandChip(id)));
-    this.paletteEl = h('div', { class: `palette palette--grid ${challenge.palette.length >= 5 ? 'palette--dense' : ''}`, role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length > 5 ? Math.ceil(challenge.palette.length / 2) : challenge.palette.length } }, this.paletteButtons);
+    this.paletteEl = h('div', { class: `palette palette--grid ${challenge.palette.length >= 5 ? 'palette--dense' : ''} ${challenge.palette.length === 6 ? 'palette--six' : ''}`, role: 'group', 'aria-label': t('seq.palette'), style: { '--cols': challenge.palette.length > 6 ? Math.ceil(challenge.palette.length / 2) : challenge.palette.length } }, this.paletteButtons);
     this.render();
   }
 
@@ -10021,6 +10037,7 @@ return { WorldView, describeWorld };
 })();
 // ── src/presentation/screens/ChallengeScreen.js
 __m["src/presentation/screens/ChallengeScreen.js"] = (() => {
+const { call } = __m["src/domain/program.js"];
 const { Screen } = __m["src/presentation/Screen.js"];
 const { createEditor } = __m["src/presentation/components/editors.js"];
 const { openEnergyDialog } = __m["src/presentation/components/energyDialog.js"];
@@ -10036,6 +10053,9 @@ const { h, pick, sleep } = __m["src/presentation/ui/dom.js"];
  * The verdict always comes from the domain (`session.submit`); this screen
  * only replays the returned trace and shows feedback.
  */
+/** Function challenges whose Easy explanation was already shown in this session. */
+const FN_INTRO_SEEN = new Set();
+
 class ChallengeScreen extends Screen {
   get music() {
     return null;
@@ -10099,8 +10119,9 @@ class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
-      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalled') : challenge.hints[0]) : null,
-      h('div', { class: 'challenge__stage' }, stage),
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalledShort') : challenge.hints[0]) : null,
+      // Tall maps (6+ rows) get more room on portrait screens, or their squares get tiny.
+      h('div', { class: `challenge__stage ${challenge.maps.some((m) => m.length >= 6) ? 'is-tall' : ''}` }, stage),
       this.editor.programEl,
       this.controls,
     );
@@ -10109,6 +10130,16 @@ class ChallengeScreen extends Screen {
     this.renderHintBadge();
     this.onProgramChange();
     this.editor.paletteEl.querySelector('button:not([disabled])')?.setAttribute('data-autofocus', '');
+    // The full "why the ★ are already there" goes in a window (once per session per challenge),
+    // so the on-screen line stays short and the map keeps its room.
+    if (this.fnCallsReady && !FN_INTRO_SEEN.has(challenge.id)) {
+      FN_INTRO_SEEN.add(challenge.id);
+      this.later(() => this.ask({
+        title: t('seq.function'),
+        body: h('p', {}, t('challenge.fnCalled')),
+        actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
+      }), 250);
+    }
   }
 
   renderEnergy() {
@@ -10126,10 +10157,22 @@ class ChallengeScreen extends Screen {
   /** Easy mode: try the program in the background (no energy, no stars) and draw where Bit would go. */
   updatePreview() {
     if (!this.session.difficulty.preview) return;
-    const program = this.editor.getProgram();
+    const program = this.previewProgram();
     const evaluation = this.editor.isEmpty() ? null : this.ctx.game.evaluator.evaluate(this.challenge, program);
     const valid = evaluation && !(evaluation.failure && evaluation.failure.stepIndex < 0);
     this.views.forEach((view, i) => view.showPreview(valid ? evaluation.runs.find((r) => r.mapIndex === i) ?? null : null));
+  }
+
+  /**
+   * While the ★ Função is open (being built), the preview shows what ONE ★ does: one Andar
+   * in the function is one square, even with several ★ already in the program. Closing the
+   * function (✓) shows the whole program's path again.
+   */
+  previewProgram() {
+    const program = this.editor.getProgram();
+    const def = this.editor.def;
+    if (!def || this.editor.target !== def.id) return program;
+    return [program.find((n) => n.type === 'function'), call()];
   }
 
   /** Easy mode, after a few tries: fill in the solution so the child can watch it work. */

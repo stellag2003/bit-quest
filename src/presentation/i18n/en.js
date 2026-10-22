@@ -277,7 +277,7 @@ export const EN = {
   'world.walls': 'walls',
   'challenge.debugTip': 'The bug is near the block with !. Remove what\'s extra, swap what\'s wrong or change a number.',
   'challenge.debugRulesTip': 'The bug is in one of the rules. Look at what Bit did at the marked step and change what\'s wrong.',
-  'challenge.fnCalled': 'The ★ blocks are already in the program: they call the function. Without a ★, the function never runs! Build the ★ Function up top.',
+  'challenge.fnCalled': 'The ★ blocks are already in the program: without them, the function never runs. Build the ★ Function up top; the path shows what one ★ does.',
   'hint.freeLeft.one': '{n} free hint left in this challenge.',
   'hint.freeLeft.other': '{n} free hints left in this challenge.',
   'hint.paidNote': 'You spent {price} coins on this hint.',
@@ -289,4 +289,5 @@ export const EN = {
   'hint.badgeAria': '{n} free hints',
   'common.notNow': 'Not now',
   'hint.lastFree': 'That was the last free hint. The next ones cost {price} coins.',
+  'challenge.fnCalledShort': 'The ★ already call the function. Build the ★ Function!',
 };

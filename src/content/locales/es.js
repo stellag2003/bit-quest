@@ -193,8 +193,8 @@ export const ES = {
         },
         'f6-c3': {
           title: 'Desafío final',
-          goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
-          hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
+          goal: 'Usa una función dentro del Repetir. ¡7 bloques como máximo!',
+          hints: ['El pedazo Caminar, Saltar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
           nudges: ['Aquí hay dos repeticiones: un pedazo pequeño y un patrón más grande.', 'El pedazo pequeño va en la ★ Función. El patrón grande, con las curvas, va en el Repetir.'],
         },
       },

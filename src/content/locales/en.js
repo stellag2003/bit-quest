@@ -193,8 +193,8 @@ export const EN = {
         },
         'f6-c3': {
           title: 'Final challenge',
-          goal: 'Use a function inside the Repeat. 8 blocks at most!',
-          hints: ['The piece Walk, Jump, Walk shows up 4 times, with turns between them.', 'Function: Walk, Jump, Walk. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
+          goal: 'Use a function inside the Repeat. 7 blocks at most!',
+          hints: ['The piece Walk, Jump shows up 4 times, with turns between them.', 'Function: Walk, Jump. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
           nudges: ['There are two repetitions here: a small piece and a bigger pattern.', 'The small piece goes in the ★ Function. The bigger pattern, with the turns, goes in the Repeat.'],
         },
       },

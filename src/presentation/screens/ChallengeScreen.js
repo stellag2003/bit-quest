@@ -1,3 +1,4 @@
+import { call } from '../../domain/program.js';
 import { Screen } from '../Screen.js';
 import { createEditor } from '../components/editors.js';
 import { openEnergyDialog } from '../components/energyDialog.js';
@@ -14,6 +15,9 @@ import { h, pick, sleep } from '../ui/dom.js';
  * The verdict always comes from the domain (`session.submit`); this screen
  * only replays the returned trace and shows feedback.
  */
+/** Function challenges whose Easy explanation was already shown in this session. */
+const FN_INTRO_SEEN = new Set();
+
 export class ChallengeScreen extends Screen {
   get music() {
     return null;
@@ -77,8 +81,9 @@ export class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
-      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalled') : challenge.hints[0]) : null,
-      h('div', { class: 'challenge__stage' }, stage),
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalledShort') : challenge.hints[0]) : null,
+      // Tall maps (6+ rows) get more room on portrait screens, or their squares get tiny.
+      h('div', { class: `challenge__stage ${challenge.maps.some((m) => m.length >= 6) ? 'is-tall' : ''}` }, stage),
       this.editor.programEl,
       this.controls,
     );
@@ -87,6 +92,16 @@ export class ChallengeScreen extends Screen {
     this.renderHintBadge();
     this.onProgramChange();
     this.editor.paletteEl.querySelector('button:not([disabled])')?.setAttribute('data-autofocus', '');
+    // The full "why the ★ are already there" goes in a window (once per session per challenge),
+    // so the on-screen line stays short and the map keeps its room.
+    if (this.fnCallsReady && !FN_INTRO_SEEN.has(challenge.id)) {
+      FN_INTRO_SEEN.add(challenge.id);
+      this.later(() => this.ask({
+        title: t('seq.function'),
+        body: h('p', {}, t('challenge.fnCalled')),
+        actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
+      }), 250);
+    }
   }
 
   renderEnergy() {
@@ -104,10 +119,22 @@ export class ChallengeScreen extends Screen {
   /** Easy mode: try the program in the background (no energy, no stars) and draw where Bit would go. */
   updatePreview() {
     if (!this.session.difficulty.preview) return;
-    const program = this.editor.getProgram();
+    const program = this.previewProgram();
     const evaluation = this.editor.isEmpty() ? null : this.ctx.game.evaluator.evaluate(this.challenge, program);
     const valid = evaluation && !(evaluation.failure && evaluation.failure.stepIndex < 0);
     this.views.forEach((view, i) => view.showPreview(valid ? evaluation.runs.find((r) => r.mapIndex === i) ?? null : null));
+  }
+
+  /**
+   * While the ★ Função is open (being built), the preview shows what ONE ★ does: one Andar
+   * in the function is one square, even with several ★ already in the program. Closing the
+   * function (✓) shows the whole program's path again.
+   */
+  previewProgram() {
+    const program = this.editor.getProgram();
+    const def = this.editor.def;
+    if (!def || this.editor.target !== def.id) return program;
+    return [program.find((n) => n.type === 'function'), call()];
   }
 
   /** Easy mode, after a few tries: fill in the solution so the child can watch it work. */

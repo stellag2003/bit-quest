@@ -277,7 +277,7 @@ export const ES = {
   'world.walls': 'paredes',
   'challenge.debugTip': 'El bug está cerca del bloque con !. Quita lo que sobra, cambia lo que está mal o cambia un número.',
   'challenge.debugRulesTip': 'El bug está en una de las reglas. Mira lo que hizo Bit en el paso marcado y cambia lo que esté mal.',
-  'challenge.fnCalled': 'Los bloques ★ ya están en el programa: ellos llaman a la función. ¡Sin un ★, la función nunca se ejecuta! Arma la ★ Función arriba.',
+  'challenge.fnCalled': 'Los ★ ya están en el programa: sin ellos, la función nunca se ejecuta. Arma la ★ Función arriba; el camino muestra lo que hace un ★.',
   'hint.freeLeft.one': 'Te queda {n} pista gratis en este desafío.',
   'hint.freeLeft.other': 'Te quedan {n} pistas gratis en este desafío.',
   'hint.paidNote': 'Usaste {price} monedas en esta pista.',
@@ -289,4 +289,5 @@ export const ES = {
   'hint.badgeAria': '{n} pistas gratis',
   'common.notNow': 'Ahora no',
   'hint.lastFree': 'Esa fue la última pista gratis. Las siguientes cuestan {price} monedas.',
+  'challenge.fnCalledShort': 'Los ★ ya llaman a la función. ¡Arma la ★ Función!',
 };
