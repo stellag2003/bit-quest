@@ -403,6 +403,7 @@ export const EN = {
       function_not_called: { title: 'The function was never called', hint: 'A function only runs when a ★ block calls it. Put a ★ in the program.' },
       incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
       too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
+      too_many_blocks_plain: { title: 'Too many commands!', hint: 'Some commands are extra. Remove one and try again.' },
       edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },
       hit_wall: { title: 'Bonk! Bit bumped into the wall.', hint: 'Before the wall, try Turn.' },
       hit_rock: { title: 'Bit tripped on the rock!', hint: 'Rocks are short: use Jump.' },

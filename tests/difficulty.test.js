@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { CONTENT } from '../src/content/index.js';
+import { applyDifficulty } from '../src/domain/difficulty.js';
 import { cmd } from '../src/domain/program.js';
 import { makeGame } from './helpers.js';
 
 const fase1 = CONTENT.fases[0];
 const [first] = fase1.challenges;
 const wrong = [cmd('turnLeft'), cmd('walk'), cmd('walk')]; // 3 blocks (fits hard's limit) that miss the flag
+
+const evaluator = (level) => gameAt(level).game.evaluator;
 
 function gameAt(difficulty) {
   const ctx = makeGame();
@@ -64,6 +67,21 @@ describe('Difficulty levels', () => {
     assert.equal(energyOf(game), 3);
     assert.equal(outcome.stars, 2); // the empty program never ran; 1 failed run on hard → 2★ (2 runs → 1★)
     assert.ok(outcome.reward.xp >= Math.round(medium.reward.xp * 0.5));
+  });
+
+  it('every level: the buggy start program of a debugging challenge runs (and fails by moving, not by size)', () => {
+    for (const level of ['easy', 'medium', 'hard']) {
+      const levelData = CONTENT.difficulties.levels.find((d) => d.id === level);
+      for (const fase of CONTENT.fases) {
+        for (const c of fase.challenges.filter((x) => x.start)) {
+          const effective = applyDifficulty(c, levelData);
+          const result = evaluator(level).evaluate(effective, c.start);
+          assert.equal(result.success, false, `${level} ${c.id}`);
+          assert.ok(result.failure.stepIndex >= 0, `${level} ${c.id}: ${result.failure.code}`);
+          assert.equal(evaluator(level).evaluate(effective, c.solution).success, true, `${level} ${c.id}`);
+        }
+      }
+    }
   });
 
   it('hard: the block limit is the best solution, and every challenge stays solvable', () => {

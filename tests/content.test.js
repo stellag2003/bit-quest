@@ -50,7 +50,7 @@ describe('Content: lesson demos and copy', () => {
   });
 
   it('every engine failure code has kid-friendly feedback', () => {
-    const codes = ['empty', 'empty_loop', 'incomplete_rule', 'too_many_blocks', 'edge', 'hit_wall', 'hit_rock', 'jump_wall', 'bad_landing', 'not_reached', 'stuck_loop', 'too_long', 'empty_function', 'function_not_called'];
+    const codes = ['empty', 'empty_loop', 'incomplete_rule', 'too_many_blocks', 'edge', 'hit_wall', 'hit_rock', 'jump_wall', 'bad_landing', 'not_reached', 'stuck_loop', 'too_long', 'empty_function', 'function_not_called', 'too_many_blocks_plain'];
     codes.forEach((code) => assert.ok(FAILURES[code]?.title && FAILURES[code]?.hint, code));
   });
 

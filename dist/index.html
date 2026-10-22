@@ -4203,14 +4203,18 @@ return { newlyUnlockedAchievements };
 })();
 // ── src/domain/difficulty.js
 __m["src/domain/difficulty.js"] = (() => {
+const { countBlocks } = __m["src/domain/program.js"];
 /**
  * Difficulty applied to a challenge. Pure: returns a new challenge object.
  * "exactBlocks" turns the best solution's size into the block limit, so the
  * editor stops at the shortest program (rule challenges already are exact).
+ * Debugging challenges (`start`) keep room for their starting program: the
+ * child must be able to run the buggy program and watch where it goes wrong.
  */
 function applyDifficulty(challenge, difficulty) {
   if (!difficulty?.exactBlocks || !challenge.optimalBlocks) return challenge;
-  const maxBlocks = Math.min(challenge.maxBlocks ?? Infinity, challenge.optimalBlocks);
+  const startSize = challenge.start && challenge.kind === 'sequence' ? countBlocks(challenge.start) : 0;
+  const maxBlocks = Math.max(Math.min(challenge.maxBlocks ?? Infinity, challenge.optimalBlocks), startSize);
   return { ...challenge, maxBlocks };
 }
 
@@ -4896,6 +4900,8 @@ const FAILURES = {
   function_not_called: { title: 'A função não foi chamada', hint: 'A função só roda quando um bloco ★ chama ela. Coloque um ★ no programa.' },
   incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
+  // Same failure in challenges without the Repetir block: just remove what is extra.
+  too_many_blocks_plain: { title: 'Comandos demais!', hint: 'Há comandos sobrando. Tire um e tente de novo.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
   hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
   // In fases drawn with trees (the meadow), the blocking tiles are trees: same failure, tree words.
@@ -6073,6 +6079,7 @@ const EN = {
       function_not_called: { title: 'The function was never called', hint: 'A function only runs when a ★ block calls it. Put a ★ in the program.' },
       incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
       too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
+      too_many_blocks_plain: { title: 'Too many commands!', hint: 'Some commands are extra. Remove one and try again.' },
       edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },
       hit_wall: { title: 'Bonk! Bit bumped into the wall.', hint: 'Before the wall, try Turn.' },
       hit_rock: { title: 'Bit tripped on the rock!', hint: 'Rocks are short: use Jump.' },
@@ -6497,6 +6504,7 @@ const ES = {
       function_not_called: { title: 'La función no fue llamada', hint: 'Una función solo se ejecuta cuando un bloque ★ la llama. Pon un ★ en el programa.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
+      too_many_blocks_plain: { title: '¡Demasiados comandos!', hint: 'Sobran comandos. Quita uno e inténtalo de nuevo.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },
       hit_wall: { title: '¡Bonk! Bit chocó con la pared.', hint: 'Antes de la pared, prueba Girar.' },
       hit_rock: { title: '¡Bit tropezó con la piedra!', hint: 'Las piedras son bajitas: usa Saltar.' },
@@ -10191,7 +10199,9 @@ class ChallengeScreen extends Screen {
     const { failure } = evaluation;
     const { failures, encouragements } = this.ctx.game.content.feedback;
     // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
-    const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
+    // "Use o Repetir" only makes sense where the Repetir block exists.
+    const code = failure.code === 'too_many_blocks' && !this.challenge.palette?.includes('repeat') ? 'too_many_blocks_plain' : failure.code;
+    const copy = (this.obstacle === 'tree' && failures[`${code}_tree`]) || failures[code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
     // Debugging challenges: point at the bug instead of suggesting a new block (which reads as "add one").
     const debugTip = executed && this.challenge.start ? t(this.challenge.kind === 'rules' ? 'challenge.debugRulesTip' : 'challenge.debugTip') : null;

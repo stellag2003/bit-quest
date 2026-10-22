@@ -6,6 +6,8 @@ export const FAILURES = {
   function_not_called: { title: 'A função não foi chamada', hint: 'A função só roda quando um bloco ★ chama ela. Coloque um ★ no programa.' },
   incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
+  // Same failure in challenges without the Repetir block: just remove what is extra.
+  too_many_blocks_plain: { title: 'Comandos demais!', hint: 'Há comandos sobrando. Tire um e tente de novo.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
   hit_wall: { title: 'Bonk! O Bit bateu na parede.', hint: 'Antes da parede, experimente Virar.' },
   // In fases drawn with trees (the meadow), the blocking tiles are trees: same failure, tree words.

@@ -398,6 +398,7 @@ export const ES = {
       function_not_called: { title: 'La función no fue llamada', hint: 'Una función solo se ejecuta cuando un bloque ★ la llama. Pon un ★ en el programa.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
+      too_many_blocks_plain: { title: '¡Demasiados comandos!', hint: 'Sobran comandos. Quita uno e inténtalo de nuevo.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },
       hit_wall: { title: '¡Bonk! Bit chocó con la pared.', hint: 'Antes de la pared, prueba Girar.' },
       hit_rock: { title: '¡Bit tropezó con la piedra!', hint: 'Las piedras son bajitas: usa Saltar.' },

@@ -177,7 +177,9 @@ export class ChallengeScreen extends Screen {
     const { failure } = evaluation;
     const { failures, encouragements } = this.ctx.game.content.feedback;
     // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
-    const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
+    // "Use o Repetir" only makes sense where the Repetir block exists.
+    const code = failure.code === 'too_many_blocks' && !this.challenge.palette?.includes('repeat') ? 'too_many_blocks_plain' : failure.code;
+    const copy = (this.obstacle === 'tree' && failures[`${code}_tree`]) || failures[code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
     // Debugging challenges: point at the bug instead of suggesting a new block (which reads as "add one").
     const debugTip = executed && this.challenge.start ? t(this.challenge.kind === 'rules' ? 'challenge.debugRulesTip' : 'challenge.debugTip') : null;
