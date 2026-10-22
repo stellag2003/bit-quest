@@ -83,6 +83,7 @@ export class MentorUnlockScreen extends Screen {
           onClick: () => {
             game.selectMentor.execute(this.mentor.id);
             this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
+            this.onBack(); // with the new guide, straight on to the next fase
           },
         }, icon('person'), t('mentor.choose')),
         h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.onBack() }, t('mentor.continue'))),

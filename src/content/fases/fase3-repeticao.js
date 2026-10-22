@@ -44,6 +44,7 @@ export const fase3 = {
       maps: [['#.#.#.#.#', '.>....G..', '#.#.#.#.#']],
       optimalBlocks: 2,
       hints: ['Coloque o bloco Repetir e um Andar dentro dele.', 'Toque no ×2 para mudar quantas vezes repetir. Conte as casas!'],
+      nudges: ['O Bit faz a mesma coisa várias vezes seguidas. Qual bloco evita escrever tudo de novo?', 'Dentro do Repetir vai o que se repete. O número diz quantas vezes.'],
       successMessage: LOOP_MESSAGE,
       solution: [repeat(5, [cmd('walk')])],
     },
@@ -57,6 +58,7 @@ export const fase3 = {
       maps: [['.......', '...#G..', '..#..#.', '.#..#..', '.>.#...', '.......']],
       optimalBlocks: 5,
       hints: ['Cada degrau é igual: andar, virar, andar, virar.', 'Repetir 3× [Andar, Virar ↺, Andar, Virar ↻].'],
+      nudges: ['Olhe os degraus: cada um é diferente ou igual?', 'Descubra os passos de um degrau só. Depois conte os degraus.'],
       solution: [repeat(3, [cmd('walk'), cmd('turnLeft'), cmd('walk'), cmd('turnRight')])],
     },
     {
@@ -69,6 +71,7 @@ export const fase3 = {
       maps: [['#.#.#.#.#.', '>.R..R..RG', '#.#.#.#.#.']],
       optimalBlocks: 3,
       hints: ['Antes de cada pedra há um chão livre. Qual é o padrão?', 'Repetir 3× [Andar, Pular].'],
+      nudges: ['Observe o espaço entre as pedras. Ele muda?', 'Ache o menor pedaço que se repete até a bandeira.'],
       solution: [repeat(3, [cmd('walk'), cmd('jump')])],
     },
   ],

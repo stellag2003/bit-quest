@@ -10,3 +10,7 @@ export const PALETTES = [
 ];
 
 export const ECONOMY = Object.freeze({ energyRefillPrice: 15 });
+
+/** Cheapest and dearest palette for sale (for the "Moedas" page of Como jogar). */
+const forSale = PALETTES.filter((p) => p.price > 0).map((p) => p.price);
+export const PALETTE_PRICES = Object.freeze({ min: Math.min(...forSale), max: Math.max(...forSale) });

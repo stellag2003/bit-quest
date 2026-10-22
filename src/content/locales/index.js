@@ -19,7 +19,7 @@ function localizeFase(fase, t = {}) {
     lesson: fase.lesson.map((slide, i) => ({ ...slide, text: t.lesson?.[i] ?? slide.text })),
     challenges: fase.challenges.map((c) => {
       const ct = t.challenges?.[c.id] ?? {};
-      return { ...c, ...pickText(c, ct, ['title', 'goal', 'hints', 'successMessage']) };
+      return { ...c, ...pickText(c, ct, ['title', 'goal', 'hints', 'nudges', 'successMessage']) };
     }),
   };
 }

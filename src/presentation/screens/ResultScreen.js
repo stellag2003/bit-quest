@@ -8,6 +8,10 @@ import { icon } from '../pixel/icons.js';
 import { t } from '../i18n/index.js';
 import { h, pick, reducedMotion, tween } from '../ui/dom.js';
 
+// How long each jingle plays (soundBank: win = 3 beats at 200 bpm, victory = 10.5 beats at 168 bpm).
+// The stars and the counters wait for it, so the sounds come one after the other, never piled up.
+const JINGLE_MS = { win: 950, victory: 3800 };
+
 export class ResultScreen extends Screen {
   get music() {
     return null;
@@ -50,8 +54,9 @@ export class ResultScreen extends Screen {
           h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel()))),
     );
 
-    this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
-    this.animate();
+    const jingle = outcome.faseCompleted ? 'victory' : 'win';
+    this.ctx.bus.emit('song', jingle);
+    this.animate(game.store.get().settings.sfx ? JINGLE_MS[jingle] : 0);
   }
 
   starTip(challenge) {
@@ -73,10 +78,12 @@ export class ResultScreen extends Screen {
       h('p', {}, t('result.saved', { n: commandsExecuted - blocksUsed })));
   }
 
-  async animate() {
+  async animate(jingleMs) {
     const { stars, reward } = this.outcome;
     const fast = reducedMotion();
     const starEls = [...this.stars.querySelectorAll('.star')];
+    // `later` is cancelled when the screen closes, so nothing below plays on the next screen.
+    await new Promise((resolve) => this.later(resolve, jingleMs));
     for (let i = 0; i < stars; i += 1) {
       await new Promise((resolve) => this.later(resolve, fast ? 0 : 380));
       starEls[i].classList.add('is-on', 'is-pop');
@@ -84,6 +91,7 @@ export class ResultScreen extends Screen {
     }
     this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
+    if (!this.root.isConnected) return;
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
   }
 
@@ -93,10 +101,12 @@ export class ResultScreen extends Screen {
       el.textContent = `+${value}`;
       return;
     }
+    // A few ticks while counting (at most 6), never after the screen has closed.
+    const step = Math.max(5, Math.ceil(value / 6 / 5) * 5);
     let last = -1;
     await tween(Math.min(900, 80 * value), (t) => {
       const shown = Math.round(value * t);
-      if (shown !== last && shown % 5 === 0) this.ctx.sfx(sound);
+      if (shown !== last && shown % step === 0 && this.root.isConnected) this.ctx.sfx(sound);
       last = shown;
       el.textContent = `+${shown}`;
     });

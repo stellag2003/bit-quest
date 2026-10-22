@@ -50,8 +50,17 @@ describe('Content: lesson demos and copy', () => {
   });
 
   it('every engine failure code has kid-friendly feedback', () => {
-    const codes = ['empty', 'empty_loop', 'incomplete_rule', 'too_many_blocks', 'edge', 'hit_wall', 'hit_rock', 'jump_wall', 'bad_landing', 'not_reached', 'stuck_loop', 'too_long'];
+    const codes = ['empty', 'empty_loop', 'incomplete_rule', 'too_many_blocks', 'edge', 'hit_wall', 'hit_rock', 'jump_wall', 'bad_landing', 'not_reached', 'stuck_loop', 'too_long', 'empty_function', 'function_not_called'];
     codes.forEach((code) => assert.ok(FAILURES[code]?.title && FAILURES[code]?.hint, code));
+  });
+
+  it('every challenge has subtler nudges for Medium/Hard, different from its hints', () => {
+    for (const fase of CONTENT.fases) {
+      for (const c of fase.challenges) {
+        assert.equal(c.nudges?.length, 2, c.id);
+        c.nudges.forEach((n) => assert.ok(!c.hints.includes(n), c.id));
+      }
+    }
   });
 
   it('every fase reward points to an existing mentor and every mentor has a game message', () => {

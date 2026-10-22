@@ -90,10 +90,64 @@ describe('Difficulty levels', () => {
   });
 });
 
+describe('Hints by difficulty', () => {
+  const take = (session, n) => Array.from({ length: n }, () => session.takeHint());
+
+  it('Easy: hints are always free and cycle through the direct hints', () => {
+    const { game } = gameAt('easy');
+    const coins = game.store.get().coins;
+    const got = take(game.startChallenge.execute(first.id), 5);
+    assert.ok(got.every((h) => h.ok && h.paid === 0 && h.freeLeft === null));
+    assert.deepEqual(got.slice(0, 2).map((h) => h.text), first.hints);
+    assert.equal(game.store.get().coins, coins);
+  });
+
+  it('Medium: 3 free hints (subtle nudges first), then 15 coins each', () => {
+    const { game } = gameAt('medium');
+    game.store.update((p) => { p.coins = 40; });
+    const session = game.startChallenge.execute(first.id);
+    const got = take(session, 3);
+    assert.deepEqual(got.map((h) => h.text), [...first.nudges, first.hints[0]]);
+    assert.deepEqual(got.map((h) => [h.paid, h.freeLeft]), [[0, 2], [0, 1], [0, 0]]);
+    assert.equal(session.hintStatus().cost, 15);
+    const fourth = session.takeHint();
+    assert.deepEqual([fourth.ok, fourth.paid, fourth.text], [true, 15, first.hints[1]]);
+    assert.equal(game.store.get().coins, 25);
+    session.takeHint();
+    assert.equal(game.store.get().coins, 10);
+    const refused = session.takeHint();
+    assert.deepEqual([refused.ok, refused.reason, game.store.get().coins], [false, 'coins', 10]);
+  });
+
+  it('Hard: 2 free hints, then 15 coins each', () => {
+    const { game } = gameAt('hard');
+    game.store.update((p) => { p.coins = 30; });
+    const session = game.startChallenge.execute(first.id);
+    assert.deepEqual(take(session, 2).map((h) => [h.text, h.paid]), first.nudges.map((n) => [n, 0]));
+    assert.equal(session.takeHint().paid, 15);
+    assert.equal(game.store.get().coins, 15);
+  });
+
+  it('the free hints are counted per challenge and survive leaving the challenge', () => {
+    const { game } = gameAt('hard');
+    take(game.startChallenge.execute(first.id), 2);
+    assert.equal(game.startChallenge.execute(first.id).hintStatus().cost, 15);
+    game.store.update((p) => { p.stars[first.id] = 3; });
+    const [, second] = fase1.challenges;
+    assert.equal(game.startChallenge.execute(second.id).hintStatus().freeLeft, 2);
+  });
+
+  it('Bit moves slower on Hard than on Medium (higher speed = longer animation)', () => {
+    const levels = Object.fromEntries(CONTENT.difficulties.levels.map((d) => [d.id, d]));
+    assert.ok(levels.hard.speed > levels.medium.speed);
+  });
+});
+
 describe('Easy mode helps', () => {
   it('only easy shows the path preview, the hint on screen and the answer button', () => {
     const levels = Object.fromEntries(CONTENT.difficulties.levels.map((d) => [d.id, d]));
     assert.deepEqual([levels.easy.preview, levels.easy.hintOnScreen, levels.easy.answerAfter], [true, true, 2]);
     for (const id of ['medium', 'hard']) assert.deepEqual([levels[id].preview, levels[id].hintOnScreen, levels[id].answerAfter], [false, false, null], id);
+    assert.deepEqual(CONTENT.difficulties.levels.map((d) => d.fnCallsReady), [true, false, false]);
   });
 });

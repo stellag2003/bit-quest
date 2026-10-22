@@ -52,6 +52,14 @@ const buttons = Object.fromEntries(
 );
 const input = new InputController({ buttons, navigator: new FocusNavigator(), sfx, onFirstInteraction: () => audio.unlock() });
 input.attach();
+// Tablets only let audio start (or come back after sleeping) inside a real touch, and
+// some count only the end of the touch: wake the audio on every kind of gesture.
+for (const type of ['pointerup', 'touchend', 'click', 'keydown']) {
+  window.addEventListener(type, () => audio.unlock(), { capture: true, passive: true });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && audio.ctx) audio.ctx.resume?.().catch(() => {});
+});
 
 const app = new App({
   screenLayer: $('#screen'),

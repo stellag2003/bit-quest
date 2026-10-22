@@ -33,8 +33,8 @@ export class CurrentDifficulty {
 }
 
 export class StartChallenge {
-  constructor({ store, curriculum, rules, submitProgram, currentDifficulty }) {
-    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty });
+  constructor({ store, curriculum, rules, submitProgram, currentDifficulty, hintBook }) {
+    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty, hintBook });
   }
 
   execute(challengeId) {
@@ -43,7 +43,7 @@ export class StartChallenge {
     }
     const { fase, challenge, index } = this.curriculum.findChallenge(challengeId);
     const difficulty = this.currentDifficulty.execute();
-    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram });
+    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram, hintBook: this.hintBook });
   }
 }
 

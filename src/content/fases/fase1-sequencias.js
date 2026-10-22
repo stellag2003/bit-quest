@@ -35,6 +35,7 @@ export const fase1 = {
       maps: [['#.....#', '..#....', '.>..G..', '....#..', '#.....#']],
       optimalBlocks: 3,
       hints: ['Conte os quadradinhos entre o Bit e a bandeira.', 'São 3 passos para a frente: Andar, Andar, Andar.'],
+      nudges: ['Para onde o Bit está olhando? E onde está a bandeira?', 'Cada Andar leva o Bit uma casa para a frente. Conte as casas.'],
       solution: [cmd('walk'), cmd('walk'), cmd('walk')],
     },
     {
@@ -46,6 +47,7 @@ export const fase1 = {
       maps: [['#.....#', '.>..#..', '..#....', '...G...', '#.....#']],
       optimalBlocks: 5,
       hints: ['O Bit precisa virar antes da árvore.', 'Ande 2, vire para a direita e ande mais 2.'],
+      nudges: ['Algo bloqueia o caminho reto. Onde o Bit precisa mudar de direção?', 'Observe em qual casa o caminho dobra antes da árvore.'],
       solution: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
     },
     {
@@ -57,6 +59,7 @@ export const fase1 = {
       maps: [['#......#', '....G...', '.#......', '.>.R...#', '#....#..']],
       optimalBlocks: 5,
       hints: ['Pedras são baixinhas: dá para Pular por cima.', 'Ande, pule a pedra, vire para a esquerda e ande 2.'],
+      nudges: ['Nem todo obstáculo precisa ser contornado.', 'Pedras são baixinhas. E depois dela, para que lado fica a bandeira?'],
       solution: [cmd('walk'), cmd('jump'), cmd('turnLeft'), cmd('walk'), cmd('walk')],
     },
   ],

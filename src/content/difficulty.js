@@ -11,6 +11,10 @@
  *   preview     — the map shows Bit's path while the program is being built
  *   hintOnScreen — the first hint is shown under the goal from the start
  *   answerAfter — failed runs after which "Mostrar resposta" fills in the solution (null = never)
+ *   subtleHints — the hint button gives `nudges` (questions that point the way) instead of
+ *                 `hints` (which end close to the answer)
+ *   fnCallsReady — function challenges start with the ★ calls already in the program
+ *   freeHints   — free hints per challenge (null = always free); after that each costs hintPrice coins
  */
 export const DIFFICULTIES = [
   {
@@ -26,6 +30,10 @@ export const DIFFICULTIES = [
     preview: true,
     hintOnScreen: true,
     answerAfter: 2,
+    subtleHints: false,
+    fnCallsReady: true,
+    freeHints: null,
+    hintPrice: 0,
   },
   {
     id: 'medium',
@@ -40,6 +48,10 @@ export const DIFFICULTIES = [
     preview: false,
     hintOnScreen: false,
     answerAfter: null,
+    subtleHints: true,
+    fnCallsReady: false,
+    freeHints: 3,
+    hintPrice: 15,
   },
   {
     id: 'hard',
@@ -50,10 +62,14 @@ export const DIFFICULTIES = [
     hintAfter: 2,
     hintPulse: 2,
     reward: 1.5,
-    speed: 0.8,
+    speed: 1.15,
     preview: false,
     hintOnScreen: false,
     answerAfter: null,
+    subtleHints: true,
+    fnCallsReady: false,
+    freeHints: 2,
+    hintPrice: 15,
   },
 ];
 

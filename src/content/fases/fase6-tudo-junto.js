@@ -33,6 +33,7 @@ export const fase6 = {
       maps: [['#########', '#>.R...##', '######.##', '######R##', '######.##', '#G..R..##', '#########']],
       optimalBlocks: 2,
       hints: ['Você vai precisar de uma regra para pedras e outra para paredes.', 'SE pedra → Pular. SE parede → Virar dir.'],
+      nudges: ['Que tipos de obstáculo existem neste labirinto?', 'Cada tipo de obstáculo precisa da sua própria regra.'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
     {
@@ -45,6 +46,7 @@ export const fase6 = {
       maps: [['>.R.', '##..', '#..R', 'GR..']],
       optimalBlocks: 4,
       hints: ['Andar, Pular, Virar... e de novo. Quantas vezes?', 'Repetir 3× [Andar, Pular, Virar dir.].'],
+      nudges: ['Siga a volta com o dedo. Você percebe um movimento que se repete?', 'Ache o pedaço que se repete e conte quantas vezes ele aparece.'],
       solution: [repeat(3, [cmd('walk'), cmd('jump'), cmd('turnRight')])],
     },
     {
@@ -58,6 +60,7 @@ export const fase6 = {
       maps: [['>.R..####', '####.####', '####R####', '####.####', '####..R..', '########.', '########R', '########.', '########G']],
       optimalBlocks: 8,
       hints: ['O pedaço Andar, Pular, Andar aparece 4 vezes, com curvas entre eles.', 'Função: Andar, Pular, Andar. Programa: Repetir 2× [★, Virar dir., ★, Virar esq.].'],
+      nudges: ['Aqui existem duas repetições: um pedaço pequeno e um padrão maior.', 'O pedaço pequeno vai na ★ Função. O padrão maior, com as curvas, vai no Repetir.'],
       solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight'), call(), cmd('turnLeft')])],
     },
   ],

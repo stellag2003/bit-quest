@@ -1,6 +1,7 @@
 import { ENERGY_MAX, ENERGY_REGEN_MS } from '../../domain/energy.js';
 import { REWARDS } from '../../domain/scoring.js';
-import { ECONOMY } from '../palettes.js';
+import { DIFFICULTIES } from '../difficulty.js';
+import { ECONOMY, PALETTE_PRICES } from '../palettes.js';
 
 /** English translation of the game content. Ids mirror the Portuguese source. */
 export const EN = {
@@ -21,16 +22,19 @@ export const EN = {
           title: 'First steps',
           goal: 'Take Bit to the flag.',
           hints: ['Count the squares between Bit and the flag.', 'It\'s 3 steps forward: Walk, Walk, Walk.'],
+          nudges: ['Which way is Bit facing? And where is the flag?', 'Each Walk moves Bit one square forward. Count the squares.'],
         },
         'f1-c2': {
           title: 'The turn',
           goal: 'The flag is around the corner.',
           hints: ['Bit needs to turn before the tree.', 'Walk 2, turn right and walk 2 more.'],
+          nudges: ['Something blocks the straight path. Where does Bit need to change direction?', 'Look at which square the path bends on before the tree.'],
         },
         'f1-c3': {
           title: 'Rock in the way',
           goal: 'Get past the rock and reach the flag.',
           hints: ['Rocks are short: you can Jump over them.', 'Walk, jump the rock, turn left and walk 2.'],
+          nudges: ['Not every obstacle has to be walked around.', 'Rocks are short. And after the rock, which way is the flag?'],
         },
       },
     },
@@ -50,16 +54,19 @@ export const EN = {
           title: 'Jump the rocks',
           goal: 'Make a rule to get past the rocks.',
           hints: ['Choose the IF: what does Bit see ahead?', 'IF rock ahead, THEN jump.'],
+          nudges: ['What shows up on the path and stops Bit?', 'A rule says: IF Bit sees something, THEN he does something. What does he see here?'],
         },
         'f2-c2': {
           title: 'Dodge the walls',
           goal: 'Teach Bit to take the turns by himself.',
           hints: ['What should Bit do when a wall shows up?', 'Look where the path goes: the turn is to the right.'],
+          nudges: ['Follow the path with your finger. What happens at each corner?', 'Does the path turn the same way at every corner?'],
         },
         'f2-c3': {
           title: 'Two maps',
           goal: 'The same rules must beat both maps.',
           hints: ['You\'ll need two rules: one for rocks and one for walls.', 'IF rock → jump. IF wall → turn right.'],
+          nudges: ['Compare both maps: which obstacles show up in each one?', 'One rule can\'t solve everything. How many different situations are there?'],
         },
       },
     },
@@ -79,17 +86,20 @@ export const EN = {
           title: 'Long hallway',
           goal: 'Reach the flag using only 2 blocks.',
           hints: ['Put down the Repeat block and a Walk inside it.', 'Tap the ×2 to change how many times to repeat. Count the squares!'],
+          nudges: ['Bit does the same thing many times in a row. Which block saves you from writing it all again?', 'What repeats goes inside the Repeat. The number says how many times.'],
           successMessage: 'You just made a loop! It lets you repeat an action many times without writing the same command again and again.',
         },
         'f3-c2': {
           title: 'Staircase',
           goal: 'Climb the stairs with 5 blocks at most.',
           hints: ['Every step is the same: walk, turn, walk, turn.', 'Repeat 3× [Walk, Turn ↺, Walk, Turn ↻].'],
+          nudges: ['Look at the steps: is each one different or the same?', 'Work out the moves for just one step. Then count the steps.'],
         },
         'f3-c3': {
           title: 'Jumping to the beat',
           goal: 'Find the pattern and use only 3 blocks.',
           hints: ['Before each rock there\'s an empty square. What\'s the pattern?', 'Repeat 3× [Walk, Jump].'],
+          nudges: ['Look at the space between the rocks. Does it change?', 'Find the smallest piece that repeats all the way to the flag.'],
         },
       },
     },
@@ -102,23 +112,26 @@ export const EN = {
       lesson: [
         'Not every program works the first time. A mistake in a program is called a bug.',
         'This program has one step too many. Run it and find the guilty block.',
-        'Fix only what is wrong: remove a block, change a number or swap a rule.',
+        'Fix only what is wrong: remove a block, change a number or swap a rule. When you remove a block, the next one you pick goes in its place.',
       ],
       challenges: {
         'f4-c1': {
           title: 'One step too many',
           goal: 'The program has a bug. Fix it and take Bit to the flag.',
           hints: ['Run the program: at which block does Bit bump into the tree?', 'There\'s an extra Walk before the Turn. Tap it to remove it.'],
+          nudges: ['Run the program and watch: at what moment does Bit get in trouble?', 'The block marked with ! shows where the error appears. Is it extra?'],
         },
         'f4-c2': {
           title: 'Wrong count',
           goal: 'The Repeat is counting wrong. Fix the number.',
           hints: ['Bit stops before the flag. How many squares are missing?', 'Count the squares to the flag and tap the Repeat number until you get there.'],
+          nudges: ['Run it and see where Bit stops. Is the path too short or too long?', 'The blocks are right. What\'s wrong is the count.'],
         },
         'f4-c3': {
           title: 'Mixed-up rule',
           goal: 'One of the rules is wrong. Find out which one and fix it.',
           hints: ['The rock rule works. Look at the wall rule.', 'The path turns right. Tap the THEN of the wall rule and choose Turn right.'],
+          nudges: ['Run it and watch: which obstacle can\'t Bit get past?', 'When the wall rule is used, which way does the path go?'],
         },
       },
     },
@@ -131,23 +144,26 @@ export const EN = {
       lesson: [
         'When a piece repeats, you can write it just once!',
         'Build the ★ Function with the steps. Each ★ block does everything inside it.',
-        'First build the function up top. Then use the ★ block in your program.',
+        'First build the function up top. Then use the ★ block in your program: without it, the function never runs.',
       ],
       challenges: {
         'f5-c1': {
           title: 'The magic block',
           goal: 'Make a function and reach the flag with only 5 blocks.',
           hints: ['The path repeats: Walk, Walk, Jump.', 'Function: Walk, Walk, Jump. Program: ★ and ★.'],
+          nudges: ['The path has a piece that shows up more than once.', 'Put the repeating piece in the ★ Function and call it as many times as you need.'],
         },
         'f5-c2': {
           title: 'Sonja\'s staircase',
           goal: 'Climb the stairs using 7 blocks at most.',
           hints: ['Every step is the same: walk, turn, walk, turn.', 'Function: Walk, Turn right, Walk, Turn left. Use ★ three times.'],
+          nudges: ['Are the steps alike? What does Bit do on one step?', 'Build one step in the ★ Function. How many ★ do you need?'],
         },
         'f5-c3': {
           title: 'Hidden pattern',
           goal: 'Find the piece that repeats and use 8 blocks at most.',
           hints: ['Before and after each turn, Bit does: Walk, Jump, Walk.', 'Function: Walk, Jump, Walk. Program: ★, Turn right, ★, Turn left, ★.'],
+          nudges: ['Forget the turns for a moment: what does Bit do between them?', 'The piece between the turns goes in the ★ Function. The turns stay in the program.'],
         },
       },
     },
@@ -167,16 +183,19 @@ export const EN = {
           title: 'Maze of rules',
           goal: 'Make the rules that take Bit through the whole maze.',
           hints: ['You\'ll need one rule for rocks and another for walls.', 'IF rock → Jump. IF wall → Turn right.'],
+          nudges: ['What kinds of obstacles are in this maze?', 'Each kind of obstacle needs its own rule.'],
         },
         'f6-c2': {
           title: 'Around the plaza',
           goal: 'Go around the rocks using only 4 blocks.',
           hints: ['Walk, Jump, Turn... and again. How many times?', 'Repeat 3× [Walk, Jump, Turn right].'],
+          nudges: ['Follow the loop with your finger. Do you notice a move that repeats?', 'Find the piece that repeats and count how many times it shows up.'],
         },
         'f6-c3': {
           title: 'Final challenge',
           goal: 'Use a function inside the Repeat. 8 blocks at most!',
           hints: ['The piece Walk, Jump, Walk shows up 4 times, with turns between them.', 'Function: Walk, Jump, Walk. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
+          nudges: ['There are two repetitions here: a small piece and a bigger pattern.', 'The small piece goes in the ★ Function. The bigger pattern, with the turns, goes in the Repeat.'],
         },
       },
     },
@@ -311,7 +330,7 @@ export const EN = {
       items: [
         ['Run', 'starts your program'],
         ['Block with "!"', 'shows where Bit went wrong'],
-        ['Hint', 'ask for help when you\'re stuck'],
+        ['Hint', 'Medium: 3 free, Hard: 2; then 15 coins'],
         ['Try again', 'your program is still there'],
       ],
     },
@@ -333,6 +352,15 @@ export const EN = {
         ['Coins', `${REWARDS.coinsPerStar} per star, +${REWARDS.faseBonusCoins} per stage`],
         ['Streak', 'play every day to make it grow'],
         ['Medals', 'special achievements'],
+      ],
+    },
+    coins: {
+      title: 'How to use coins',
+      text: 'You earn coins by winning challenges. Use them to buy things that help you and decorate the game:',
+      items: [
+        ['New colors', `${PALETTE_PRICES.min} to ${PALETTE_PRICES.max} coins, in Settings (each color brings a song)`],
+        ['Energy', `${ECONOMY.energyRefillPrice} coins fill the whole bar`],
+        ['Extra hints', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} coins each, once the free ones run out (Medium and Hard)`],
       ],
     },
     mentors: {
@@ -372,6 +400,7 @@ export const EN = {
       empty: { title: 'Your program is empty', hint: 'Tap the commands down below to build the path.' },
       empty_loop: { title: 'The Repeat is empty', hint: 'Put at least one command inside the Repeat.' },
       empty_function: { title: 'The function is empty', hint: 'Put commands inside the ★ Function before using it.' },
+      function_not_called: { title: 'The function was never called', hint: 'A function only runs when a ★ block calls it. Put a ★ in the program.' },
       incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
       too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
       edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },

@@ -23,7 +23,7 @@ export const fase4 = {
       text: 'Este programa tem um passo a mais. Rode e ache o bloco culpado.',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
     },
-    { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra.' },
+    { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra. Ao tirar um bloco, o próximo que você escolher entra no lugar dele.' },
   ],
   challenges: [
     {
@@ -36,6 +36,7 @@ export const fase4 = {
       start: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
       optimalBlocks: 5,
       hints: ['Rode o programa: em qual bloco o Bit bate na árvore?', 'Tem um Andar a mais antes de Virar. Toque nele para tirar.'],
+      nudges: ['Rode o programa e observe: em que momento o Bit se dá mal?', 'O bloco marcado com ! mostra onde o erro aparece. Ele está sobrando?'],
       solution: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
     },
     {
@@ -49,6 +50,7 @@ export const fase4 = {
       start: [repeat(6, [cmd('walk')])],
       optimalBlocks: 2,
       hints: ['O Bit para antes da bandeira. Faltam quantas casas?', 'Conte as casas até a bandeira e toque no número do Repetir até chegar nele.'],
+      nudges: ['Rode e veja onde o Bit para. Falta ou sobra caminho?', 'Os blocos estão certos. O que está errado é a conta.'],
       solution: [repeat(8, [cmd('walk')])],
     },
     {
@@ -64,6 +66,7 @@ export const fase4 = {
       start: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnLeft')],
       optimalBlocks: 2,
       hints: ['A regra da pedra funciona. Olhe a regra da parede.', 'O caminho vira para a direita. Toque no ENTÃO da regra da parede e escolha Virar dir.'],
+      nudges: ['Rode e observe: qual obstáculo o Bit não consegue resolver?', 'Quando a regra da parede é usada, para que lado o caminho segue?'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
   ],

@@ -59,7 +59,7 @@ export class FinaleScreen extends Screen {
 
     if (first) {
       bus.emit('song', 'victory');
-      this.later(() => sfx('achievement'), 1400);
+      this.later(() => sfx('achievement'), 3900); // after the victory song, not over it
     }
     if (!reducedMotion()) this.startConfetti(first ? 260 : 90);
   }

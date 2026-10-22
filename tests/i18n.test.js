@@ -30,7 +30,7 @@ describe('i18n: interface copy', () => {
 describe('i18n: game content', () => {
   const texts = (content) => JSON.stringify({
     fases: content.fases.map((f) => [f.title, f.concept.title, f.concept.summary, f.lesson.map((s) => s.text),
-      f.challenges.map((c) => [c.title, c.goal, c.hints, c.successMessage ?? null])]),
+      f.challenges.map((c) => [c.title, c.goal, c.hints, c.nudges, c.successMessage ?? null])]),
     mentors: content.mentors.map((m) => [m.area, m.intro, m.fact, m.message, m.unlockText]),
     achievements: content.achievements.map((a) => [a.title, a.description]),
     palettes: content.palettes.map((p) => [p.name, p.songName]),

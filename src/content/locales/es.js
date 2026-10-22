@@ -1,6 +1,7 @@
 import { ENERGY_MAX, ENERGY_REGEN_MS } from '../../domain/energy.js';
 import { REWARDS } from '../../domain/scoring.js';
-import { ECONOMY } from '../palettes.js';
+import { DIFFICULTIES } from '../difficulty.js';
+import { ECONOMY, PALETTE_PRICES } from '../palettes.js';
 
 /** Spanish translation of the game content. Ids mirror the Portuguese source. */
 export const ES = {
@@ -21,16 +22,19 @@ export const ES = {
           title: 'Primeros pasos',
           goal: 'Lleva a Bit hasta la bandera.',
           hints: ['Cuenta los cuadritos entre Bit y la bandera.', 'Son 3 pasos hacia adelante: Caminar, Caminar, Caminar.'],
+          nudges: ['¿Hacia dónde mira Bit? ¿Y dónde está la bandera?', 'Cada Caminar mueve a Bit una casilla hacia adelante. Cuenta las casillas.'],
         },
         'f1-c2': {
           title: 'La curva',
           goal: 'La bandera está después de la curva.',
           hints: ['Bit tiene que girar antes del árbol.', 'Camina 2, gira a la derecha y camina 2 más.'],
+          nudges: ['Algo bloquea el camino recto. ¿Dónde tiene que cambiar de dirección Bit?', 'Observa en qué casilla dobla el camino antes del árbol.'],
         },
         'f1-c3': {
           title: 'Piedra en el camino',
           goal: 'Pasa la piedra y llega a la bandera.',
           hints: ['Las piedras son bajitas: puedes Saltar por encima.', 'Camina, salta la piedra, gira a la izquierda y camina 2.'],
+          nudges: ['No todos los obstáculos hay que rodearlos.', 'Las piedras son bajitas. Y después de la piedra, ¿hacia qué lado está la bandera?'],
         },
       },
     },
@@ -50,16 +54,19 @@ export const ES = {
           title: 'Salta las piedras',
           goal: 'Crea una regla para pasar las piedras.',
           hints: ['Elige el SI: ¿qué ve Bit adelante?', 'SI piedra adelante, ENTONCES saltar.'],
+          nudges: ['¿Qué aparece en el camino y hace que Bit se detenga?', 'Una regla dice: SI Bit ve algo, ENTONCES hace algo. ¿Qué ve aquí?'],
         },
         'f2-c2': {
           title: 'Esquiva las paredes',
           goal: 'Enséñale a Bit a tomar las curvas solo.',
           hints: ['¿Qué hacer cuando aparece una pared?', 'Mira hacia dónde sigue el camino: la curva es a la derecha.'],
+          nudges: ['Sigue el camino con el dedo. ¿Qué pasa en cada esquina?', '¿En todas las esquinas la curva es hacia el mismo lado?'],
         },
         'f2-c3': {
           title: 'Dos mapas',
           goal: 'Las mismas reglas tienen que ganar en los 2 mapas.',
           hints: ['Vas a necesitar dos reglas: una para piedras y otra para paredes.', 'SI piedra → saltar. SI pared → girar a la derecha.'],
+          nudges: ['Compara los dos mapas: ¿qué obstáculos aparecen en cada uno?', 'Una sola regla no lo resuelve todo. ¿Cuántas situaciones diferentes hay?'],
         },
       },
     },
@@ -79,17 +86,20 @@ export const ES = {
           title: 'Pasillo largo',
           goal: 'Llega a la bandera usando solo 2 bloques.',
           hints: ['Pon el bloque Repetir y un Caminar dentro de él.', 'Toca el ×2 para cambiar cuántas veces repetir. ¡Cuenta las casillas!'],
+          nudges: ['Bit hace lo mismo varias veces seguidas. ¿Qué bloque evita escribirlo todo de nuevo?', 'Dentro del Repetir va lo que se repite. El número dice cuántas veces.'],
           successMessage: '¡Acabas de crear un loop! Te permite repetir una acción muchas veces sin tener que escribir el mismo comando.',
         },
         'f3-c2': {
           title: 'Escalera',
           goal: 'Sube la escalera con 5 bloques como máximo.',
           hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Repetir 3× [Caminar, Girar ↺, Caminar, Girar ↻].'],
+          nudges: ['Mira los escalones: ¿cada uno es diferente o igual?', 'Descubre los pasos de un solo escalón. Después cuenta los escalones.'],
         },
         'f3-c3': {
           title: 'Saltos con ritmo',
           goal: 'Encuentra el patrón y usa solo 3 bloques.',
           hints: ['Antes de cada piedra hay un suelo libre. ¿Cuál es el patrón?', 'Repetir 3× [Caminar, Saltar].'],
+          nudges: ['Observa el espacio entre las piedras. ¿Cambia?', 'Busca el pedazo más pequeño que se repite hasta la bandera.'],
         },
       },
     },
@@ -102,23 +112,26 @@ export const ES = {
       lesson: [
         'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
         'Este programa tiene un paso de más. Ejecútalo y encuentra el bloque culpable.',
-        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
+        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla. Al quitar un bloque, el siguiente que elijas entra en su lugar.',
       ],
       challenges: {
         'f4-c1': {
           title: 'Un paso de más',
           goal: 'El programa tiene un bug. Arréglalo y lleva a Bit hasta la bandera.',
           hints: ['Ejecuta el programa: ¿en qué bloque choca Bit con el árbol?', 'Hay un Caminar de más antes de Girar. Tócalo para quitarlo.'],
+          nudges: ['Ejecuta el programa y observa: ¿en qué momento le va mal a Bit?', 'El bloque marcado con ! muestra dónde aparece el error. ¿Está sobrando?'],
         },
         'f4-c2': {
           title: 'Cuenta equivocada',
           goal: 'El Repetir está contando mal. Arregla el número.',
           hints: ['Bit se detiene antes de la bandera. ¿Cuántas casillas faltan?', 'Cuenta las casillas hasta la bandera y toca el número del Repetir hasta llegar a él.'],
+          nudges: ['Ejecútalo y mira dónde se detiene Bit. ¿Falta o sobra camino?', 'Los bloques están bien. Lo que está mal es la cuenta.'],
         },
         'f4-c3': {
           title: 'Regla cambiada',
           goal: 'Una de las reglas está mal. Descubre cuál y arréglala.',
           hints: ['La regla de la piedra funciona. Mira la regla de la pared.', 'El camino gira a la derecha. Toca el ENTONCES de la regla de la pared y elige Girar der.'],
+          nudges: ['Ejecútalo y observa: ¿qué obstáculo no logra resolver Bit?', 'Cuando se usa la regla de la pared, ¿hacia qué lado sigue el camino?'],
         },
       },
     },
@@ -131,23 +144,26 @@ export const ES = {
       lesson: [
         '¡Cuando un pedazo se repite, puedes escribirlo una sola vez!',
         'Arma la ★ Función con los pasos. Cada bloque ★ hace todo lo que tiene adentro.',
-        'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
+        'Primero arma la función arriba. Después usa el bloque ★ en el programa: sin él, la función nunca se ejecuta.',
       ],
       challenges: {
         'f5-c1': {
           title: 'El bloque mágico',
           goal: 'Crea una función y llega a la bandera con solo 5 bloques.',
           hints: ['El camino se repite: Caminar, Caminar, Saltar.', 'Función: Caminar, Caminar, Saltar. Programa: ★ y ★.'],
+          nudges: ['El camino tiene un pedazo que aparece más de una vez.', 'Pon en la ★ Función el pedazo que se repite y llámala las veces que necesites.'],
         },
         'f5-c2': {
           title: 'La escalera de Sonja',
           goal: 'Sube la escalera con 7 bloques como máximo.',
           hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Función: Caminar, Girar der., Caminar, Girar izq. Usa ★ tres veces.'],
+          nudges: ['¿Los escalones se parecen? ¿Qué hace Bit en un escalón?', 'Arma un escalón en la ★ Función. ¿Cuántos ★ necesitas?'],
         },
         'f5-c3': {
           title: 'Patrón escondido',
           goal: 'Encuentra el pedazo que se repite y usa 8 bloques como máximo.',
           hints: ['Antes y después de cada curva, Bit hace: Caminar, Saltar, Caminar.', 'Función: Caminar, Saltar, Caminar. Programa: ★, Girar der., ★, Girar izq., ★.'],
+          nudges: ['Olvida las curvas por un momento: ¿qué hace Bit entre ellas?', 'El pedazo entre las curvas va en la ★ Función. Las curvas quedan en el programa.'],
         },
       },
     },
@@ -167,16 +183,19 @@ export const ES = {
           title: 'Laberinto de reglas',
           goal: 'Crea las reglas que llevan a Bit por todo el laberinto.',
           hints: ['Vas a necesitar una regla para piedras y otra para paredes.', 'SI piedra → Saltar. SI pared → Girar der.'],
+          nudges: ['¿Qué tipos de obstáculos hay en este laberinto?', 'Cada tipo de obstáculo necesita su propia regla.'],
         },
         'f6-c2': {
           title: 'Vuelta a la plaza',
           goal: 'Da la vuelta a las piedras usando solo 4 bloques.',
           hints: ['Caminar, Saltar, Girar... y otra vez. ¿Cuántas veces?', 'Repetir 3× [Caminar, Saltar, Girar der.].'],
+          nudges: ['Sigue la vuelta con el dedo. ¿Notas un movimiento que se repite?', 'Busca el pedazo que se repite y cuenta cuántas veces aparece.'],
         },
         'f6-c3': {
           title: 'Desafío final',
           goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
           hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
+          nudges: ['Aquí hay dos repeticiones: un pedazo pequeño y un patrón más grande.', 'El pedazo pequeño va en la ★ Función. El patrón grande, con las curvas, va en el Repetir.'],
         },
       },
     },
@@ -307,7 +326,7 @@ export const ES = {
       items: [
         ['Ejecutar', 'pone en marcha tu programa'],
         ['Bloque con "!"', 'muestra dónde se equivocó Bit'],
-        ['Pista', 'pide ayuda cuando te trabes'],
+        ['Pista', 'Medio: 3 gratis, Difícil: 2; luego 15 monedas'],
         ['Intentar de nuevo', 'tu programa sigue ahí'],
       ],
     },
@@ -329,6 +348,15 @@ export const ES = {
         ['Monedas', `${REWARDS.coinsPerStar} por estrella, +${REWARDS.faseBonusCoins} por fase`],
         ['Racha', 'juega todos los días para aumentarla'],
         ['Medallas', 'logros especiales'],
+      ],
+    },
+    coins: {
+      title: 'Cómo usar las monedas',
+      text: 'Ganas monedas al vencer desafíos. Sirven para comprar cosas que ayudan y adornan el juego:',
+      items: [
+        ['Colores nuevos', `${PALETTE_PRICES.min} a ${PALETTE_PRICES.max} monedas, en Ajustes (cada color trae una canción)`],
+        ['Energía', `${ECONOMY.energyRefillPrice} monedas llenan toda la barra`],
+        ['Pistas extra', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} monedas cada una, cuando se acaban las gratis (Medio y Difícil)`],
       ],
     },
     mentors: {
@@ -367,6 +395,7 @@ export const ES = {
       empty: { title: 'Tu programa está vacío', hint: 'Toca los comandos de abajo para armar el camino.' },
       empty_loop: { title: 'El Repetir está vacío', hint: 'Pon al menos un comando dentro del Repetir.' },
       empty_function: { title: 'La función está vacía', hint: 'Pon comandos dentro de la ★ Función antes de usarla.' },
+      function_not_called: { title: 'La función no fue llamada', hint: 'Una función solo se ejecuta cuando un bloque ★ la llama. Pon un ★ en el programa.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },

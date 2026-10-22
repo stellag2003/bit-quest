@@ -1,6 +1,7 @@
 import { ENERGY_MAX, ENERGY_REGEN_MS } from '../domain/energy.js';
 import { REWARDS } from '../domain/scoring.js';
-import { ECONOMY } from './palettes.js';
+import { DIFFICULTIES } from './difficulty.js';
+import { ECONOMY, PALETTE_PRICES } from './palettes.js';
 
 /**
  * "Como jogar": the welcome tour shown on the first launch (and from the "?"
@@ -75,7 +76,7 @@ export const GUIDE = [
     items: [
       ['play', 'Executar', 'roda o seu programa'],
       ['bug', 'Bloco com "!"', 'mostra onde o Bit errou'],
-      ['hint', 'Dica', 'peça ajuda quando travar'],
+      ['hint', 'Dica', 'Médio: 3 grátis, Difícil: 2; depois, 15 moedas'],
       ['back', 'Tentar de novo', 'seu programa continua lá'],
     ],
   },
@@ -99,6 +100,16 @@ export const GUIDE = [
       ['coin', 'Moedas', `${REWARDS.coinsPerStar} por estrela, +${REWARDS.faseBonusCoins} por fase`],
       ['flame', 'Sequência', 'jogue todo dia para aumentar'],
       ['trophy', 'Medalhas', 'conquistas especiais'],
+    ],
+  },
+  {
+    id: 'coins',
+    title: 'Como usar as moedas',
+    text: 'Você ganha moedas vencendo desafios. Elas servem para comprar coisas que ajudam e enfeitam o jogo:',
+    items: [
+      ['palette', 'Cores novas', `${PALETTE_PRICES.min} a ${PALETTE_PRICES.max} moedas, em Ajustes (cada cor vem com uma música)`],
+      ['energy', 'Energia', `${ECONOMY.energyRefillPrice} moedas enchem a barra toda`],
+      ['hint', 'Dicas extras', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} moedas cada, quando as grátis acabam (Médio e Difícil)`],
     ],
   },
   {

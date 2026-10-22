@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { createCommandRegistry } from '../src/domain/commands.js';
-import { cmd, countBlocks, expandedLength, repeat, rule } from '../src/domain/program.js';
+import { cmd, countBlocks, expandedLength, fn, repeat, rule } from '../src/domain/program.js';
 import { RuleRunner } from '../src/domain/runners/RuleRunner.js';
 import { SequenceRunner } from '../src/domain/runners/SequenceRunner.js';
 import { createSensorRegistry } from '../src/domain/sensors.js';
@@ -34,6 +34,12 @@ describe('SPEC-002 SequenceRunner', () => {
     const empty = sequence.run([], world);
     assert.equal(empty.failure.code, 'empty');
     assert.equal(empty.failure.stepIndex, -1);
+  });
+
+  it('a filled ★ Função that nothing calls is reported as not called', () => {
+    const r = sequence.run([fn([cmd('walk')])], world);
+    assert.equal(r.failure.code, 'function_not_called');
+    assert.equal(r.failure.stepIndex, -1);
   });
 });
 

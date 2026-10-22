@@ -7,6 +7,7 @@ import { RuleRunner } from '../domain/runners/RuleRunner.js';
 import { SequenceRunner } from '../domain/runners/SequenceRunner.js';
 import { createSensorRegistry } from '../domain/sensors.js';
 import { PurchasePalette, RefillEnergy, SelectPalette } from './economy.js';
+import { HintBook } from './hints.js';
 import { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } from './learning.js';
 import { ProgressStore } from './ProgressStore.js';
 import { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } from './profile.js';
@@ -45,7 +46,7 @@ export function createGame({ content, repository, clock, bus, store: existingSto
     evaluator,
     content,
     completeLesson: new CompleteLesson({ store, rules, bus }),
-    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty }),
+    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty, hintBook: new HintBook({ store, currentDifficulty }) }),
     currentDifficulty,
     refillEnergy: new RefillEnergy({ store, clock, price: economy.energyRefillPrice, bus }),
     purchasePalette: new PurchasePalette({ store, palettes, bus }),

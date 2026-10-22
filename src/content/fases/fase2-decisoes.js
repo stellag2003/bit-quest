@@ -38,6 +38,7 @@ export const fase2 = {
       maps: [['.........', '#########', '#>.R..R.G', '#########', '.........']],
       optimalBlocks: 1,
       hints: ['Escolha o SE: o que o Bit vê à frente?', 'SE pedra à frente, ENTÃO pular.'],
+      nudges: ['O que aparece no caminho e faz o Bit parar?', 'Uma regra diz: SE o Bit vê algo, ENTÃO ele faz alguma coisa. O que ele vê aqui?'],
       solution: [rule('rockAhead', 'jump')],
     },
     {
@@ -50,6 +51,7 @@ export const fase2 = {
       maps: [['#######', '#>...##', '####.##', '####.##', '#G...##', '#######']],
       optimalBlocks: 1,
       hints: ['O que fazer quando aparecer uma parede?', 'Olhe para onde o caminho segue: a curva é para a direita.'],
+      nudges: ['Siga o caminho com o dedo. O que acontece em cada canto?', 'Em todos os cantos a curva é para o mesmo lado?'],
       solution: [rule('wallAhead', 'turnRight')],
     },
     {
@@ -65,6 +67,7 @@ export const fase2 = {
       ],
       optimalBlocks: 2,
       hints: ['Você vai precisar de duas regras: uma para pedras e outra para paredes.', 'SE pedra → pular. SE parede → virar para a direita.'],
+      nudges: ['Compare os dois mapas: que obstáculos aparecem em cada um?', 'Uma regra só não resolve tudo. Quantas situações diferentes existem?'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
   ],

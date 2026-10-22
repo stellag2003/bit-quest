@@ -9,25 +9,28 @@ const MAX_PROGRAM = 12;
 const LOOP_BODY_MAX = 4;
 
 /**
- * Editor for sequence challenges: tap palette → append block; tap block → remove;
- * Repetir captures the next blocks until closed. Debugging challenges start
+ * Editor for sequence challenges: tap palette → add block at the cursor; tap block → remove
+ * it, and the cursor stays in its place so the next block replaces it (fixing a bug in the
+ * middle never means deleting everything after it). Repetir captures the next blocks until closed. Debugging challenges start
  * from `challenge.start`; function challenges (`functionMax`) add a ★ Função
  * frame on top whose body is filled the same way. Same interface as RuleEditor.
  */
 export class SequenceEditor {
-  constructor({ challenge, sfx }) {
+  constructor({ challenge, sfx, prefill = null }) {
     this.challenge = challenge;
     this.sfx = sfx;
-    this.nodes = structuredClone(challenge.start ?? []);
+    this.nodes = structuredClone(challenge.start ?? prefill ?? []);
     // ★ Função: always present, filled first (the cursor starts inside it).
     this.def = challenge.functionMax ? fn([]) : null;
     this.target = this.def?.id ?? null;
+    // Where the next top-level block goes: an index into `nodes`, or null for the end.
+    this.insertAt = null;
     this.locked = false;
     this.onChange = () => {};
     this.limit = challenge.maxBlocks ?? MAX_PROGRAM;
 
     this.counter = h('span', { class: 'program__count', 'aria-live': 'polite' });
-    this.list = h('div', { class: 'program__list', role: 'list' });
+    this.list = h('div', { class: 'program__list', role: 'list', onClick: (event) => event.target === this.list && this.cursorToEnd() });
     this.programEl = h('section', { class: 'program', 'aria-label': t('seq.title') },
       h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), challenge.start ? bugBadge() : null, this.counter), this.list);
     this.paletteButtons = challenge.palette.map((id) => h('button', {
@@ -78,24 +81,43 @@ export class SequenceEditor {
     const make = () => (commandId === 'call' ? call() : cmd(commandId));
     if (commandId === 'repeat') {
       const node = repeat(REPEAT_LIMITS.min, []);
-      this.nodes.push(node);
+      this.insertTop(node);
       this.target = node.id;
     } else if (this.loop) {
       this.loop.body.push(make());
       if (this.loop.body.length >= this.bodyMax) this.target = null;
     } else {
-      this.nodes.push(make());
+      this.insertTop(make());
     }
     this.sfx('place');
     this.changed();
   }
 
-  remove(nodeId) {
+  /** Puts a block at the cursor; the cursor moves past it (back to the end once it gets there). */
+  insertTop(node) {
+    if (this.insertAt == null) return this.nodes.push(node);
+    this.nodes.splice(this.insertAt, 0, node);
+    this.insertAt += 1;
+    if (this.insertAt >= this.nodes.length) this.insertAt = null;
+  }
+
+  /** Tapping the empty part of the program moves the cursor back to the end. */
+  cursorToEnd() {
+    if (this.locked || this.insertAt == null) return;
+    this.insertAt = null;
+    this.sfx('move');
+    this.render();
+  }
+
+  remove(nodeId, { keepPlace = true } = {}) {
     if (this.locked) return;
     const index = this.nodes.findIndex((n) => n.id === nodeId);
     if (index >= 0) {
       if (this.target === nodeId) this.target = null;
       this.nodes.splice(index, 1);
+      // The hole stays open: the next block chosen goes right there.
+      this.insertAt = keepPlace && index < this.nodes.length ? index : null;
+      if (this.insertAt != null) this.target = null; // an open Repetir/★ would take the next block instead
     } else {
       [this.def, ...this.nodes].forEach((n) => n && n.body && (n.body = n.body.filter((b) => b.id !== nodeId)));
     }
@@ -105,6 +127,7 @@ export class SequenceEditor {
 
   /** B button: undo the last placed block. */
   removeLast() {
+    this.insertAt = null;
     if (this.nodes.length === 0 && this.def?.body.length) return this.remove(this.def.body.at(-1).id);
     const loop = this.loop;
     if (loop?.body.length) return this.remove(loop.body.at(-1).id);
@@ -114,7 +137,7 @@ export class SequenceEditor {
       this.target = last.id;
       return this.remove(last.body.at(-1).id);
     }
-    return this.remove(last.id);
+    return this.remove(last.id, { keepPlace: false });
   }
 
   /** Replaces everything with `program` (used by "Mostrar resposta" on easy). */
@@ -125,6 +148,7 @@ export class SequenceEditor {
     if (this.def) this.def.body = def?.body ?? [];
     this.nodes = copy.filter((n) => n.type !== 'function');
     this.target = null;
+    this.insertAt = null;
     this.sfx('place');
     this.changed();
   }
@@ -132,6 +156,7 @@ export class SequenceEditor {
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.nodes = [];
+    this.insertAt = null;
     if (this.def) this.def.body = [];
     this.target = this.def?.id ?? null;
     this.sfx('remove');
@@ -148,6 +173,7 @@ export class SequenceEditor {
   setTarget(nodeId) {
     if (this.locked) return;
     this.target = nodeId;
+    if (nodeId) this.insertAt = null;
     this.sfx('move');
     this.render();
   }
@@ -182,7 +208,7 @@ export class SequenceEditor {
     this.paletteButtons.forEach((btn) => (btn.disabled = !this.canAdd(btn.dataset.command)));
 
     const items = this.nodes.map((node) => (node.type === 'repeat' ? this.renderLoop(node) : this.renderBlock(node)));
-    if (!this.loop && !this.locked) items.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
+    if (!this.loop && !this.locked) items.splice(this.insertAt ?? items.length, 0, h('span', { class: `cursor ${this.insertAt != null ? 'cursor--mid' : ''}`, 'aria-hidden': 'true' }));
     if (this.nodes.length === 0 && !this.def) {
       items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }

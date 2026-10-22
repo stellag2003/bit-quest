@@ -25,7 +25,7 @@ export const fase5 = {
         program: [fn([cmd('walk'), cmd('turnLeft'), cmd('walk'), cmd('turnRight')]), call(), call()],
       },
     },
-    { text: 'Primeiro monte a função lá em cima. Depois use o bloco ★ no programa.' },
+    { text: 'Primeiro monte a função lá em cima. Depois use o bloco ★ no programa: sem ele, a função nunca roda.' },
   ],
   challenges: [
     {
@@ -39,6 +39,7 @@ export const fase5 = {
       maps: [['#.#.#.#.#', '>..R...RG', '#.#.#.#.#']],
       optimalBlocks: 5,
       hints: ['O caminho se repete: Andar, Andar, Pular.', 'Função: Andar, Andar, Pular. Programa: ★ e ★.'],
+      nudges: ['O caminho tem um pedaço que aparece mais de uma vez.', 'Coloque na ★ Função o pedaço que se repete e chame ela quantas vezes precisar.'],
       solution: [fn([cmd('walk'), cmd('walk'), cmd('jump')]), call(), call()],
     },
     {
@@ -52,6 +53,7 @@ export const fase5 = {
       maps: [['.......', '..G#...', '.#..#..', '..#..#.', '...#.<.', '.......']],
       optimalBlocks: 7,
       hints: ['Cada degrau é igual: andar, virar, andar, virar.', 'Função: Andar, Virar dir., Andar, Virar esq. Use ★ três vezes.'],
+      nudges: ['Os degraus são parecidos? O que o Bit faz em um degrau?', 'Monte um degrau na ★ Função. Quantos ★ você precisa?'],
       solution: [fn([cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('turnLeft')]), call(), call(), call()],
     },
     {
@@ -65,6 +67,7 @@ export const fase5 = {
       maps: [['#########', '>.R..####', '####.####', '####R####', '####.####', '####..R.G', '#########']],
       optimalBlocks: 8,
       hints: ['Antes e depois de cada curva o Bit faz: Andar, Pular, Andar.', 'Função: Andar, Pular, Andar. Programa: ★, Virar dir., ★, Virar esq., ★.'],
+      nudges: ['Esqueça as curvas por um momento: o que o Bit faz entre elas?', 'O pedaço entre as curvas vai na ★ Função. As curvas ficam no programa.'],
       solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), call(), cmd('turnRight'), call(), cmd('turnLeft'), call()],
     },
   ],

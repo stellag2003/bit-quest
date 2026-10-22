@@ -11,6 +11,8 @@ export class AudioDirector {
   start() {
     this.bus.on('sfx', (id) => id && this.audio.play(id));
     this.bus.on('song', (id) => this.audio.playSong(id));
+    // The previous screen's fanfare stops before the new screen plays anything.
+    this.bus.on('screen:leaving', () => this.audio.stopJingles?.());
     this.bus.on('screen:changed', ({ music }) => (music ? this.audio.playSong(this.resolveSong(music)) : this.audio.stopMusic()));
     const sync = ({ settings }) => {
       this.audio.setSfxEnabled(settings.sfx);

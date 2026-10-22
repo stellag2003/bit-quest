@@ -9,6 +9,7 @@ export function createInitialProgress(now, { firstMentor = 'ada', firstPalette =
     xp: 0,
     coins: 30,
     stars: {},
+    hintsUsed: {}, // challengeId → hints taken (Medium/Hard charge coins after the free ones)
     lessonsDone: [],
     completedFases: [],
     unlockedMentors: [firstMentor],
@@ -34,6 +35,8 @@ export function migrateProgress(saved, now, options) {
   for (const key of ['lessonsDone', 'completedFases', 'unlockedMentors', 'achievements']) {
     if (!Array.isArray(merged[key])) merged[key] = base[key];
   }
-  if (typeof merged.stars !== 'object' || merged.stars === null) merged.stars = {};
+  for (const key of ['stars', 'hintsUsed']) {
+    if (typeof merged[key] !== 'object' || merged[key] === null || Array.isArray(merged[key])) merged[key] = {};
+  }
   return merged;
 }

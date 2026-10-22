@@ -1219,6 +1219,46 @@ body.is-large-text .scr { font-size: 20px; }
 
 body.is-plain-font .scr { letter-spacing: 0.01em; }
 
+/* Cursor left where a block was removed: the next block goes there. */
+.cursor--mid {
+  width: 6px;
+}
+
+/* Medium/Hard: free hints left on the hint button (a coin once they cost coins). */
+.iconbtn--hint {
+  position: relative;
+}
+
+.hint-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 2px;
+  background: var(--c0);
+  color: var(--c3);
+  font: 700 11px/1 var(--font-pixel);
+  pointer-events: none;
+}
+
+.hint-badge[hidden] {
+  display: none;
+}
+
+.hint-badge .ico {
+  width: 12px;
+  height: 12px;
+}
+
+.hint__note {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.8;
+}
+
 </style>
   <style>
 /* ───────────── Boot ───────────── */
@@ -3705,6 +3745,7 @@ function createInitialProgress(now, { firstMentor = 'ada', firstPalette = 'class
     xp: 0,
     coins: 30,
     stars: {},
+    hintsUsed: {}, // challengeId → hints taken (Medium/Hard charge coins after the free ones)
     lessonsDone: [],
     completedFases: [],
     unlockedMentors: [firstMentor],
@@ -3730,7 +3771,9 @@ function migrateProgress(saved, now, options) {
   for (const key of ['lessonsDone', 'completedFases', 'unlockedMentors', 'achievements']) {
     if (!Array.isArray(merged[key])) merged[key] = base[key];
   }
-  if (typeof merged.stars !== 'object' || merged.stars === null) merged.stars = {};
+  for (const key of ['stars', 'hintsUsed']) {
+    if (typeof merged[key] !== 'object' || merged[key] === null || Array.isArray(merged[key])) merged[key] = {};
+  }
   return merged;
 }
 
@@ -3875,7 +3918,7 @@ function* flatten(nodes, loops = [], def = definitionIn(nodes)) {
 
 function findSequenceProblem(nodes, def = definitionIn(nodes)) {
   const main = nodes.filter((node) => node.type !== 'function');
-  if (main.length === 0) return { code: 'empty', nodeId: null };
+  if (main.length === 0) return def?.body.length ? { code: 'function_not_called', nodeId: def.id } : { code: 'empty', nodeId: null };
   for (const node of main) {
     if (node.type === 'call' && !def?.body.length) return { code: 'empty_function', nodeId: def?.id ?? node.id };
     if (node.type !== 'repeat') continue;
@@ -4105,6 +4148,47 @@ class SelectPalette {
 
 return { RefillEnergy, PurchasePalette, SelectPalette };
 })();
+// ── src/application/hints.js
+__m["src/application/hints.js"] = (() => {
+/**
+ * Hints per challenge. Easy: always free. Medium/Hard: the first `freeHints` are free,
+ * each one after that costs `hintPrice` coins. How many were used is saved per challenge,
+ * so leaving and coming back does not refill the free ones.
+ *
+ * Medium/Hard start with the subtler nudges and only then reach the direct hints:
+ * the hints you pay for are the more helpful ones.
+ */
+class HintBook {
+  constructor({ store, currentDifficulty }) {
+    Object.assign(this, { store, currentDifficulty });
+  }
+
+  /** { used, freeLeft (null = unlimited), cost (0 = free), coins } for the next hint. */
+  status(challengeId) {
+    const { freeHints = null, hintPrice = 0 } = this.currentDifficulty.execute();
+    const { hintsUsed, coins } = this.store.get();
+    const used = hintsUsed?.[challengeId] ?? 0;
+    const freeLeft = freeHints == null ? null : Math.max(0, freeHints - used);
+    return { used, freeLeft, cost: freeLeft === 0 ? hintPrice : 0, coins };
+  }
+
+  /** Gives the next hint, charging coins once the free ones are over. */
+  take(challenge) {
+    const { used, cost, coins } = this.status(challenge.id);
+    if (cost > coins) return { ok: false, reason: 'coins', cost, coins };
+    const list = this.currentDifficulty.execute().subtleHints && challenge.nudges?.length
+      ? [...challenge.nudges, ...challenge.hints]
+      : challenge.hints;
+    this.store.update((p) => {
+      p.coins -= cost;
+      p.hintsUsed = { ...p.hintsUsed, [challenge.id]: used + 1 };
+    });
+    return { ok: true, text: list[used % list.length], paid: cost, ...this.status(challenge.id) };
+  }
+}
+
+return { HintBook };
+})();
 // ── src/domain/achievements.js
 __m["src/domain/achievements.js"] = (() => {
 /**
@@ -4209,16 +4293,16 @@ return { dayKey, registerActivity, visibleStreak };
 })();
 // ── src/application/ChallengeSession.js
 __m["src/application/ChallengeSession.js"] = (() => {
-/** One attempt-series at a challenge: counts failures (for stars) and cycles hints. */
+/** One attempt-series at a challenge: counts failures (for stars) and hands out hints. */
 class ChallengeSession {
-  constructor({ fase, challenge, index, difficulty, submitProgram }) {
+  constructor({ fase, challenge, index, difficulty, submitProgram, hintBook }) {
     this.fase = fase;
     this.challenge = challenge;
     this.index = index;
     this.difficulty = difficulty;
     this.submitProgram = submitProgram;
+    this.hintBook = hintBook;
     this.failures = 0;
-    this.hintIndex = 0;
   }
 
   submit(program) {
@@ -4236,11 +4320,14 @@ class ChallengeSession {
     return Math.max(0, (this.difficulty?.hintAfter ?? 0) - this.failures);
   }
 
-  nextHint() {
-    const { hints } = this.challenge;
-    const hint = hints[this.hintIndex % hints.length];
-    this.hintIndex += 1;
-    return hint;
+  /** What the next hint costs: { freeLeft, cost, coins }. */
+  hintStatus() {
+    return this.hintBook.status(this.challenge.id);
+  }
+
+  /** Next hint (Medium/Hard: subtler nudges first); charges coins once the free ones are used. */
+  takeHint() {
+    return this.hintBook.take(this.challenge);
   }
 }
 
@@ -4282,8 +4369,8 @@ class CurrentDifficulty {
 }
 
 class StartChallenge {
-  constructor({ store, curriculum, rules, submitProgram, currentDifficulty }) {
-    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty });
+  constructor({ store, curriculum, rules, submitProgram, currentDifficulty, hintBook }) {
+    Object.assign(this, { store, curriculum, rules, submitProgram, currentDifficulty, hintBook });
   }
 
   execute(challengeId) {
@@ -4292,7 +4379,7 @@ class StartChallenge {
     }
     const { fase, challenge, index } = this.curriculum.findChallenge(challengeId);
     const difficulty = this.currentDifficulty.execute();
-    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram });
+    return new ChallengeSession({ fase, challenge: applyDifficulty(challenge, difficulty), index, difficulty, submitProgram: this.submitProgram, hintBook: this.hintBook });
   }
 }
 
@@ -4605,6 +4692,7 @@ const { RuleRunner } = __m["src/domain/runners/RuleRunner.js"];
 const { SequenceRunner } = __m["src/domain/runners/SequenceRunner.js"];
 const { createSensorRegistry } = __m["src/domain/sensors.js"];
 const { PurchasePalette, RefillEnergy, SelectPalette } = __m["src/application/economy.js"];
+const { HintBook } = __m["src/application/hints.js"];
 const { CompleteLesson, CurrentDifficulty, StartChallenge, SubmitProgram } = __m["src/application/learning.js"];
 const { ProgressStore } = __m["src/application/ProgressStore.js"];
 const { CompleteGame, ResetProgress, SelectMentor, SetCertificateName, UpdateSettings } = __m["src/application/profile.js"];
@@ -4642,7 +4730,7 @@ function createGame({ content, repository, clock, bus, store: existingStore = nu
     evaluator,
     content,
     completeLesson: new CompleteLesson({ store, rules, bus }),
-    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty }),
+    startChallenge: new StartChallenge({ store, curriculum, rules, submitProgram, currentDifficulty, hintBook: new HintBook({ store, currentDifficulty }) }),
     currentDifficulty,
     refillEnergy: new RefillEnergy({ store, clock, price: economy.energyRefillPrice, bus }),
     purchasePalette: new PurchasePalette({ store, palettes, bus }),
@@ -4732,6 +4820,10 @@ __m["src/content/difficulty.js"] = (() => {
  *   preview     — the map shows Bit's path while the program is being built
  *   hintOnScreen — the first hint is shown under the goal from the start
  *   answerAfter — failed runs after which "Mostrar resposta" fills in the solution (null = never)
+ *   subtleHints — the hint button gives `nudges` (questions that point the way) instead of
+ *                 `hints` (which end close to the answer)
+ *   fnCallsReady — function challenges start with the ★ calls already in the program
+ *   freeHints   — free hints per challenge (null = always free); after that each costs hintPrice coins
  */
 const DIFFICULTIES = [
   {
@@ -4747,6 +4839,10 @@ const DIFFICULTIES = [
     preview: true,
     hintOnScreen: true,
     answerAfter: 2,
+    subtleHints: false,
+    fnCallsReady: true,
+    freeHints: null,
+    hintPrice: 0,
   },
   {
     id: 'medium',
@@ -4761,6 +4857,10 @@ const DIFFICULTIES = [
     preview: false,
     hintOnScreen: false,
     answerAfter: null,
+    subtleHints: true,
+    fnCallsReady: false,
+    freeHints: 3,
+    hintPrice: 15,
   },
   {
     id: 'hard',
@@ -4771,10 +4871,14 @@ const DIFFICULTIES = [
     hintAfter: 2,
     hintPulse: 2,
     reward: 1.5,
-    speed: 0.8,
+    speed: 1.15,
     preview: false,
     hintOnScreen: false,
     answerAfter: null,
+    subtleHints: true,
+    fnCallsReady: false,
+    freeHints: 2,
+    hintPrice: 15,
   },
 ];
 
@@ -4789,6 +4893,7 @@ const FAILURES = {
   empty: { title: 'Seu programa está vazio', hint: 'Toque nos comandos lá embaixo para montar o caminho.' },
   empty_loop: { title: 'O Repetir está vazio', hint: 'Coloque pelo menos um comando dentro do Repetir.' },
   empty_function: { title: 'A função está vazia', hint: 'Coloque comandos dentro da ★ Função antes de usá-la.' },
+  function_not_called: { title: 'A função não foi chamada', hint: 'A função só roda quando um bloco ★ chama ela. Coloque um ★ no programa.' },
   incomplete_rule: { title: 'Falta completar a regra', hint: 'Toda regra precisa de um SE e de um ENTÃO.' },
   too_many_blocks: { title: 'Blocos demais!', hint: 'Use o Repetir para escrever menos.' },
   edge: { title: 'O Bit quase saiu do mapa!', hint: 'Conte os quadradinhos até a bandeira.' },
@@ -4853,6 +4958,7 @@ const fase1 = {
       maps: [['#.....#', '..#....', '.>..G..', '....#..', '#.....#']],
       optimalBlocks: 3,
       hints: ['Conte os quadradinhos entre o Bit e a bandeira.', 'São 3 passos para a frente: Andar, Andar, Andar.'],
+      nudges: ['Para onde o Bit está olhando? E onde está a bandeira?', 'Cada Andar leva o Bit uma casa para a frente. Conte as casas.'],
       solution: [cmd('walk'), cmd('walk'), cmd('walk')],
     },
     {
@@ -4864,6 +4970,7 @@ const fase1 = {
       maps: [['#.....#', '.>..#..', '..#....', '...G...', '#.....#']],
       optimalBlocks: 5,
       hints: ['O Bit precisa virar antes da árvore.', 'Ande 2, vire para a direita e ande mais 2.'],
+      nudges: ['Algo bloqueia o caminho reto. Onde o Bit precisa mudar de direção?', 'Observe em qual casa o caminho dobra antes da árvore.'],
       solution: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
     },
     {
@@ -4875,6 +4982,7 @@ const fase1 = {
       maps: [['#......#', '....G...', '.#......', '.>.R...#', '#....#..']],
       optimalBlocks: 5,
       hints: ['Pedras são baixinhas: dá para Pular por cima.', 'Ande, pule a pedra, vire para a esquerda e ande 2.'],
+      nudges: ['Nem todo obstáculo precisa ser contornado.', 'Pedras são baixinhas. E depois dela, para que lado fica a bandeira?'],
       solution: [cmd('walk'), cmd('jump'), cmd('turnLeft'), cmd('walk'), cmd('walk')],
     },
   ],
@@ -4923,6 +5031,7 @@ const fase2 = {
       maps: [['.........', '#########', '#>.R..R.G', '#########', '.........']],
       optimalBlocks: 1,
       hints: ['Escolha o SE: o que o Bit vê à frente?', 'SE pedra à frente, ENTÃO pular.'],
+      nudges: ['O que aparece no caminho e faz o Bit parar?', 'Uma regra diz: SE o Bit vê algo, ENTÃO ele faz alguma coisa. O que ele vê aqui?'],
       solution: [rule('rockAhead', 'jump')],
     },
     {
@@ -4935,6 +5044,7 @@ const fase2 = {
       maps: [['#######', '#>...##', '####.##', '####.##', '#G...##', '#######']],
       optimalBlocks: 1,
       hints: ['O que fazer quando aparecer uma parede?', 'Olhe para onde o caminho segue: a curva é para a direita.'],
+      nudges: ['Siga o caminho com o dedo. O que acontece em cada canto?', 'Em todos os cantos a curva é para o mesmo lado?'],
       solution: [rule('wallAhead', 'turnRight')],
     },
     {
@@ -4950,6 +5060,7 @@ const fase2 = {
       ],
       optimalBlocks: 2,
       hints: ['Você vai precisar de duas regras: uma para pedras e outra para paredes.', 'SE pedra → pular. SE parede → virar para a direita.'],
+      nudges: ['Compare os dois mapas: que obstáculos aparecem em cada um?', 'Uma regra só não resolve tudo. Quantas situações diferentes existem?'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
   ],
@@ -5004,6 +5115,7 @@ const fase3 = {
       maps: [['#.#.#.#.#', '.>....G..', '#.#.#.#.#']],
       optimalBlocks: 2,
       hints: ['Coloque o bloco Repetir e um Andar dentro dele.', 'Toque no ×2 para mudar quantas vezes repetir. Conte as casas!'],
+      nudges: ['O Bit faz a mesma coisa várias vezes seguidas. Qual bloco evita escrever tudo de novo?', 'Dentro do Repetir vai o que se repete. O número diz quantas vezes.'],
       successMessage: LOOP_MESSAGE,
       solution: [repeat(5, [cmd('walk')])],
     },
@@ -5017,6 +5129,7 @@ const fase3 = {
       maps: [['.......', '...#G..', '..#..#.', '.#..#..', '.>.#...', '.......']],
       optimalBlocks: 5,
       hints: ['Cada degrau é igual: andar, virar, andar, virar.', 'Repetir 3× [Andar, Virar ↺, Andar, Virar ↻].'],
+      nudges: ['Olhe os degraus: cada um é diferente ou igual?', 'Descubra os passos de um degrau só. Depois conte os degraus.'],
       solution: [repeat(3, [cmd('walk'), cmd('turnLeft'), cmd('walk'), cmd('turnRight')])],
     },
     {
@@ -5029,6 +5142,7 @@ const fase3 = {
       maps: [['#.#.#.#.#.', '>.R..R..RG', '#.#.#.#.#.']],
       optimalBlocks: 3,
       hints: ['Antes de cada pedra há um chão livre. Qual é o padrão?', 'Repetir 3× [Andar, Pular].'],
+      nudges: ['Observe o espaço entre as pedras. Ele muda?', 'Ache o menor pedaço que se repete até a bandeira.'],
       solution: [repeat(3, [cmd('walk'), cmd('jump')])],
     },
   ],
@@ -5062,7 +5176,7 @@ const fase4 = {
       text: 'Este programa tem um passo a mais. Rode e ache o bloco culpado.',
       strip: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk')],
     },
-    { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra.' },
+    { text: 'Conserte só o que está errado: tire um bloco, mude um número ou troque uma regra. Ao tirar um bloco, o próximo que você escolher entra no lugar dele.' },
   ],
   challenges: [
     {
@@ -5075,6 +5189,7 @@ const fase4 = {
       start: [cmd('walk'), cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
       optimalBlocks: 5,
       hints: ['Rode o programa: em qual bloco o Bit bate na árvore?', 'Tem um Andar a mais antes de Virar. Toque nele para tirar.'],
+      nudges: ['Rode o programa e observe: em que momento o Bit se dá mal?', 'O bloco marcado com ! mostra onde o erro aparece. Ele está sobrando?'],
       solution: [cmd('walk'), cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('walk')],
     },
     {
@@ -5088,6 +5203,7 @@ const fase4 = {
       start: [repeat(6, [cmd('walk')])],
       optimalBlocks: 2,
       hints: ['O Bit para antes da bandeira. Faltam quantas casas?', 'Conte as casas até a bandeira e toque no número do Repetir até chegar nele.'],
+      nudges: ['Rode e veja onde o Bit para. Falta ou sobra caminho?', 'Os blocos estão certos. O que está errado é a conta.'],
       solution: [repeat(8, [cmd('walk')])],
     },
     {
@@ -5103,6 +5219,7 @@ const fase4 = {
       start: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnLeft')],
       optimalBlocks: 2,
       hints: ['A regra da pedra funciona. Olhe a regra da parede.', 'O caminho vira para a direita. Toque no ENTÃO da regra da parede e escolha Virar dir.'],
+      nudges: ['Rode e observe: qual obstáculo o Bit não consegue resolver?', 'Quando a regra da parede é usada, para que lado o caminho segue?'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
   ],
@@ -5138,7 +5255,7 @@ const fase5 = {
         program: [fn([cmd('walk'), cmd('turnLeft'), cmd('walk'), cmd('turnRight')]), call(), call()],
       },
     },
-    { text: 'Primeiro monte a função lá em cima. Depois use o bloco ★ no programa.' },
+    { text: 'Primeiro monte a função lá em cima. Depois use o bloco ★ no programa: sem ele, a função nunca roda.' },
   ],
   challenges: [
     {
@@ -5152,6 +5269,7 @@ const fase5 = {
       maps: [['#.#.#.#.#', '>..R...RG', '#.#.#.#.#']],
       optimalBlocks: 5,
       hints: ['O caminho se repete: Andar, Andar, Pular.', 'Função: Andar, Andar, Pular. Programa: ★ e ★.'],
+      nudges: ['O caminho tem um pedaço que aparece mais de uma vez.', 'Coloque na ★ Função o pedaço que se repete e chame ela quantas vezes precisar.'],
       solution: [fn([cmd('walk'), cmd('walk'), cmd('jump')]), call(), call()],
     },
     {
@@ -5165,6 +5283,7 @@ const fase5 = {
       maps: [['.......', '..G#...', '.#..#..', '..#..#.', '...#.<.', '.......']],
       optimalBlocks: 7,
       hints: ['Cada degrau é igual: andar, virar, andar, virar.', 'Função: Andar, Virar dir., Andar, Virar esq. Use ★ três vezes.'],
+      nudges: ['Os degraus são parecidos? O que o Bit faz em um degrau?', 'Monte um degrau na ★ Função. Quantos ★ você precisa?'],
       solution: [fn([cmd('walk'), cmd('turnRight'), cmd('walk'), cmd('turnLeft')]), call(), call(), call()],
     },
     {
@@ -5178,6 +5297,7 @@ const fase5 = {
       maps: [['#########', '>.R..####', '####.####', '####R####', '####.####', '####..R.G', '#########']],
       optimalBlocks: 8,
       hints: ['Antes e depois de cada curva o Bit faz: Andar, Pular, Andar.', 'Função: Andar, Pular, Andar. Programa: ★, Virar dir., ★, Virar esq., ★.'],
+      nudges: ['Esqueça as curvas por um momento: o que o Bit faz entre elas?', 'O pedaço entre as curvas vai na ★ Função. As curvas ficam no programa.'],
       solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), call(), cmd('turnRight'), call(), cmd('turnLeft'), call()],
     },
   ],
@@ -5221,6 +5341,7 @@ const fase6 = {
       maps: [['#########', '#>.R...##', '######.##', '######R##', '######.##', '#G..R..##', '#########']],
       optimalBlocks: 2,
       hints: ['Você vai precisar de uma regra para pedras e outra para paredes.', 'SE pedra → Pular. SE parede → Virar dir.'],
+      nudges: ['Que tipos de obstáculo existem neste labirinto?', 'Cada tipo de obstáculo precisa da sua própria regra.'],
       solution: [rule('rockAhead', 'jump'), rule('wallAhead', 'turnRight')],
     },
     {
@@ -5233,6 +5354,7 @@ const fase6 = {
       maps: [['>.R.', '##..', '#..R', 'GR..']],
       optimalBlocks: 4,
       hints: ['Andar, Pular, Virar... e de novo. Quantas vezes?', 'Repetir 3× [Andar, Pular, Virar dir.].'],
+      nudges: ['Siga a volta com o dedo. Você percebe um movimento que se repete?', 'Ache o pedaço que se repete e conte quantas vezes ele aparece.'],
       solution: [repeat(3, [cmd('walk'), cmd('jump'), cmd('turnRight')])],
     },
     {
@@ -5246,6 +5368,7 @@ const fase6 = {
       maps: [['>.R..####', '####.####', '####R####', '####.####', '####..R..', '########.', '########R', '########.', '########G']],
       optimalBlocks: 8,
       hints: ['O pedaço Andar, Pular, Andar aparece 4 vezes, com curvas entre eles.', 'Função: Andar, Pular, Andar. Programa: Repetir 2× [★, Virar dir., ★, Virar esq.].'],
+      nudges: ['Aqui existem duas repetições: um pedaço pequeno e um padrão maior.', 'O pedaço pequeno vai na ★ Função. O padrão maior, com as curvas, vai no Repetir.'],
       solution: [fn([cmd('walk'), cmd('jump'), cmd('walk')]), repeat(2, [call(), cmd('turnRight'), call(), cmd('turnLeft')])],
     },
   ],
@@ -5281,13 +5404,18 @@ const PALETTES = [
 
 const ECONOMY = Object.freeze({ energyRefillPrice: 15 });
 
-return { PALETTES, ECONOMY };
+/** Cheapest and dearest palette for sale (for the "Moedas" page of Como jogar). */
+const forSale = PALETTES.filter((p) => p.price > 0).map((p) => p.price);
+const PALETTE_PRICES = Object.freeze({ min: Math.min(...forSale), max: Math.max(...forSale) });
+
+return { PALETTES, ECONOMY, PALETTE_PRICES };
 })();
 // ── src/content/guide.js
 __m["src/content/guide.js"] = (() => {
 const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
 const { REWARDS } = __m["src/domain/scoring.js"];
-const { ECONOMY } = __m["src/content/palettes.js"];
+const { DIFFICULTIES } = __m["src/content/difficulty.js"];
+const { ECONOMY, PALETTE_PRICES } = __m["src/content/palettes.js"];
 /**
  * "Como jogar": the welcome tour shown on the first launch (and from the "?"
  * on the home screen). Each item is [icon, label, detail]; `key` items show a
@@ -5361,7 +5489,7 @@ const GUIDE = [
     items: [
       ['play', 'Executar', 'roda o seu programa'],
       ['bug', 'Bloco com "!"', 'mostra onde o Bit errou'],
-      ['hint', 'Dica', 'peça ajuda quando travar'],
+      ['hint', 'Dica', 'Médio: 3 grátis, Difícil: 2; depois, 15 moedas'],
       ['back', 'Tentar de novo', 'seu programa continua lá'],
     ],
   },
@@ -5385,6 +5513,16 @@ const GUIDE = [
       ['coin', 'Moedas', `${REWARDS.coinsPerStar} por estrela, +${REWARDS.faseBonusCoins} por fase`],
       ['flame', 'Sequência', 'jogue todo dia para aumentar'],
       ['trophy', 'Medalhas', 'conquistas especiais'],
+    ],
+  },
+  {
+    id: 'coins',
+    title: 'Como usar as moedas',
+    text: 'Você ganha moedas vencendo desafios. Elas servem para comprar coisas que ajudam e enfeitam o jogo:',
+    items: [
+      ['palette', 'Cores novas', `${PALETTE_PRICES.min} a ${PALETTE_PRICES.max} moedas, em Ajustes (cada cor vem com uma música)`],
+      ['energy', 'Energia', `${ECONOMY.energyRefillPrice} moedas enchem a barra toda`],
+      ['hint', 'Dicas extras', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} moedas cada, quando as grátis acabam (Médio e Difícil)`],
     ],
   },
   {
@@ -5533,7 +5671,8 @@ return { CONTENT };
 __m["src/content/locales/en.js"] = (() => {
 const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
 const { REWARDS } = __m["src/domain/scoring.js"];
-const { ECONOMY } = __m["src/content/palettes.js"];
+const { DIFFICULTIES } = __m["src/content/difficulty.js"];
+const { ECONOMY, PALETTE_PRICES } = __m["src/content/palettes.js"];
 /** English translation of the game content. Ids mirror the Portuguese source. */
 const EN = {
   fases: {
@@ -5553,16 +5692,19 @@ const EN = {
           title: 'First steps',
           goal: 'Take Bit to the flag.',
           hints: ['Count the squares between Bit and the flag.', 'It\'s 3 steps forward: Walk, Walk, Walk.'],
+          nudges: ['Which way is Bit facing? And where is the flag?', 'Each Walk moves Bit one square forward. Count the squares.'],
         },
         'f1-c2': {
           title: 'The turn',
           goal: 'The flag is around the corner.',
           hints: ['Bit needs to turn before the tree.', 'Walk 2, turn right and walk 2 more.'],
+          nudges: ['Something blocks the straight path. Where does Bit need to change direction?', 'Look at which square the path bends on before the tree.'],
         },
         'f1-c3': {
           title: 'Rock in the way',
           goal: 'Get past the rock and reach the flag.',
           hints: ['Rocks are short: you can Jump over them.', 'Walk, jump the rock, turn left and walk 2.'],
+          nudges: ['Not every obstacle has to be walked around.', 'Rocks are short. And after the rock, which way is the flag?'],
         },
       },
     },
@@ -5582,16 +5724,19 @@ const EN = {
           title: 'Jump the rocks',
           goal: 'Make a rule to get past the rocks.',
           hints: ['Choose the IF: what does Bit see ahead?', 'IF rock ahead, THEN jump.'],
+          nudges: ['What shows up on the path and stops Bit?', 'A rule says: IF Bit sees something, THEN he does something. What does he see here?'],
         },
         'f2-c2': {
           title: 'Dodge the walls',
           goal: 'Teach Bit to take the turns by himself.',
           hints: ['What should Bit do when a wall shows up?', 'Look where the path goes: the turn is to the right.'],
+          nudges: ['Follow the path with your finger. What happens at each corner?', 'Does the path turn the same way at every corner?'],
         },
         'f2-c3': {
           title: 'Two maps',
           goal: 'The same rules must beat both maps.',
           hints: ['You\'ll need two rules: one for rocks and one for walls.', 'IF rock → jump. IF wall → turn right.'],
+          nudges: ['Compare both maps: which obstacles show up in each one?', 'One rule can\'t solve everything. How many different situations are there?'],
         },
       },
     },
@@ -5611,17 +5756,20 @@ const EN = {
           title: 'Long hallway',
           goal: 'Reach the flag using only 2 blocks.',
           hints: ['Put down the Repeat block and a Walk inside it.', 'Tap the ×2 to change how many times to repeat. Count the squares!'],
+          nudges: ['Bit does the same thing many times in a row. Which block saves you from writing it all again?', 'What repeats goes inside the Repeat. The number says how many times.'],
           successMessage: 'You just made a loop! It lets you repeat an action many times without writing the same command again and again.',
         },
         'f3-c2': {
           title: 'Staircase',
           goal: 'Climb the stairs with 5 blocks at most.',
           hints: ['Every step is the same: walk, turn, walk, turn.', 'Repeat 3× [Walk, Turn ↺, Walk, Turn ↻].'],
+          nudges: ['Look at the steps: is each one different or the same?', 'Work out the moves for just one step. Then count the steps.'],
         },
         'f3-c3': {
           title: 'Jumping to the beat',
           goal: 'Find the pattern and use only 3 blocks.',
           hints: ['Before each rock there\'s an empty square. What\'s the pattern?', 'Repeat 3× [Walk, Jump].'],
+          nudges: ['Look at the space between the rocks. Does it change?', 'Find the smallest piece that repeats all the way to the flag.'],
         },
       },
     },
@@ -5634,23 +5782,26 @@ const EN = {
       lesson: [
         'Not every program works the first time. A mistake in a program is called a bug.',
         'This program has one step too many. Run it and find the guilty block.',
-        'Fix only what is wrong: remove a block, change a number or swap a rule.',
+        'Fix only what is wrong: remove a block, change a number or swap a rule. When you remove a block, the next one you pick goes in its place.',
       ],
       challenges: {
         'f4-c1': {
           title: 'One step too many',
           goal: 'The program has a bug. Fix it and take Bit to the flag.',
           hints: ['Run the program: at which block does Bit bump into the tree?', 'There\'s an extra Walk before the Turn. Tap it to remove it.'],
+          nudges: ['Run the program and watch: at what moment does Bit get in trouble?', 'The block marked with ! shows where the error appears. Is it extra?'],
         },
         'f4-c2': {
           title: 'Wrong count',
           goal: 'The Repeat is counting wrong. Fix the number.',
           hints: ['Bit stops before the flag. How many squares are missing?', 'Count the squares to the flag and tap the Repeat number until you get there.'],
+          nudges: ['Run it and see where Bit stops. Is the path too short or too long?', 'The blocks are right. What\'s wrong is the count.'],
         },
         'f4-c3': {
           title: 'Mixed-up rule',
           goal: 'One of the rules is wrong. Find out which one and fix it.',
           hints: ['The rock rule works. Look at the wall rule.', 'The path turns right. Tap the THEN of the wall rule and choose Turn right.'],
+          nudges: ['Run it and watch: which obstacle can\'t Bit get past?', 'When the wall rule is used, which way does the path go?'],
         },
       },
     },
@@ -5663,23 +5814,26 @@ const EN = {
       lesson: [
         'When a piece repeats, you can write it just once!',
         'Build the ★ Function with the steps. Each ★ block does everything inside it.',
-        'First build the function up top. Then use the ★ block in your program.',
+        'First build the function up top. Then use the ★ block in your program: without it, the function never runs.',
       ],
       challenges: {
         'f5-c1': {
           title: 'The magic block',
           goal: 'Make a function and reach the flag with only 5 blocks.',
           hints: ['The path repeats: Walk, Walk, Jump.', 'Function: Walk, Walk, Jump. Program: ★ and ★.'],
+          nudges: ['The path has a piece that shows up more than once.', 'Put the repeating piece in the ★ Function and call it as many times as you need.'],
         },
         'f5-c2': {
           title: 'Sonja\'s staircase',
           goal: 'Climb the stairs using 7 blocks at most.',
           hints: ['Every step is the same: walk, turn, walk, turn.', 'Function: Walk, Turn right, Walk, Turn left. Use ★ three times.'],
+          nudges: ['Are the steps alike? What does Bit do on one step?', 'Build one step in the ★ Function. How many ★ do you need?'],
         },
         'f5-c3': {
           title: 'Hidden pattern',
           goal: 'Find the piece that repeats and use 8 blocks at most.',
           hints: ['Before and after each turn, Bit does: Walk, Jump, Walk.', 'Function: Walk, Jump, Walk. Program: ★, Turn right, ★, Turn left, ★.'],
+          nudges: ['Forget the turns for a moment: what does Bit do between them?', 'The piece between the turns goes in the ★ Function. The turns stay in the program.'],
         },
       },
     },
@@ -5699,16 +5853,19 @@ const EN = {
           title: 'Maze of rules',
           goal: 'Make the rules that take Bit through the whole maze.',
           hints: ['You\'ll need one rule for rocks and another for walls.', 'IF rock → Jump. IF wall → Turn right.'],
+          nudges: ['What kinds of obstacles are in this maze?', 'Each kind of obstacle needs its own rule.'],
         },
         'f6-c2': {
           title: 'Around the plaza',
           goal: 'Go around the rocks using only 4 blocks.',
           hints: ['Walk, Jump, Turn... and again. How many times?', 'Repeat 3× [Walk, Jump, Turn right].'],
+          nudges: ['Follow the loop with your finger. Do you notice a move that repeats?', 'Find the piece that repeats and count how many times it shows up.'],
         },
         'f6-c3': {
           title: 'Final challenge',
           goal: 'Use a function inside the Repeat. 8 blocks at most!',
           hints: ['The piece Walk, Jump, Walk shows up 4 times, with turns between them.', 'Function: Walk, Jump, Walk. Program: Repeat 2× [★, Turn right, ★, Turn left].'],
+          nudges: ['There are two repetitions here: a small piece and a bigger pattern.', 'The small piece goes in the ★ Function. The bigger pattern, with the turns, goes in the Repeat.'],
         },
       },
     },
@@ -5843,7 +6000,7 @@ const EN = {
       items: [
         ['Run', 'starts your program'],
         ['Block with "!"', 'shows where Bit went wrong'],
-        ['Hint', 'ask for help when you\'re stuck'],
+        ['Hint', 'Medium: 3 free, Hard: 2; then 15 coins'],
         ['Try again', 'your program is still there'],
       ],
     },
@@ -5865,6 +6022,15 @@ const EN = {
         ['Coins', `${REWARDS.coinsPerStar} per star, +${REWARDS.faseBonusCoins} per stage`],
         ['Streak', 'play every day to make it grow'],
         ['Medals', 'special achievements'],
+      ],
+    },
+    coins: {
+      title: 'How to use coins',
+      text: 'You earn coins by winning challenges. Use them to buy things that help you and decorate the game:',
+      items: [
+        ['New colors', `${PALETTE_PRICES.min} to ${PALETTE_PRICES.max} coins, in Settings (each color brings a song)`],
+        ['Energy', `${ECONOMY.energyRefillPrice} coins fill the whole bar`],
+        ['Extra hints', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} coins each, once the free ones run out (Medium and Hard)`],
       ],
     },
     mentors: {
@@ -5904,6 +6070,7 @@ const EN = {
       empty: { title: 'Your program is empty', hint: 'Tap the commands down below to build the path.' },
       empty_loop: { title: 'The Repeat is empty', hint: 'Put at least one command inside the Repeat.' },
       empty_function: { title: 'The function is empty', hint: 'Put commands inside the ★ Function before using it.' },
+      function_not_called: { title: 'The function was never called', hint: 'A function only runs when a ★ block calls it. Put a ★ in the program.' },
       incomplete_rule: { title: 'The rule isn\'t finished', hint: 'Every rule needs an IF and a THEN.' },
       too_many_blocks: { title: 'Too many blocks!', hint: 'Use Repeat to write less.' },
       edge: { title: 'Bit almost fell off the map!', hint: 'Count the squares to the flag.' },
@@ -5933,7 +6100,8 @@ return { EN };
 __m["src/content/locales/es.js"] = (() => {
 const { ENERGY_MAX, ENERGY_REGEN_MS } = __m["src/domain/energy.js"];
 const { REWARDS } = __m["src/domain/scoring.js"];
-const { ECONOMY } = __m["src/content/palettes.js"];
+const { DIFFICULTIES } = __m["src/content/difficulty.js"];
+const { ECONOMY, PALETTE_PRICES } = __m["src/content/palettes.js"];
 /** Spanish translation of the game content. Ids mirror the Portuguese source. */
 const ES = {
   fases: {
@@ -5953,16 +6121,19 @@ const ES = {
           title: 'Primeros pasos',
           goal: 'Lleva a Bit hasta la bandera.',
           hints: ['Cuenta los cuadritos entre Bit y la bandera.', 'Son 3 pasos hacia adelante: Caminar, Caminar, Caminar.'],
+          nudges: ['¿Hacia dónde mira Bit? ¿Y dónde está la bandera?', 'Cada Caminar mueve a Bit una casilla hacia adelante. Cuenta las casillas.'],
         },
         'f1-c2': {
           title: 'La curva',
           goal: 'La bandera está después de la curva.',
           hints: ['Bit tiene que girar antes del árbol.', 'Camina 2, gira a la derecha y camina 2 más.'],
+          nudges: ['Algo bloquea el camino recto. ¿Dónde tiene que cambiar de dirección Bit?', 'Observa en qué casilla dobla el camino antes del árbol.'],
         },
         'f1-c3': {
           title: 'Piedra en el camino',
           goal: 'Pasa la piedra y llega a la bandera.',
           hints: ['Las piedras son bajitas: puedes Saltar por encima.', 'Camina, salta la piedra, gira a la izquierda y camina 2.'],
+          nudges: ['No todos los obstáculos hay que rodearlos.', 'Las piedras son bajitas. Y después de la piedra, ¿hacia qué lado está la bandera?'],
         },
       },
     },
@@ -5982,16 +6153,19 @@ const ES = {
           title: 'Salta las piedras',
           goal: 'Crea una regla para pasar las piedras.',
           hints: ['Elige el SI: ¿qué ve Bit adelante?', 'SI piedra adelante, ENTONCES saltar.'],
+          nudges: ['¿Qué aparece en el camino y hace que Bit se detenga?', 'Una regla dice: SI Bit ve algo, ENTONCES hace algo. ¿Qué ve aquí?'],
         },
         'f2-c2': {
           title: 'Esquiva las paredes',
           goal: 'Enséñale a Bit a tomar las curvas solo.',
           hints: ['¿Qué hacer cuando aparece una pared?', 'Mira hacia dónde sigue el camino: la curva es a la derecha.'],
+          nudges: ['Sigue el camino con el dedo. ¿Qué pasa en cada esquina?', '¿En todas las esquinas la curva es hacia el mismo lado?'],
         },
         'f2-c3': {
           title: 'Dos mapas',
           goal: 'Las mismas reglas tienen que ganar en los 2 mapas.',
           hints: ['Vas a necesitar dos reglas: una para piedras y otra para paredes.', 'SI piedra → saltar. SI pared → girar a la derecha.'],
+          nudges: ['Compara los dos mapas: ¿qué obstáculos aparecen en cada uno?', 'Una sola regla no lo resuelve todo. ¿Cuántas situaciones diferentes hay?'],
         },
       },
     },
@@ -6011,17 +6185,20 @@ const ES = {
           title: 'Pasillo largo',
           goal: 'Llega a la bandera usando solo 2 bloques.',
           hints: ['Pon el bloque Repetir y un Caminar dentro de él.', 'Toca el ×2 para cambiar cuántas veces repetir. ¡Cuenta las casillas!'],
+          nudges: ['Bit hace lo mismo varias veces seguidas. ¿Qué bloque evita escribirlo todo de nuevo?', 'Dentro del Repetir va lo que se repite. El número dice cuántas veces.'],
           successMessage: '¡Acabas de crear un loop! Te permite repetir una acción muchas veces sin tener que escribir el mismo comando.',
         },
         'f3-c2': {
           title: 'Escalera',
           goal: 'Sube la escalera con 5 bloques como máximo.',
           hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Repetir 3× [Caminar, Girar ↺, Caminar, Girar ↻].'],
+          nudges: ['Mira los escalones: ¿cada uno es diferente o igual?', 'Descubre los pasos de un solo escalón. Después cuenta los escalones.'],
         },
         'f3-c3': {
           title: 'Saltos con ritmo',
           goal: 'Encuentra el patrón y usa solo 3 bloques.',
           hints: ['Antes de cada piedra hay un suelo libre. ¿Cuál es el patrón?', 'Repetir 3× [Caminar, Saltar].'],
+          nudges: ['Observa el espacio entre las piedras. ¿Cambia?', 'Busca el pedazo más pequeño que se repite hasta la bandera.'],
         },
       },
     },
@@ -6034,23 +6211,26 @@ const ES = {
       lesson: [
         'No todos los programas funcionan a la primera. Un error en un programa se llama bug.',
         'Este programa tiene un paso de más. Ejecútalo y encuentra el bloque culpable.',
-        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla.',
+        'Arregla solo lo que está mal: quita un bloque, cambia un número o cambia una regla. Al quitar un bloque, el siguiente que elijas entra en su lugar.',
       ],
       challenges: {
         'f4-c1': {
           title: 'Un paso de más',
           goal: 'El programa tiene un bug. Arréglalo y lleva a Bit hasta la bandera.',
           hints: ['Ejecuta el programa: ¿en qué bloque choca Bit con el árbol?', 'Hay un Caminar de más antes de Girar. Tócalo para quitarlo.'],
+          nudges: ['Ejecuta el programa y observa: ¿en qué momento le va mal a Bit?', 'El bloque marcado con ! muestra dónde aparece el error. ¿Está sobrando?'],
         },
         'f4-c2': {
           title: 'Cuenta equivocada',
           goal: 'El Repetir está contando mal. Arregla el número.',
           hints: ['Bit se detiene antes de la bandera. ¿Cuántas casillas faltan?', 'Cuenta las casillas hasta la bandera y toca el número del Repetir hasta llegar a él.'],
+          nudges: ['Ejecútalo y mira dónde se detiene Bit. ¿Falta o sobra camino?', 'Los bloques están bien. Lo que está mal es la cuenta.'],
         },
         'f4-c3': {
           title: 'Regla cambiada',
           goal: 'Una de las reglas está mal. Descubre cuál y arréglala.',
           hints: ['La regla de la piedra funciona. Mira la regla de la pared.', 'El camino gira a la derecha. Toca el ENTONCES de la regla de la pared y elige Girar der.'],
+          nudges: ['Ejecútalo y observa: ¿qué obstáculo no logra resolver Bit?', 'Cuando se usa la regla de la pared, ¿hacia qué lado sigue el camino?'],
         },
       },
     },
@@ -6063,23 +6243,26 @@ const ES = {
       lesson: [
         '¡Cuando un pedazo se repite, puedes escribirlo una sola vez!',
         'Arma la ★ Función con los pasos. Cada bloque ★ hace todo lo que tiene adentro.',
-        'Primero arma la función arriba. Después usa el bloque ★ en el programa.',
+        'Primero arma la función arriba. Después usa el bloque ★ en el programa: sin él, la función nunca se ejecuta.',
       ],
       challenges: {
         'f5-c1': {
           title: 'El bloque mágico',
           goal: 'Crea una función y llega a la bandera con solo 5 bloques.',
           hints: ['El camino se repite: Caminar, Caminar, Saltar.', 'Función: Caminar, Caminar, Saltar. Programa: ★ y ★.'],
+          nudges: ['El camino tiene un pedazo que aparece más de una vez.', 'Pon en la ★ Función el pedazo que se repite y llámala las veces que necesites.'],
         },
         'f5-c2': {
           title: 'La escalera de Sonja',
           goal: 'Sube la escalera con 7 bloques como máximo.',
           hints: ['Cada escalón es igual: caminar, girar, caminar, girar.', 'Función: Caminar, Girar der., Caminar, Girar izq. Usa ★ tres veces.'],
+          nudges: ['¿Los escalones se parecen? ¿Qué hace Bit en un escalón?', 'Arma un escalón en la ★ Función. ¿Cuántos ★ necesitas?'],
         },
         'f5-c3': {
           title: 'Patrón escondido',
           goal: 'Encuentra el pedazo que se repite y usa 8 bloques como máximo.',
           hints: ['Antes y después de cada curva, Bit hace: Caminar, Saltar, Caminar.', 'Función: Caminar, Saltar, Caminar. Programa: ★, Girar der., ★, Girar izq., ★.'],
+          nudges: ['Olvida las curvas por un momento: ¿qué hace Bit entre ellas?', 'El pedazo entre las curvas va en la ★ Función. Las curvas quedan en el programa.'],
         },
       },
     },
@@ -6099,16 +6282,19 @@ const ES = {
           title: 'Laberinto de reglas',
           goal: 'Crea las reglas que llevan a Bit por todo el laberinto.',
           hints: ['Vas a necesitar una regla para piedras y otra para paredes.', 'SI piedra → Saltar. SI pared → Girar der.'],
+          nudges: ['¿Qué tipos de obstáculos hay en este laberinto?', 'Cada tipo de obstáculo necesita su propia regla.'],
         },
         'f6-c2': {
           title: 'Vuelta a la plaza',
           goal: 'Da la vuelta a las piedras usando solo 4 bloques.',
           hints: ['Caminar, Saltar, Girar... y otra vez. ¿Cuántas veces?', 'Repetir 3× [Caminar, Saltar, Girar der.].'],
+          nudges: ['Sigue la vuelta con el dedo. ¿Notas un movimiento que se repite?', 'Busca el pedazo que se repite y cuenta cuántas veces aparece.'],
         },
         'f6-c3': {
           title: 'Desafío final',
           goal: 'Usa una función dentro del Repetir. ¡8 bloques como máximo!',
           hints: ['El pedazo Caminar, Saltar, Caminar aparece 4 veces, con curvas entre ellos.', 'Función: Caminar, Saltar, Caminar. Programa: Repetir 2× [★, Girar der., ★, Girar izq.].'],
+          nudges: ['Aquí hay dos repeticiones: un pedazo pequeño y un patrón más grande.', 'El pedazo pequeño va en la ★ Función. El patrón grande, con las curvas, va en el Repetir.'],
         },
       },
     },
@@ -6239,7 +6425,7 @@ const ES = {
       items: [
         ['Ejecutar', 'pone en marcha tu programa'],
         ['Bloque con "!"', 'muestra dónde se equivocó Bit'],
-        ['Pista', 'pide ayuda cuando te trabes'],
+        ['Pista', 'Medio: 3 gratis, Difícil: 2; luego 15 monedas'],
         ['Intentar de nuevo', 'tu programa sigue ahí'],
       ],
     },
@@ -6261,6 +6447,15 @@ const ES = {
         ['Monedas', `${REWARDS.coinsPerStar} por estrella, +${REWARDS.faseBonusCoins} por fase`],
         ['Racha', 'juega todos los días para aumentarla'],
         ['Medallas', 'logros especiales'],
+      ],
+    },
+    coins: {
+      title: 'Cómo usar las monedas',
+      text: 'Ganas monedas al vencer desafíos. Sirven para comprar cosas que ayudan y adornan el juego:',
+      items: [
+        ['Colores nuevos', `${PALETTE_PRICES.min} a ${PALETTE_PRICES.max} monedas, en Ajustes (cada color trae una canción)`],
+        ['Energía', `${ECONOMY.energyRefillPrice} monedas llenan toda la barra`],
+        ['Pistas extra', `${DIFFICULTIES.find((d) => d.hintPrice).hintPrice} monedas cada una, cuando se acaban las gratis (Medio y Difícil)`],
       ],
     },
     mentors: {
@@ -6299,6 +6494,7 @@ const ES = {
       empty: { title: 'Tu programa está vacío', hint: 'Toca los comandos de abajo para armar el camino.' },
       empty_loop: { title: 'El Repetir está vacío', hint: 'Pon al menos un comando dentro del Repetir.' },
       empty_function: { title: 'La función está vacía', hint: 'Pon comandos dentro de la ★ Función antes de usarla.' },
+      function_not_called: { title: 'La función no fue llamada', hint: 'Una función solo se ejecuta cuando un bloque ★ la llama. Pon un ★ en el programa.' },
       incomplete_rule: { title: 'Falta completar la regla', hint: 'Cada regla necesita un SI y un ENTONCES.' },
       too_many_blocks: { title: '¡Demasiados bloques!', hint: 'Usa Repetir para escribir menos.' },
       edge: { title: '¡Bit casi se sale del mapa!', hint: 'Cuenta los cuadritos hasta la bandera.' },
@@ -6346,7 +6542,7 @@ function localizeFase(fase, t = {}) {
     lesson: fase.lesson.map((slide, i) => ({ ...slide, text: t.lesson?.[i] ?? slide.text })),
     challenges: fase.challenges.map((c) => {
       const ct = t.challenges?.[c.id] ?? {};
-      return { ...c, ...pickText(c, ct, ['title', 'goal', 'hints', 'successMessage']) };
+      return { ...c, ...pickText(c, ct, ['title', 'goal', 'hints', 'nudges', 'successMessage']) };
     }),
   };
 }
@@ -6437,8 +6633,14 @@ __m["src/infrastructure/audio/ChiptuneAudio.js"] = (() => {
 const { noteToFreq } = __m["src/infrastructure/audio/notes.js"];
 /**
  * Web Audio synthesiser. Implements the audio port used by the presentation:
- *   unlock(), play(id), playSong(id), stopMusic(), setSfxEnabled(b), setMusicEnabled(b)
+ *   unlock(), play(id), playSong(id), stopJingles(), stopMusic(), setSfxEnabled(b), setMusicEnabled(b)
  * Silently becomes a no-op where Web Audio is unavailable.
+ *
+ * Phones and tablets suspend (or "interrupt") the audio context when the screen
+ * sleeps, the tab hides or the device sits idle, and only resume it inside a
+ * touch. So every touch calls unlock(): it wakes the context, or builds a new
+ * one when the old one refuses to come back. The background loop only runs
+ * while the context is running and restarts fresh when it wakes up.
  */
 class ChiptuneAudio {
   constructor({ sfx, songs, AudioContextImpl = globalThis.AudioContext || globalThis.webkitAudioContext }) {
@@ -6446,63 +6648,129 @@ class ChiptuneAudio {
     this.songs = songs;
     this.AudioContextImpl = AudioContextImpl;
     this.ctx = null;
+    this.stale = false;
     this.sfxEnabled = true;
     this.musicEnabled = true;
     this.music = { id: null, voices: [], timer: null };
+    this.jingle = [];
+    this.lastPlayed = {};
     this.wantedSong = null;
   }
 
+  /** Call from inside every user gesture: creates, wakes or rebuilds the context. */
   unlock() {
     if (!this.AudioContextImpl) return;
-    if (!this.ctx) {
-      this.ctx = new this.AudioContextImpl();
-      this.master = this.ctx.createGain();
-      this.master.gain.value = 0.9;
-      this.master.connect(this.ctx.destination);
+    if (!this.ctx || this.stale || this.ctx.state === 'closed') this.createContext();
+    const ctx = this.ctx;
+    if (ctx.state !== 'running') {
+      ctx.resume?.().catch(() => {});
+      // A context that is still not running after a touch is stuck (seen on tablets after
+      // a long idle): the next touch replaces it with a new one.
+      setTimeout(() => {
+        if (this.ctx === ctx && ctx.state !== 'running') this.stale = true;
+      }, 400);
     }
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    if (this.wantedSong && !this.music.id) this.playSong(this.wantedSong);
+    this.primeSpeaker();
+    if (ctx.state === 'running') this.ensureMusic();
+  }
+
+  createContext() {
+    const old = this.ctx;
+    this.stopLoop();
+    this.stopJingles();
+    this.stale = false;
+    this.ctx = new this.AudioContextImpl();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.9;
+    this.master.connect(this.ctx.destination);
+    this.ctx.onstatechange = () => this.onStateChange(this.ctx);
+    if (old && old.state !== 'closed') old.close?.().catch(() => {});
+  }
+
+  /** iOS/iPadOS only open the speaker after a sound starts inside a touch: play one silent sample. */
+  primeSpeaker() {
+    try {
+      const source = this.ctx.createBufferSource();
+      source.buffer = this.ctx.createBuffer(1, 1, 22050);
+      source.connect(this.ctx.destination);
+      source.start(0);
+    } catch {
+      /* not needed on this browser */
+    }
+  }
+
+  onStateChange(ctx) {
+    if (ctx !== this.ctx) return;
+    if (ctx.state === 'running') {
+      this.stale = false;
+      this.ensureMusic();
+    } else {
+      // Frozen clock: drop the scheduled loop so it does not pile up; it restarts on resume.
+      this.stopLoop();
+    }
+  }
+
+  /** Starts the wanted background song if it should be playing and is not. */
+  ensureMusic() {
+    if (this.wantedSong && this.musicEnabled && !this.music.id) this.playSong(this.wantedSong);
   }
 
   get ready() {
-    return Boolean(this.ctx && this.ctx.state !== 'closed');
+    return Boolean(this.ctx && this.ctx.state === 'running');
   }
 
   setSfxEnabled(enabled) {
     this.sfxEnabled = enabled;
+    if (!enabled) this.stopJingles();
   }
 
   setMusicEnabled(enabled) {
     this.musicEnabled = enabled;
     if (!enabled) this.stopLoop();
-    else if (this.wantedSong) this.playSong(this.wantedSong);
+    else this.ensureMusic();
   }
 
   play(id) {
     const sound = this.sfx[id];
-    if (!sound || !this.sfxEnabled || !this.ready) return;
-    // Phones suspend audio when the screen locks or the tab hides; wake it up again.
-    if (this.ctx.state !== 'running') this.ctx.resume?.();
-    let t = this.ctx.currentTime + 0.005;
+    if (!sound || !this.sfxEnabled) return;
+    if (!this.ready) {
+      this.ctx?.resume?.().catch(() => {});
+      return;
+    }
+    // The same effect fired again within a few ms only stacks volume: play it once.
+    const now = this.ctx.currentTime;
+    if (now - (this.lastPlayed[id] ?? -1) < 0.06) return;
+    this.lastPlayed[id] = now;
+    let t = now + 0.005;
     for (const [note, duration] of sound.notes) {
       this.tone({ freq: noteToFreq(note), start: t, duration, wave: sound.wave, gain: sound.gain, slideTo: sound.slideTo });
       t += duration;
     }
   }
 
-  /** Looping songs become the background track; one-shot songs (jingles) play over it. */
+  /**
+   * Looping songs become the background track; one-shot songs (jingles) play over it.
+   * A new jingle replaces the one still playing. Returns the jingle length in seconds (0 if silent).
+   */
   playSong(id) {
     const song = this.songs[id];
-    if (!song) return;
+    if (!song) return 0;
     if (song.loop) {
       this.wantedSong = id;
-      if (!this.musicEnabled || !this.ready || this.music.id === id) return;
+      if (!this.musicEnabled || !this.ready || this.music.id === id) return 0;
       this.stopLoop();
       this.music.id = id;
       this.scheduleLoop(song, this.ctx.currentTime + 0.05);
-    } else if (this.sfxEnabled && this.ready) {
-      this.scheduleSong(song, this.ctx.currentTime + 0.02, []);
+      return 0;
     }
+    if (!this.sfxEnabled || !this.ready) return 0;
+    this.stopJingles();
+    return this.scheduleSong(song, this.ctx.currentTime + 0.02, this.jingle);
+  }
+
+  /** Cuts the jingle still playing (leaving a screen must not carry its fanfare along). */
+  stopJingles() {
+    this.jingle.splice(0).forEach(stopOsc);
   }
 
   stopMusic() {
@@ -6512,13 +6780,7 @@ class ChiptuneAudio {
 
   stopLoop() {
     clearTimeout(this.music.timer);
-    this.music.voices.forEach((osc) => {
-      try {
-        osc.stop();
-      } catch {
-        /* already stopped */
-      }
-    });
+    this.music.voices.forEach(stopOsc);
     this.music = { id: null, voices: [], timer: null };
   }
 
@@ -6526,8 +6788,11 @@ class ChiptuneAudio {
     const length = this.scheduleSong(song, startAt, this.music.voices);
     const delayMs = (startAt + length - this.ctx.currentTime - 0.25) * 1000;
     this.music.timer = setTimeout(() => {
+      if (!this.music.id) return;
+      if (!this.ready) return this.stopLoop(); // restarted by onStateChange/unlock
       this.music.voices = [];
-      if (this.music.id) this.scheduleLoop(song, startAt + length);
+      // A late timer (busy or throttled tab) must not schedule notes in the past, which would play all at once.
+      this.scheduleLoop(song, Math.max(startAt + length, this.ctx.currentTime + 0.05));
     }, Math.max(0, delayMs));
   }
 
@@ -6565,6 +6830,14 @@ class ChiptuneAudio {
     osc.start(start);
     osc.stop(start + duration + 0.02);
     return osc;
+  }
+}
+
+function stopOsc(osc) {
+  try {
+    osc.stop();
+  } catch {
+    /* already stopped */
   }
 }
 
@@ -6885,6 +7158,7 @@ class App {
     const ScreenClass = this.screens[name];
     if (!ScreenClass) throw new Error(`Tela desconhecida: ${name}`);
     this.current?.unmount();
+    this.bus.emit('screen:leaving', { name: this.currentName });
 
     const root = h('div', { class: `scr scr--${name}` });
     // Screens append optional parts as `cond ? node : null`; skip the empty ones (like h() does)
@@ -6930,6 +7204,8 @@ class AudioDirector {
   start() {
     this.bus.on('sfx', (id) => id && this.audio.play(id));
     this.bus.on('song', (id) => this.audio.playSong(id));
+    // The previous screen's fanfare stops before the new screen plays anything.
+    this.bus.on('screen:leaving', () => this.audio.stopJingles?.());
     this.bus.on('screen:changed', ({ music }) => (music ? this.audio.playSong(this.resolveSong(music)) : this.audio.stopMusic()));
     const sync = ({ settings }) => {
       this.audio.setSfxEnabled(settings.sfx);
@@ -7289,9 +7565,9 @@ const EN = {
   'difficulty.easy.3': 'Hint on screen, answer after 2 tries',
   'difficulty.medium.1': 'Each mistake costs 1 energy',
   'difficulty.medium.2': 'Winning gives 1 energy back',
-  'difficulty.medium.3': 'Hints always available',
+  'difficulty.medium.3': 'Subtle hints: 3 free, then 15 coins',
   'difficulty.hard.1': 'Use the fewest blocks possible',
-  'difficulty.hard.2': 'Hint only after 2 tries',
+  'difficulty.hard.2': 'Hints after 2 misses: 2 free, then 15 coins',
   'difficulty.hard.3': '+50% XP and coins',
   'difficulty.current': 'Difficulty: {name}',
   'settings.difficulty': 'Difficulty',
@@ -7334,6 +7610,20 @@ const EN = {
   'challenge.answerShown': 'Done! Now tap Run.',
   'world.trees': 'trees',
   'world.walls': 'walls',
+  'challenge.debugTip': 'The bug is near the block with !. Remove what\'s extra, swap what\'s wrong or change a number.',
+  'challenge.debugRulesTip': 'The bug is in one of the rules. Look at what Bit did at the marked step and change what\'s wrong.',
+  'challenge.fnCalled': 'The ★ blocks are already in the program: they call the function. Without a ★, the function never runs! Build the ★ Function up top.',
+  'hint.freeLeft.one': '{n} free hint left in this challenge.',
+  'hint.freeLeft.other': '{n} free hints left in this challenge.',
+  'hint.paidNote': 'You spent {price} coins on this hint.',
+  'hint.buyTitle': 'Extra hint',
+  'hint.buyText': 'The free hints for this challenge are used up. One more hint costs {price} coins. You have {coins}.',
+  'hint.buy': 'Use {price} coins',
+  'hint.noCoinsTitle': 'Not enough coins',
+  'hint.noCoinsText': 'One more hint costs {price} coins and you have {coins}. Win challenges to earn coins!',
+  'hint.badgeAria': '{n} free hints',
+  'common.notNow': 'Not now',
+  'hint.lastFree': 'That was the last free hint. The next ones cost {price} coins.',
 };
 
 return { EN };
@@ -7572,9 +7862,9 @@ const ES = {
   'difficulty.easy.3': 'Pista en pantalla y respuesta tras 2 errores',
   'difficulty.medium.1': 'Cada error gasta 1 de energía',
   'difficulty.medium.2': 'Ganar te devuelve 1 de energía',
-  'difficulty.medium.3': 'Pistas siempre disponibles',
+  'difficulty.medium.3': 'Pistas sutiles: 3 gratis, luego 15 monedas',
   'difficulty.hard.1': 'Usa la menor cantidad de bloques',
-  'difficulty.hard.2': 'Pista solo después de 2 intentos',
+  'difficulty.hard.2': 'Pistas tras 2 errores: 2 gratis, luego 15 monedas',
   'difficulty.hard.3': '+50% de XP y monedas',
   'difficulty.current': 'Dificultad: {name}',
   'settings.difficulty': 'Dificultad',
@@ -7617,6 +7907,20 @@ const ES = {
   'challenge.answerShown': '¡Listo! Ahora toca Ejecutar.',
   'world.trees': 'árboles',
   'world.walls': 'paredes',
+  'challenge.debugTip': 'El bug está cerca del bloque con !. Quita lo que sobra, cambia lo que está mal o cambia un número.',
+  'challenge.debugRulesTip': 'El bug está en una de las reglas. Mira lo que hizo Bit en el paso marcado y cambia lo que esté mal.',
+  'challenge.fnCalled': 'Los bloques ★ ya están en el programa: ellos llaman a la función. ¡Sin un ★, la función nunca se ejecuta! Arma la ★ Función arriba.',
+  'hint.freeLeft.one': 'Te queda {n} pista gratis en este desafío.',
+  'hint.freeLeft.other': 'Te quedan {n} pistas gratis en este desafío.',
+  'hint.paidNote': 'Usaste {price} monedas en esta pista.',
+  'hint.buyTitle': 'Pista extra',
+  'hint.buyText': 'Las pistas gratis de este desafío se acabaron. Otra pista cuesta {price} monedas. Tienes {coins}.',
+  'hint.buy': 'Usar {price} monedas',
+  'hint.noCoinsTitle': 'Monedas insuficientes',
+  'hint.noCoinsText': 'Otra pista cuesta {price} monedas y tienes {coins}. ¡Gana desafíos para conseguir monedas!',
+  'hint.badgeAria': '{n} pistas gratis',
+  'common.notNow': 'Ahora no',
+  'hint.lastFree': 'Esa fue la última pista gratis. Las siguientes cuestan {price} monedas.',
 };
 
 return { ES };
@@ -7855,9 +8159,9 @@ const PT = {
   'difficulty.easy.3': 'Dica na tela e resposta após 2 erros',
   'difficulty.medium.1': 'Cada erro gasta 1 energia',
   'difficulty.medium.2': 'Vencer devolve 1 energia',
-  'difficulty.medium.3': 'Dicas sempre liberadas',
+  'difficulty.medium.3': 'Dicas sutis: 3 grátis, depois 15 moedas',
   'difficulty.hard.1': 'Use o menor número de blocos',
-  'difficulty.hard.2': 'Dica só depois de 2 tentativas',
+  'difficulty.hard.2': 'Dicas após 2 erros: 2 grátis, depois 15 moedas',
   'difficulty.hard.3': '+50% de XP e moedas',
   'difficulty.current': 'Dificuldade: {name}',
   'settings.difficulty': 'Dificuldade',
@@ -7900,6 +8204,20 @@ const PT = {
   'challenge.answerShown': 'Pronto! Agora toque em Executar.',
   'world.trees': 'árvores',
   'world.walls': 'paredes',
+  'challenge.debugTip': 'O bug está perto do bloco com !. Tire o que sobra, troque o que está errado ou mude um número.',
+  'challenge.debugRulesTip': 'O bug está em uma das regras. Veja o que o Bit fez no passo marcado e troque o que estiver errado.',
+  'challenge.fnCalled': 'Os blocos ★ já estão no programa: são eles que chamam a função. Sem um ★, a função nunca roda! Monte a ★ Função lá em cima.',
+  'hint.freeLeft.one': 'Resta {n} dica grátis neste desafio.',
+  'hint.freeLeft.other': 'Restam {n} dicas grátis neste desafio.',
+  'hint.paidNote': 'Você usou {price} moedas nesta dica.',
+  'hint.buyTitle': 'Dica extra',
+  'hint.buyText': 'As dicas grátis deste desafio acabaram. Mais uma dica custa {price} moedas. Você tem {coins}.',
+  'hint.buy': 'Usar {price} moedas',
+  'hint.noCoinsTitle': 'Moedas insuficientes',
+  'hint.noCoinsText': 'Mais uma dica custa {price} moedas e você tem {coins}. Vença desafios para ganhar moedas!',
+  'hint.badgeAria': '{n} dicas grátis',
+  'common.notNow': 'Agora não',
+  'hint.lastFree': 'Essa foi a última dica grátis. As próximas custam {price} moedas.',
 };
 
 return { PT };
@@ -8552,25 +8870,28 @@ const MAX_PROGRAM = 12;
 const LOOP_BODY_MAX = 4;
 
 /**
- * Editor for sequence challenges: tap palette → append block; tap block → remove;
- * Repetir captures the next blocks until closed. Debugging challenges start
+ * Editor for sequence challenges: tap palette → add block at the cursor; tap block → remove
+ * it, and the cursor stays in its place so the next block replaces it (fixing a bug in the
+ * middle never means deleting everything after it). Repetir captures the next blocks until closed. Debugging challenges start
  * from `challenge.start`; function challenges (`functionMax`) add a ★ Função
  * frame on top whose body is filled the same way. Same interface as RuleEditor.
  */
 class SequenceEditor {
-  constructor({ challenge, sfx }) {
+  constructor({ challenge, sfx, prefill = null }) {
     this.challenge = challenge;
     this.sfx = sfx;
-    this.nodes = structuredClone(challenge.start ?? []);
+    this.nodes = structuredClone(challenge.start ?? prefill ?? []);
     // ★ Função: always present, filled first (the cursor starts inside it).
     this.def = challenge.functionMax ? fn([]) : null;
     this.target = this.def?.id ?? null;
+    // Where the next top-level block goes: an index into `nodes`, or null for the end.
+    this.insertAt = null;
     this.locked = false;
     this.onChange = () => {};
     this.limit = challenge.maxBlocks ?? MAX_PROGRAM;
 
     this.counter = h('span', { class: 'program__count', 'aria-live': 'polite' });
-    this.list = h('div', { class: 'program__list', role: 'list' });
+    this.list = h('div', { class: 'program__list', role: 'list', onClick: (event) => event.target === this.list && this.cursorToEnd() });
     this.programEl = h('section', { class: 'program', 'aria-label': t('seq.title') },
       h('header', { class: 'program__head' }, h('span', {}, t('seq.title')), challenge.start ? bugBadge() : null, this.counter), this.list);
     this.paletteButtons = challenge.palette.map((id) => h('button', {
@@ -8621,24 +8942,43 @@ class SequenceEditor {
     const make = () => (commandId === 'call' ? call() : cmd(commandId));
     if (commandId === 'repeat') {
       const node = repeat(REPEAT_LIMITS.min, []);
-      this.nodes.push(node);
+      this.insertTop(node);
       this.target = node.id;
     } else if (this.loop) {
       this.loop.body.push(make());
       if (this.loop.body.length >= this.bodyMax) this.target = null;
     } else {
-      this.nodes.push(make());
+      this.insertTop(make());
     }
     this.sfx('place');
     this.changed();
   }
 
-  remove(nodeId) {
+  /** Puts a block at the cursor; the cursor moves past it (back to the end once it gets there). */
+  insertTop(node) {
+    if (this.insertAt == null) return this.nodes.push(node);
+    this.nodes.splice(this.insertAt, 0, node);
+    this.insertAt += 1;
+    if (this.insertAt >= this.nodes.length) this.insertAt = null;
+  }
+
+  /** Tapping the empty part of the program moves the cursor back to the end. */
+  cursorToEnd() {
+    if (this.locked || this.insertAt == null) return;
+    this.insertAt = null;
+    this.sfx('move');
+    this.render();
+  }
+
+  remove(nodeId, { keepPlace = true } = {}) {
     if (this.locked) return;
     const index = this.nodes.findIndex((n) => n.id === nodeId);
     if (index >= 0) {
       if (this.target === nodeId) this.target = null;
       this.nodes.splice(index, 1);
+      // The hole stays open: the next block chosen goes right there.
+      this.insertAt = keepPlace && index < this.nodes.length ? index : null;
+      if (this.insertAt != null) this.target = null; // an open Repetir/★ would take the next block instead
     } else {
       [this.def, ...this.nodes].forEach((n) => n && n.body && (n.body = n.body.filter((b) => b.id !== nodeId)));
     }
@@ -8648,6 +8988,7 @@ class SequenceEditor {
 
   /** B button: undo the last placed block. */
   removeLast() {
+    this.insertAt = null;
     if (this.nodes.length === 0 && this.def?.body.length) return this.remove(this.def.body.at(-1).id);
     const loop = this.loop;
     if (loop?.body.length) return this.remove(loop.body.at(-1).id);
@@ -8657,7 +8998,7 @@ class SequenceEditor {
       this.target = last.id;
       return this.remove(last.body.at(-1).id);
     }
-    return this.remove(last.id);
+    return this.remove(last.id, { keepPlace: false });
   }
 
   /** Replaces everything with `program` (used by "Mostrar resposta" on easy). */
@@ -8668,6 +9009,7 @@ class SequenceEditor {
     if (this.def) this.def.body = def?.body ?? [];
     this.nodes = copy.filter((n) => n.type !== 'function');
     this.target = null;
+    this.insertAt = null;
     this.sfx('place');
     this.changed();
   }
@@ -8675,6 +9017,7 @@ class SequenceEditor {
   clear() {
     if (this.locked || this.isEmpty()) return;
     this.nodes = [];
+    this.insertAt = null;
     if (this.def) this.def.body = [];
     this.target = this.def?.id ?? null;
     this.sfx('remove');
@@ -8691,6 +9034,7 @@ class SequenceEditor {
   setTarget(nodeId) {
     if (this.locked) return;
     this.target = nodeId;
+    if (nodeId) this.insertAt = null;
     this.sfx('move');
     this.render();
   }
@@ -8725,7 +9069,7 @@ class SequenceEditor {
     this.paletteButtons.forEach((btn) => (btn.disabled = !this.canAdd(btn.dataset.command)));
 
     const items = this.nodes.map((node) => (node.type === 'repeat' ? this.renderLoop(node) : this.renderBlock(node)));
-    if (!this.loop && !this.locked) items.push(h('span', { class: 'cursor', 'aria-hidden': 'true' }));
+    if (!this.loop && !this.locked) items.splice(this.insertAt ?? items.length, 0, h('span', { class: `cursor ${this.insertAt != null ? 'cursor--mid' : ''}`, 'aria-hidden': 'true' }));
     if (this.nodes.length === 0 && !this.def) {
       items.unshift(h('p', { class: 'program__empty' }, t('seq.empty')));
     }
@@ -9673,7 +10017,11 @@ class ChallengeScreen extends Screen {
     this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.state = 'editing';
 
-    this.editor = createEditor(challenge, { sfx });
+    // Easy, function challenges: the ★ calls (and the turns between them) are already in the
+    // program, so the preview shows Bit's path as soon as the ★ Função gets its first block.
+    this.fnCallsReady = Boolean(this.session.difficulty.fnCallsReady && challenge.functionMax && !challenge.start);
+    const prefill = this.fnCallsReady ? challenge.solution.filter((n) => n.type !== 'function') : null;
+    this.editor = createEditor(challenge, { sfx, prefill });
     this.editor.onChange = () => this.onProgramChange();
     this.scenery = challenge.scenery ?? fase.scenery;
     this.obstacle = SCENERIES[this.scenery]?.obstacle ?? 'wall';
@@ -9689,7 +10037,8 @@ class ChallengeScreen extends Screen {
     this.track(() => this.views.forEach((view) => view.destroy()));
 
     this.energySlot = h('div', { class: 'challenge__energy' });
-    this.hintBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'));
+    this.hintBadge = h('span', { class: 'hint-badge' });
+    this.hintBtn = h('button', { class: 'iconbtn iconbtn--hint', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'), this.hintBadge);
     this.runBtn = h('button', { class: 'pbtn pbtn--primary pbtn--run', type: 'button', onClick: () => this.run() }, icon('play'), t('challenge.run'));
     this.clearBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.clear'), onClick: () => this.clearAll() }, icon('trash'));
     this.feedbackLayer = h('div', { class: 'feedback-layer' });
@@ -9709,13 +10058,14 @@ class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
-      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), challenge.hints[0]) : null,
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalled') : challenge.hints[0]) : null,
       h('div', { class: 'challenge__stage' }, stage),
       this.editor.programEl,
       this.controls,
     );
     this.views.forEach((view, i) => view.setWorld(challenge.maps[i]));
     this.renderEnergy();
+    this.renderHintBadge();
     this.onProgramChange();
     this.editor.paletteEl.querySelector('button:not([disabled])')?.setAttribute('data-autofocus', '');
   }
@@ -9810,12 +10160,14 @@ class ChallengeScreen extends Screen {
     // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
     const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
+    // Debugging challenges: point at the bug instead of suggesting a new block (which reads as "add one").
+    const debugTip = executed && this.challenge.start ? t(this.challenge.kind === 'rules' ? 'challenge.debugRulesTip' : 'challenge.debugTip') : null;
     const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
     this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= this.session.difficulty.hintPulse && !this.session.hintsLockedFor);
 
     const card = h('div', { class: 'feedback panel', role: 'alert' },
       h('div', { class: 'feedback__head' }, icon(executed ? 'bug' : 'hint', 'feedback__icon'), h('strong', {}, copy.title)),
-      h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
+      h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, debugTip ?? copy.hint),
       executed ? h('p', { class: 'feedback__note' }, energyLost ? [icon('energy'), ` ${t('challenge.energyLost')} `] : null, pick(encouragements)) : null,
       h('div', { class: 'feedback__actions' },
         this.answerAvailable ? h('button', { class: 'pbtn', type: 'button', onClick: () => this.showAnswer() }, icon('check'), t('challenge.answer'))
@@ -9841,6 +10193,15 @@ class ChallengeScreen extends Screen {
     this.updatePreview();
   }
 
+  /** Medium/Hard: how many free hints are left (a number), or a coin once they cost coins. */
+  renderHintBadge() {
+    const { freeLeft, cost } = this.session.hintStatus();
+    this.hintBadge.hidden = freeLeft == null;
+    this.hintBadge.replaceChildren(cost ? icon('coin') : String(freeLeft ?? ''));
+    this.hintBtn.setAttribute('aria-label', freeLeft == null ? t('challenge.hint')
+      : `${t('challenge.hint')}. ${cost ? t('hint.buyTitle') : t('hint.badgeAria', { n: freeLeft })}`);
+  }
+
   async showHint() {
     if (this.state === 'running') return;
     const lockedFor = this.session.hintsLockedFor;
@@ -9848,11 +10209,34 @@ class ChallengeScreen extends Screen {
       this.ctx.sfx('wrong');
       return this.ctx.toast.show({ title: t('challenge.hintLocked'), text: tn('challenge.hintLockedText', lockedFor), iconName: 'lock' });
     }
-    this.ctx.sfx('lesson');
+    const { cost, coins } = this.session.hintStatus();
+    if (cost > coins) {
+      this.ctx.sfx('wrong');
+      return this.ask({
+        title: t('hint.noCoinsTitle'),
+        body: h('p', {}, icon('coin'), ` ${t('hint.noCoinsText', { price: cost, coins })}`),
+        actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
+      });
+    }
+    if (cost) {
+      const buy = await this.ask({
+        title: t('hint.buyTitle'),
+        body: h('p', {}, icon('coin'), ` ${t('hint.buyText', { price: cost, coins })}`),
+        actions: [{ label: t('common.notNow'), value: false }, { label: t('hint.buy', { price: cost }), value: true, primary: true }],
+      });
+      if (!buy) return;
+    }
+    const hint = this.session.takeHint();
+    if (!hint.ok) return;
+    this.ctx.sfx(hint.paid ? 'coin' : 'lesson');
+    this.renderHintBadge();
+    const note = hint.paid ? t('hint.paidNote', { price: hint.paid })
+      : hint.freeLeft === 0 ? t('hint.lastFree', { price: hint.cost })
+        : hint.freeLeft != null ? tn('hint.freeLeft', hint.freeLeft) : null;
     await this.ask({
       title: t('challenge.hintTitle'),
       body: h('div', { class: 'hint' }, mentorPortrait(this.mentor.id, this.ctx.theme.colors, { scale: 3 }),
-        h('div', {}, h('strong', {}, this.mentor.name), h('p', {}, this.session.nextHint()))),
+        h('div', {}, h('strong', {}, this.mentor.name), h('p', {}, hint.text), note ? h('small', { class: 'hint__note' }, note) : null)),
       actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
     });
   }
@@ -10011,7 +10395,7 @@ class FinaleScreen extends Screen {
 
     if (first) {
       bus.emit('song', 'victory');
-      this.later(() => sfx('achievement'), 1400);
+      this.later(() => sfx('achievement'), 3900); // after the victory song, not over it
     }
     if (!reducedMotion()) this.startConfetti(first ? 260 : 90);
   }
@@ -10765,6 +11149,7 @@ class MentorUnlockScreen extends Screen {
           onClick: () => {
             game.selectMentor.execute(this.mentor.id);
             this.ctx.toast.show({ title: t('mentor.nowGuide', { name: this.mentor.name }), iconName: 'person' });
+            this.onBack(); // with the new guide, straight on to the next fase
           },
         }, icon('person'), t('mentor.choose')),
         h('button', { class: 'pbtn pbtn--primary', type: 'button', onClick: () => this.onBack() }, t('mentor.continue'))),
@@ -10791,6 +11176,10 @@ const { mentorPortrait } = __m["src/presentation/components/mentorViews.js"];
 const { icon } = __m["src/presentation/pixel/icons.js"];
 const { t } = __m["src/presentation/i18n/index.js"];
 const { h, pick, reducedMotion, tween } = __m["src/presentation/ui/dom.js"];
+// How long each jingle plays (soundBank: win = 3 beats at 200 bpm, victory = 10.5 beats at 168 bpm).
+// The stars and the counters wait for it, so the sounds come one after the other, never piled up.
+const JINGLE_MS = { win: 950, victory: 3800 };
+
 class ResultScreen extends Screen {
   get music() {
     return null;
@@ -10833,8 +11222,9 @@ class ResultScreen extends Screen {
           h('button', { class: 'pbtn pbtn--primary', type: 'button', 'data-autofocus': '', onClick: () => this.continue() }, this.continueLabel()))),
     );
 
-    this.ctx.bus.emit('song', outcome.faseCompleted ? 'victory' : 'win');
-    this.animate();
+    const jingle = outcome.faseCompleted ? 'victory' : 'win';
+    this.ctx.bus.emit('song', jingle);
+    this.animate(game.store.get().settings.sfx ? JINGLE_MS[jingle] : 0);
   }
 
   starTip(challenge) {
@@ -10856,10 +11246,12 @@ class ResultScreen extends Screen {
       h('p', {}, t('result.saved', { n: commandsExecuted - blocksUsed })));
   }
 
-  async animate() {
+  async animate(jingleMs) {
     const { stars, reward } = this.outcome;
     const fast = reducedMotion();
     const starEls = [...this.stars.querySelectorAll('.star')];
+    // `later` is cancelled when the screen closes, so nothing below plays on the next screen.
+    await new Promise((resolve) => this.later(resolve, jingleMs));
     for (let i = 0; i < stars; i += 1) {
       await new Promise((resolve) => this.later(resolve, fast ? 0 : 380));
       starEls[i].classList.add('is-on', 'is-pop');
@@ -10867,6 +11259,7 @@ class ResultScreen extends Screen {
     }
     this.stars.setAttribute('aria-label', t('stars.aria', { n: stars, max: 3 }));
     await this.countUp(this.xpEl, reward.xp, 'xp', fast);
+    if (!this.root.isConnected) return;
     await this.countUp(this.coinEl, reward.coins, 'coin', fast);
   }
 
@@ -10876,10 +11269,12 @@ class ResultScreen extends Screen {
       el.textContent = `+${value}`;
       return;
     }
+    // A few ticks while counting (at most 6), never after the screen has closed.
+    const step = Math.max(5, Math.ceil(value / 6 / 5) * 5);
     let last = -1;
     await tween(Math.min(900, 80 * value), (t) => {
       const shown = Math.round(value * t);
-      if (shown !== last && shown % 5 === 0) this.ctx.sfx(sound);
+      if (shown !== last && shown % step === 0 && this.root.isConnected) this.ctx.sfx(sound);
       last = shown;
       el.textContent = `+${shown}`;
     });
@@ -11117,6 +11512,14 @@ const buttons = Object.fromEntries(
 );
 const input = new InputController({ buttons, navigator: new FocusNavigator(), sfx, onFirstInteraction: () => audio.unlock() });
 input.attach();
+// Tablets only let audio start (or come back after sleeping) inside a real touch, and
+// some count only the end of the touch: wake the audio on every kind of gesture.
+for (const type of ['pointerup', 'touchend', 'click', 'keydown']) {
+  window.addEventListener(type, () => audio.unlock(), { capture: true, passive: true });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && audio.ctx) audio.ctx.resume?.().catch(() => {});
+});
 
 const app = new App({
   screenLayer: $('#screen'),

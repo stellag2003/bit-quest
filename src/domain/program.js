@@ -63,7 +63,7 @@ export function* flatten(nodes, loops = [], def = definitionIn(nodes)) {
 
 export function findSequenceProblem(nodes, def = definitionIn(nodes)) {
   const main = nodes.filter((node) => node.type !== 'function');
-  if (main.length === 0) return { code: 'empty', nodeId: null };
+  if (main.length === 0) return def?.body.length ? { code: 'function_not_called', nodeId: def.id } : { code: 'empty', nodeId: null };
   for (const node of main) {
     if (node.type === 'call' && !def?.body.length) return { code: 'empty_function', nodeId: def?.id ?? node.id };
     if (node.type !== 'repeat') continue;

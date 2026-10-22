@@ -16,6 +16,7 @@ export class App {
     const ScreenClass = this.screens[name];
     if (!ScreenClass) throw new Error(`Tela desconhecida: ${name}`);
     this.current?.unmount();
+    this.bus.emit('screen:leaving', { name: this.currentName });
 
     const root = h('div', { class: `scr scr--${name}` });
     // Screens append optional parts as `cond ? node : null`; skip the empty ones (like h() does)

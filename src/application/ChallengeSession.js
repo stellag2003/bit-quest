@@ -1,13 +1,13 @@
-/** One attempt-series at a challenge: counts failures (for stars) and cycles hints. */
+/** One attempt-series at a challenge: counts failures (for stars) and hands out hints. */
 export class ChallengeSession {
-  constructor({ fase, challenge, index, difficulty, submitProgram }) {
+  constructor({ fase, challenge, index, difficulty, submitProgram, hintBook }) {
     this.fase = fase;
     this.challenge = challenge;
     this.index = index;
     this.difficulty = difficulty;
     this.submitProgram = submitProgram;
+    this.hintBook = hintBook;
     this.failures = 0;
-    this.hintIndex = 0;
   }
 
   submit(program) {
@@ -25,10 +25,13 @@ export class ChallengeSession {
     return Math.max(0, (this.difficulty?.hintAfter ?? 0) - this.failures);
   }
 
-  nextHint() {
-    const { hints } = this.challenge;
-    const hint = hints[this.hintIndex % hints.length];
-    this.hintIndex += 1;
-    return hint;
+  /** What the next hint costs: { freeLeft, cost, coins }. */
+  hintStatus() {
+    return this.hintBook.status(this.challenge.id);
+  }
+
+  /** Next hint (Medium/Hard: subtler nudges first); charges coins once the free ones are used. */
+  takeHint() {
+    return this.hintBook.take(this.challenge);
   }
 }

@@ -36,7 +36,11 @@ export class ChallengeScreen extends Screen {
     this.mentor = game.playerSummary.execute().mentor; // the guide the player chose
     this.state = 'editing';
 
-    this.editor = createEditor(challenge, { sfx });
+    // Easy, function challenges: the ★ calls (and the turns between them) are already in the
+    // program, so the preview shows Bit's path as soon as the ★ Função gets its first block.
+    this.fnCallsReady = Boolean(this.session.difficulty.fnCallsReady && challenge.functionMax && !challenge.start);
+    const prefill = this.fnCallsReady ? challenge.solution.filter((n) => n.type !== 'function') : null;
+    this.editor = createEditor(challenge, { sfx, prefill });
     this.editor.onChange = () => this.onProgramChange();
     this.scenery = challenge.scenery ?? fase.scenery;
     this.obstacle = SCENERIES[this.scenery]?.obstacle ?? 'wall';
@@ -52,7 +56,8 @@ export class ChallengeScreen extends Screen {
     this.track(() => this.views.forEach((view) => view.destroy()));
 
     this.energySlot = h('div', { class: 'challenge__energy' });
-    this.hintBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'));
+    this.hintBadge = h('span', { class: 'hint-badge' });
+    this.hintBtn = h('button', { class: 'iconbtn iconbtn--hint', type: 'button', 'aria-label': t('challenge.hint'), onClick: () => this.showHint() }, icon('hint'), this.hintBadge);
     this.runBtn = h('button', { class: 'pbtn pbtn--primary pbtn--run', type: 'button', onClick: () => this.run() }, icon('play'), t('challenge.run'));
     this.clearBtn = h('button', { class: 'iconbtn', type: 'button', 'aria-label': t('challenge.clear'), onClick: () => this.clearAll() }, icon('trash'));
     this.feedbackLayer = h('div', { class: 'feedback-layer' });
@@ -72,13 +77,14 @@ export class ChallengeScreen extends Screen {
         this.energySlot,
         this.hintBtn),
       h('p', { class: 'goal' }, icon('flag'), challenge.goal),
-      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), challenge.hints[0]) : null,
+      this.session.difficulty.hintOnScreen ? h('p', { class: 'goal goal--hint' }, icon('hint'), this.fnCallsReady ? t('challenge.fnCalled') : challenge.hints[0]) : null,
       h('div', { class: 'challenge__stage' }, stage),
       this.editor.programEl,
       this.controls,
     );
     this.views.forEach((view, i) => view.setWorld(challenge.maps[i]));
     this.renderEnergy();
+    this.renderHintBadge();
     this.onProgramChange();
     this.editor.paletteEl.querySelector('button:not([disabled])')?.setAttribute('data-autofocus', '');
   }
@@ -173,12 +179,14 @@ export class ChallengeScreen extends Screen {
     // Trees are called trees: the meadow uses the *_tree copy for the same wall failures.
     const copy = (this.obstacle === 'tree' && failures[`${failure.code}_tree`]) || failures[failure.code] || { title: t('challenge.unknownTitle'), hint: t('challenge.unknownHint') };
     const multiMap = this.challenge.maps.length > 1;
+    // Debugging challenges: point at the bug instead of suggesting a new block (which reads as "add one").
+    const debugTip = executed && this.challenge.start ? t(this.challenge.kind === 'rules' ? 'challenge.debugRulesTip' : 'challenge.debugTip') : null;
     const where = failure.stepIndex >= 0 ? t(multiMap ? 'challenge.whereStepMap' : 'challenge.whereStep', { step: failure.stepIndex + 1, map: failure.mapIndex + 1 }) : null;
     this.hintBtn.classList.toggle('is-pulsing', this.session.failures >= this.session.difficulty.hintPulse && !this.session.hintsLockedFor);
 
     const card = h('div', { class: 'feedback panel', role: 'alert' },
       h('div', { class: 'feedback__head' }, icon(executed ? 'bug' : 'hint', 'feedback__icon'), h('strong', {}, copy.title)),
-      h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, copy.hint),
+      h('p', { class: 'feedback__hint' }, where ? h('b', {}, `${where} `) : null, debugTip ?? copy.hint),
       executed ? h('p', { class: 'feedback__note' }, energyLost ? [icon('energy'), ` ${t('challenge.energyLost')} `] : null, pick(encouragements)) : null,
       h('div', { class: 'feedback__actions' },
         this.answerAvailable ? h('button', { class: 'pbtn', type: 'button', onClick: () => this.showAnswer() }, icon('check'), t('challenge.answer'))
@@ -204,6 +212,15 @@ export class ChallengeScreen extends Screen {
     this.updatePreview();
   }
 
+  /** Medium/Hard: how many free hints are left (a number), or a coin once they cost coins. */
+  renderHintBadge() {
+    const { freeLeft, cost } = this.session.hintStatus();
+    this.hintBadge.hidden = freeLeft == null;
+    this.hintBadge.replaceChildren(cost ? icon('coin') : String(freeLeft ?? ''));
+    this.hintBtn.setAttribute('aria-label', freeLeft == null ? t('challenge.hint')
+      : `${t('challenge.hint')}. ${cost ? t('hint.buyTitle') : t('hint.badgeAria', { n: freeLeft })}`);
+  }
+
   async showHint() {
     if (this.state === 'running') return;
     const lockedFor = this.session.hintsLockedFor;
@@ -211,11 +228,34 @@ export class ChallengeScreen extends Screen {
       this.ctx.sfx('wrong');
       return this.ctx.toast.show({ title: t('challenge.hintLocked'), text: tn('challenge.hintLockedText', lockedFor), iconName: 'lock' });
     }
-    this.ctx.sfx('lesson');
+    const { cost, coins } = this.session.hintStatus();
+    if (cost > coins) {
+      this.ctx.sfx('wrong');
+      return this.ask({
+        title: t('hint.noCoinsTitle'),
+        body: h('p', {}, icon('coin'), ` ${t('hint.noCoinsText', { price: cost, coins })}`),
+        actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
+      });
+    }
+    if (cost) {
+      const buy = await this.ask({
+        title: t('hint.buyTitle'),
+        body: h('p', {}, icon('coin'), ` ${t('hint.buyText', { price: cost, coins })}`),
+        actions: [{ label: t('common.notNow'), value: false }, { label: t('hint.buy', { price: cost }), value: true, primary: true }],
+      });
+      if (!buy) return;
+    }
+    const hint = this.session.takeHint();
+    if (!hint.ok) return;
+    this.ctx.sfx(hint.paid ? 'coin' : 'lesson');
+    this.renderHintBadge();
+    const note = hint.paid ? t('hint.paidNote', { price: hint.paid })
+      : hint.freeLeft === 0 ? t('hint.lastFree', { price: hint.cost })
+        : hint.freeLeft != null ? tn('hint.freeLeft', hint.freeLeft) : null;
     await this.ask({
       title: t('challenge.hintTitle'),
       body: h('div', { class: 'hint' }, mentorPortrait(this.mentor.id, this.ctx.theme.colors, { scale: 3 }),
-        h('div', {}, h('strong', {}, this.mentor.name), h('p', {}, this.session.nextHint()))),
+        h('div', {}, h('strong', {}, this.mentor.name), h('p', {}, hint.text), note ? h('small', { class: 'hint__note' }, note) : null)),
       actions: [{ label: t('challenge.gotIt'), value: true, primary: true }],
     });
   }
